@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrackPoint | Phone Tracking</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span>●</span> TrackPoint
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+    </nav>
+
+
+    <main class="hero">
+
+        <div class="hero-content">
+
+            <div class="badge">
+                ● Secure location tracking
+            </div>
+
+            <h1>
+                Know where your
+                <span>devices are.</span>
+            </h1>
+
+            <p>
+                Track your own devices with permission,
+                view their latest location and manage
+                everything from one simple dashboard.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="dashboard.html" class="btn primary">
+                    Open Dashboard
+                </a>
+
+                <button class="btn secondary" onclick="requestLocation()">
+                    Test Location
+                </button>
+            </div>
+
+            <div id="location-status" class="location-status">
+                Location permission has not been requested.
+            </div>
+
+        </div>
+
+
+        <div class="phone-preview">
+
+            <div class="phone">
+
+                <div class="phone-top">
+                    <span>9:41</span>
+                    <span>● ● ●</span>
+                </div>
+
+                <div class="map">
+
+                    <div class="map-grid"></div>
+
+                    <div class="location-ring">
+                        <div class="location-dot"></div>
+                    </div>
+
+                    <div class="map-card">
+                        <strong>My Phone</strong>
+                        <small>Location available</small>
+                    </div>
+
+                </div>
+
+                <div class="phone-bottom">
+
+                    <div>
+                        <small>STATUS</small>
+                        <strong class="online">● Online</strong>
+                    </div>
+
+                    <div>
+                        <small>BATTERY</small>
+                        <strong>78%</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <section class="features">
+
+        <div class="feature">
+            <div class="feature-icon">📍</div>
+            <h3>Live Location</h3>
+            <p>
+                See the latest location shared by your device.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">🔐</div>
+            <h3>Permission Based</h3>
+            <p>
+                Location sharing only works when the device owner allows it.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">📱</div>
+            <h3>Multiple Devices</h3>
+            <p>
+                Manage several devices from one dashboard.
+            </p>
+        </div>
+
+    </section>
+
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
