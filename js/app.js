@@ -9,31 +9,15 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
-
 // ========================================
-// LOAD SUPABASE
+// SUPABASE CLIENT
 // ========================================
 
-const script = document.createElement("script");
-
-script.src =
-    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-script.onload = () => {
-
-    window.supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-    setupLogin();
-    setupSignup();
-    setupDashboard();
-};
-
-document.head.appendChild(script);
-
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 // ========================================
 // SHOW / HIDE PASSWORD
@@ -47,17 +31,13 @@ function togglePassword(inputId, button) {
     if (!input) return;
 
     if (input.type === "password") {
-
         input.type = "text";
         button.textContent = "Hide";
-
     } else {
-
         input.type = "password";
         button.textContent = "Show";
     }
 }
-
 
 // ========================================
 // LOGIN
@@ -70,13 +50,11 @@ function setupLogin() {
 
     if (!loginForm) return;
 
-
     loginForm.addEventListener(
         "submit",
         async function (event) {
 
             event.preventDefault();
-
 
             const email =
                 document
@@ -90,43 +68,35 @@ function setupLogin() {
                     .value;
 
             const message =
-                document.getElementById(
-                    "loginMessage"
-                );
+                document.getElementById("loginMessage");
 
             const button =
-                loginForm.querySelector(
-                    ".auth-button"
-                );
-
+                loginForm.querySelector(".auth-button");
 
             message.textContent = "";
+            message.className = "";
 
             button.disabled = true;
             button.textContent = "Signing in...";
 
-
             try {
 
                 const { data, error } =
-                    await window.supabaseClient.auth
+                    await supabaseClient.auth
                         .signInWithPassword({
-                            email,
-                            password
+                            email: email,
+                            password: password
                         });
-
 
                 if (error) {
                     throw error;
                 }
 
-
-                if (!data.user) {
+                if (!data.session) {
                     throw new Error(
-                        "Unable to sign in."
+                        "Login failed. No session was created."
                     );
                 }
-
 
                 message.textContent =
                     "Login successful!";
@@ -134,14 +104,8 @@ function setupLogin() {
                 message.className =
                     "success-message";
 
-
-                setTimeout(() => {
-
-                    window.location.href =
-                        "dashboard.html";
-
-                }, 500);
-
+                window.location.href =
+                    "dashboard.html";
 
             } catch (error) {
 
@@ -150,7 +114,6 @@ function setupLogin() {
                     error
                 );
 
-
                 message.textContent =
                     error.message ||
                     "Unable to sign in.";
@@ -158,14 +121,12 @@ function setupLogin() {
                 message.className =
                     "error-message";
 
-
                 button.disabled = false;
-                button.textContent = "Log in";
+                button.textContent = "Sign in";
             }
         }
     );
 }
-
 
 // ========================================
 // SIGN UP
@@ -178,13 +139,11 @@ function setupSignup() {
 
     if (!signupForm) return;
 
-
     signupForm.addEventListener(
         "submit",
         async function (event) {
 
             event.preventDefault();
-
 
             const name =
                 document
@@ -205,31 +164,16 @@ function setupSignup() {
 
             const confirmPassword =
                 document
-                    .getElementById(
-                        "signupConfirmPassword"
-                    )
+                    .getElementById("signupConfirmPassword")
                     .value;
 
-
             const message =
-                document.getElementById(
-                    "signupMessage"
-                );
+                document.getElementById("signupMessage");
 
             const button =
-                signupForm.querySelector(
-                    ".auth-button"
-                );
+                signupForm.querySelector(".auth-button");
 
-
-            // ----------------------------
-            // PASSWORD CHECK
-            // ----------------------------
-
-            if (
-                password !==
-                confirmPassword
-            ) {
+            if (password !== confirmPassword) {
 
                 message.textContent =
                     "Passwords do not match.";
@@ -239,7 +183,6 @@ function setupSignup() {
 
                 return;
             }
-
 
             if (password.length < 8) {
 
@@ -252,11 +195,9 @@ function setupSignup() {
                 return;
             }
 
-
             button.disabled = true;
             button.textContent =
                 "Creating account...";
-
 
             try {
 
@@ -264,61 +205,51 @@ function setupSignup() {
                     window.location.origin +
                     "/login.html";
 
-
                 const { data, error } =
-                    await window.supabaseClient.auth
-                        .signUp({
+                    await supabaseClient.auth.signUp({
 
-                            email: email,
+                        email: email,
 
-                            password: password,
+                        password: password,
 
-                            options: {
+                        options: {
 
-                                data: {
-                                    full_name: name
-                                },
+                            data: {
+                                full_name: name
+                            },
 
-                                emailRedirectTo:
-                                    redirectUrl
-                            }
-                        });
-
+                            emailRedirectTo:
+                                redirectUrl
+                        }
+                    });
 
                 if (error) {
                     throw error;
                 }
 
-
-                // Email confirmation required
                 if (
                     data.user &&
                     !data.session
                 ) {
 
                     message.textContent =
-                        "Account created! Check your email and click the verification link.";
+                        "Account created! Check your email and verify your account.";
 
                     message.className =
                         "success-message";
 
-
                     button.disabled = false;
-
                     button.textContent =
                         "Create account";
 
                     return;
                 }
 
-
-                // Confirmation disabled
                 message.textContent =
                     "Account created successfully!";
 
                 message.className =
                     "success-message";
-
 
                 setTimeout(() => {
 
@@ -327,7 +258,6 @@ function setupSignup() {
 
                 }, 700);
 
-
             } catch (error) {
 
                 console.error(
@@ -335,14 +265,12 @@ function setupSignup() {
                     error
                 );
 
-
                 message.textContent =
                     error.message ||
                     "Unable to create your account.";
 
                 message.className =
                     "error-message";
-
 
                 button.disabled = false;
 
@@ -353,7 +281,6 @@ function setupSignup() {
     );
 }
 
-
 // ========================================
 // DASHBOARD AUTHENTICATION
 // ========================================
@@ -361,25 +288,20 @@ function setupSignup() {
 async function setupDashboard() {
 
     const dashboard =
-        document.querySelector(
-            ".app"
-        );
+        document.querySelector(".app");
 
     if (!dashboard) return;
 
-
     try {
 
-        const { data, error } =
-            await window.supabaseClient.auth
-                .getUser();
+        const {
+            data: {
+                session
+            }
+        } =
+            await supabaseClient.auth.getSession();
 
-
-        if (
-            error ||
-            !data ||
-            !data.user
-        ) {
+        if (!session) {
 
             window.location.replace(
                 "login.html"
@@ -388,111 +310,8 @@ async function setupDashboard() {
             return;
         }
 
-
         const user =
-            data.user;
+            session.user;
 
-
-        // ----------------------------
-        // USER NAME
-        // ----------------------------
-
-        const fullName =
-            user.user_metadata?.full_name ||
-            user.user_metadata?.name ||
-            user.email?.split("@")[0] ||
-            "User";
-
-
-        const profileName =
-            document.getElementById(
-                "profileName"
-            );
-
-        if (profileName) {
-            profileName.textContent =
-                fullName;
-        }
-
-
-        // ----------------------------
-        // EMAIL
-        // ----------------------------
-
-        const userEmail =
-            document.getElementById(
-                "userEmail"
-            );
-
-        if (userEmail) {
-            userEmail.textContent =
-                user.email;
-        }
-
-
-        // ----------------------------
-        // AVATAR
-        // ----------------------------
-
-        const profileAvatar =
-            document.getElementById(
-                "profileAvatar"
-            );
-
-        if (profileAvatar) {
-
-            profileAvatar.textContent =
-                fullName
-                    .charAt(0)
-                    .toUpperCase();
-        }
-
-
-        // ----------------------------
-        // LOGOUT
-        // ----------------------------
-
-        const logoutButton =
-            document.getElementById(
-                "logoutButton"
-            );
-
-
-        if (logoutButton) {
-
-            logoutButton.addEventListener(
-                "click",
-                async function () {
-
-                    logoutButton.disabled =
-                        true;
-
-                    logoutButton.textContent =
-                        "Logging out...";
-
-
-                    await window.supabaseClient.auth
-                        .signOut();
-
-
-                    window.location.replace(
-                        "login.html"
-                    );
-                }
-            );
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Dashboard authentication error:",
-            error
-        );
-
-        window.location.replace(
-            "login.html"
-        );
-    }
-}
+        c
 ```
