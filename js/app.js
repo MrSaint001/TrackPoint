@@ -1,6 +1,7 @@
-/* ========================================
-   TRACKPOINT APP
-======================================== */
+```javascript
+// ========================================
+// TRACKPOINT - SUPABASE AUTHENTICATION
+// ========================================
 
 const SUPABASE_URL =
     "https://zlzbbtoainxzvgocxpmb.supabase.co";
@@ -8,482 +9,478 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
-let supabaseClient = null;
 
+// ========================================
+// LOAD SUPABASE
+// ========================================
 
-/* ========================================
-   LOAD SUPABASE
-======================================== */
+const script = document.createElement("script");
 
-async function loadSupabase() {
+script.src =
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-    if (window.supabase) {
-        supabaseClient = window.supabase.createClient(
+script.onload = () => {
+
+    window.supabaseClient =
+        window.supabase.createClient(
             SUPABASE_URL,
             SUPABASE_KEY
         );
 
-        return supabaseClient;
-    }
+    setupLogin();
+    setupSignup();
+    setupDashboard();
+};
 
-    await new Promise((resolve, reject) => {
-
-        const script = document.createElement("script");
-
-        script.src =
-            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-        script.onload = resolve;
-        script.onerror = reject;
-
-        document.head.appendChild(script);
-
-    });
-
-    supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-    return supabaseClient;
-}
+document.head.appendChild(script);
 
 
-/* ========================================
-   PASSWORD TOGGLE
-======================================== */
+// ========================================
+// SHOW / HIDE PASSWORD
+// ========================================
 
 function togglePassword(inputId, button) {
 
-    const input = document.getElementById(inputId);
+    const input =
+        document.getElementById(inputId);
 
     if (!input) return;
 
     if (input.type === "password") {
 
         input.type = "text";
-
-        if (button) {
-            button.textContent = "Hide";
-        }
+        button.textContent = "Hide";
 
     } else {
 
         input.type = "password";
-
-        if (button) {
-            button.textContent = "Show";
-        }
+        button.textContent = "Show";
     }
 }
 
 
-/* ========================================
-   LOGIN
-======================================== */
+// ========================================
+// LOGIN
+// ========================================
 
 function setupLogin() {
 
-    const form = document.getElementById("loginForm");
+    const loginForm =
+        document.getElementById("loginForm");
 
-    if (!form) return;
+    if (!loginForm) return;
 
-    form.addEventListener("submit", async function (event) {
 
-        event.preventDefault();
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        const email =
-            document.getElementById("loginEmail")?.value.trim();
+            event.preventDefault();
 
-        const password =
-            document.getElementById("loginPassword")?.value;
 
-        const message =
-            document.getElementById("loginMessage");
+            const email =
+                document
+                    .getElementById("loginEmail")
+                    .value
+                    .trim();
 
-        if (!email || !password) {
+            const password =
+                document
+                    .getElementById("loginPassword")
+                    .value;
 
-            if (message) {
-                message.textContent =
-                    "Please enter your email and password.";
-                message.style.color = "#dc2626";
-            }
+            const message =
+                document.getElementById(
+                    "loginMessage"
+                );
 
-            return;
-        }
+            const button =
+                loginForm.querySelector(
+                    ".auth-button"
+                );
 
-        try {
 
-            if (message) {
-                message.textContent = "Signing in...";
-                message.style.color = "#718096";
-            }
+            message.textContent = "";
 
-            const supabase = await loadSupabase();
+            button.disabled = true;
+            button.textContent = "Signing in...";
 
-            const { data, error } =
-                await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
 
-            if (error) {
-                throw error;
-            }
+            try {
 
-            if (message) {
-                message.textContent =
-                    "Login successful. Opening TrackPoint...";
-                message.style.color = "#16a34a";
-            }
+                const { data, error } =
+                    await window.supabaseClient.auth
+                        .signInWithPassword({
+                            email,
+                            password
+                        });
 
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 500);
 
-        } catch (error) {
-
-            console.error("Login error:", error);
-
-            if (message) {
-
-                let text = error.message ||
-                    "Unable to sign in.";
-
-                if (
-                    text.toLowerCase().includes("email not confirmed")
-                ) {
-                    text =
-                        "Please verify your email before signing in.";
+                if (error) {
+                    throw error;
                 }
 
-                message.textContent = text;
-                message.style.color = "#dc2626";
-            }
-        }
 
-    });
-}
+                if (!data.user) {
+                    throw new Error(
+                        "Unable to sign in."
+                    );
+                }
 
-
-/* ========================================
-   SIGNUP
-======================================== */
-
-function setupSignup() {
-
-    const form = document.getElementById("signupForm");
-
-    if (!form) return;
-
-    form.addEventListener("submit", async function (event) {
-
-        event.preventDefault();
-
-        const name =
-            document.getElementById("signupName")?.value.trim();
-
-        const email =
-            document.getElementById("signupEmail")?.value.trim();
-
-        const password =
-            document.getElementById("signupPassword")?.value;
-
-        const confirmPassword =
-            document.getElementById("signupConfirmPassword")?.value;
-
-        const message =
-            document.getElementById("signupMessage");
-
-
-        /* -------------------------
-           VALIDATION
-        ------------------------- */
-
-        if (!name || !email || !password || !confirmPassword) {
-
-            if (message) {
-                message.textContent =
-                    "Please fill in all fields.";
-                message.style.color = "#dc2626";
-            }
-
-            return;
-        }
-
-
-        if (password.length < 8) {
-
-            if (message) {
-                message.textContent =
-                    "Password must be at least 8 characters.";
-                message.style.color = "#dc2626";
-            }
-
-            return;
-        }
-
-
-        if (password !== confirmPassword) {
-
-            if (message) {
-                message.textContent =
-                    "Passwords do not match.";
-                message.style.color = "#dc2626";
-            }
-
-            return;
-        }
-
-
-        try {
-
-            if (message) {
-                message.textContent =
-                    "Creating your account...";
-                message.style.color = "#718096";
-            }
-
-            const supabase = await loadSupabase();
-
-
-            /* -------------------------
-               CREATE ACCOUNT
-            ------------------------- */
-
-            const { data, error } =
-                await supabase.auth.signUp({
-
-                    email: email,
-
-                    password: password,
-
-                    options: {
-
-                        /*
-                         * After the user clicks the
-                         * verification email, return
-                         * them to the styled TrackPoint
-                         * login page.
-                         */
-
-                        emailRedirectTo:
-                            window.location.origin +
-                            "/login.html",
-
-                        data: {
-                            full_name: name
-                        }
-                    }
-                });
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            /* -------------------------
-               SUCCESS
-            ------------------------- */
-
-            if (message) {
 
                 message.textContent =
-                    "Account created! Check your email and click the verification link.";
+                    "Login successful!";
 
-                message.style.color = "#16a34a";
-            }
-
-
-            form.reset();
+                message.className =
+                    "success-message";
 
 
-        } catch (error) {
+                setTimeout(() => {
 
-            console.error("Signup error:", error);
+                    window.location.href =
+                        "dashboard.html";
 
-            if (message) {
+                }, 500);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
 
                 message.textContent =
                     error.message ||
-                    "Unable to create your account.";
+                    "Unable to sign in.";
 
-                message.style.color = "#dc2626";
+                message.className =
+                    "error-message";
+
+
+                button.disabled = false;
+                button.textContent = "Log in";
             }
-        }
-
-    });
-}
-
-
-/* ========================================
-   HOME PAGE LOCATION TEST
-======================================== */
-
-function requestLocation() {
-
-    const status =
-        document.getElementById("location-status");
-
-    if (!navigator.geolocation) {
-
-        if (status) {
-            status.textContent =
-                "Location is not supported by this browser.";
-            status.style.color = "#dc2626";
-        }
-
-        return;
-    }
-
-
-    if (status) {
-        status.textContent =
-            "Requesting location permission...";
-        status.style.color = "#718096";
-    }
-
-
-    navigator.geolocation.getCurrentPosition(
-
-        function (position) {
-
-            const latitude =
-                position.coords.latitude;
-
-            const longitude =
-                position.coords.longitude;
-
-            const accuracy =
-                Math.round(position.coords.accuracy);
-
-
-            if (status) {
-
-                status.innerHTML =
-                    "Location available.<br>" +
-                    "Accuracy: " +
-                    accuracy +
-                    " metres";
-
-                status.style.color = "#16a34a";
-            }
-
-            console.log("Location:", {
-                latitude,
-                longitude,
-                accuracy
-            });
-
-        },
-
-        function (error) {
-
-            console.error("Location error:", error);
-
-            if (!status) return;
-
-            if (error.code === 1) {
-
-                status.textContent =
-                    "Location permission was denied.";
-
-            } else if (error.code === 2) {
-
-                status.textContent =
-                    "Your location could not be determined.";
-
-            } else if (error.code === 3) {
-
-                status.textContent =
-                    "Location request timed out.";
-
-            } else {
-
-                status.textContent =
-                    "Unable to get your location.";
-            }
-
-            status.style.color = "#dc2626";
-        },
-
-        {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
         }
     );
 }
 
 
-/* ========================================
-   DASHBOARD AUTH
-======================================== */
+// ========================================
+// SIGN UP
+// ========================================
 
-async function setupDashboardAuth() {
+function setupSignup() {
 
-    if (!window.location.pathname.endsWith("dashboard.html")) {
-        return;
-    }
+    const signupForm =
+        document.getElementById("signupForm");
+
+    if (!signupForm) return;
+
+
+    signupForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const name =
+                document
+                    .getElementById("signupName")
+                    .value
+                    .trim();
+
+            const email =
+                document
+                    .getElementById("signupEmail")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("signupPassword")
+                    .value;
+
+            const confirmPassword =
+                document
+                    .getElementById(
+                        "signupConfirmPassword"
+                    )
+                    .value;
+
+
+            const message =
+                document.getElementById(
+                    "signupMessage"
+                );
+
+            const button =
+                signupForm.querySelector(
+                    ".auth-button"
+                );
+
+
+            // ----------------------------
+            // PASSWORD CHECK
+            // ----------------------------
+
+            if (
+                password !==
+                confirmPassword
+            ) {
+
+                message.textContent =
+                    "Passwords do not match.";
+
+                message.className =
+                    "error-message";
+
+                return;
+            }
+
+
+            if (password.length < 8) {
+
+                message.textContent =
+                    "Password must be at least 8 characters.";
+
+                message.className =
+                    "error-message";
+
+                return;
+            }
+
+
+            button.disabled = true;
+            button.textContent =
+                "Creating account...";
+
+
+            try {
+
+                const redirectUrl =
+                    window.location.origin +
+                    "/login.html";
+
+
+                const { data, error } =
+                    await window.supabaseClient.auth
+                        .signUp({
+
+                            email: email,
+
+                            password: password,
+
+                            options: {
+
+                                data: {
+                                    full_name: name
+                                },
+
+                                emailRedirectTo:
+                                    redirectUrl
+                            }
+                        });
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                // Email confirmation required
+                if (
+                    data.user &&
+                    !data.session
+                ) {
+
+                    message.textContent =
+                        "Account created! Check your email and click the verification link.";
+
+                    message.className =
+                        "success-message";
+
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "Create account";
+
+                    return;
+                }
+
+
+                // Confirmation disabled
+                message.textContent =
+                    "Account created successfully!";
+
+                message.className =
+                    "success-message";
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }, 700);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Signup error:",
+                    error
+                );
+
+
+                message.textContent =
+                    error.message ||
+                    "Unable to create your account.";
+
+                message.className =
+                    "error-message";
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create account";
+            }
+        }
+    );
+}
+
+
+// ========================================
+// DASHBOARD AUTHENTICATION
+// ========================================
+
+async function setupDashboard() {
+
+    const dashboard =
+        document.querySelector(
+            ".app"
+        );
+
+    if (!dashboard) return;
+
 
     try {
 
-        const supabase = await loadSupabase();
-
-        const {
-            data: {
-                user
-            }
-        } = await supabase.auth.getUser();
+        const { data, error } =
+            await window.supabaseClient.auth
+                .getUser();
 
 
-        /* -------------------------
-           NOT LOGGED IN
-        ------------------------- */
+        if (
+            error ||
+            !data ||
+            !data.user
+        ) {
 
-        if (!user) {
-
-            window.location.href = "login.html";
+            window.location.replace(
+                "login.html"
+            );
 
             return;
         }
 
 
-        /* -------------------------
-           USER INFORMATION
-        ------------------------- */
+        const user =
+            data.user;
 
-        const metadata =
-            user.user_metadata || {};
+
+        // ----------------------------
+        // USER NAME
+        // ----------------------------
 
         const fullName =
-            metadata.full_name ||
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
             user.email?.split("@")[0] ||
             "User";
 
 
-        /* Try common dashboard elements */
-
-        const nameElements =
-            document.querySelectorAll(
-                "#userName, .user-name, .profile-name"
+        const profileName =
+            document.getElementById(
+                "profileName"
             );
 
-        nameElements.forEach(element => {
-            element.textContent = fullName;
-        });
+        if (profileName) {
+            profileName.textContent =
+                fullName;
+        }
 
 
-        const emailElements =
-            document.querySelectorAll(
-                "#userEmail, .user-email, .profile-email"
+        // ----------------------------
+        // EMAIL
+        // ----------------------------
+
+        const userEmail =
+            document.getElementById(
+                "userEmail"
             );
 
-        emailElements.forEach(element => {
-            element.textContent =
-                user.email || "";
-        });
+        if (userEmail) {
+            userEmail.textContent =
+                user.email;
+        }
+
+
+        // ----------------------------
+        // AVATAR
+        // ----------------------------
+
+        const profileAvatar =
+            document.getElementById(
+                "profileAvatar"
+            );
+
+        if (profileAvatar) {
+
+            profileAvatar.textContent =
+                fullName
+                    .charAt(0)
+                    .toUpperCase();
+        }
+
+
+        // ----------------------------
+        // LOGOUT
+        // ----------------------------
+
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+
+
+        if (logoutButton) {
+
+            logoutButton.addEventListener(
+                "click",
+                async function () {
+
+                    logoutButton.disabled =
+                        true;
+
+                    logoutButton.textContent =
+                        "Logging out...";
+
+
+                    await window.supabaseClient.auth
+                        .signOut();
+
+
+                    window.location.replace(
+                        "login.html"
+                    );
+                }
+            );
+        }
 
 
     } catch (error) {
@@ -492,49 +489,10 @@ async function setupDashboardAuth() {
             "Dashboard authentication error:",
             error
         );
-    }
-}
 
-
-/* ========================================
-   LOGOUT
-======================================== */
-
-async function trackPointLogout() {
-
-    try {
-
-        const supabase = await loadSupabase();
-
-        await supabase.auth.signOut();
-
-    } catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
+        window.location.replace(
+            "login.html"
         );
-
-    } finally {
-
-        window.location.href = "login.html";
     }
 }
-
-
-/* ========================================
-   START APP
-======================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
-
-        setupLogin();
-
-        setupSignup();
-
-        setupDashboardAuth();
-
-    }
-);
+```
