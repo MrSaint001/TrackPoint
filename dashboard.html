@@ -263,269 +263,463 @@
             background: #101821;
             border: 1px solid #202b36;
             border-radius: 12px;
-            padding: 19px;
+            overflow: hidden;
         }
 
-        .card-title {
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border-bottom: 1px solid #202b36;
+        }
+
+        .card-header h3 {
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 15px;
         }
 
-        .card-subtitle {
+        .card-header span {
             color: #718096;
             font-size: 11px;
-            margin-top: -8px;
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        /* =========================
+           OVERVIEW
+        ========================= */
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 18px;
+        }
+
+        .welcome-box {
+            background: linear-gradient(
+                135deg,
+                #17283d,
+                #101821
+            );
+            border: 1px solid #26384c;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+
+        .welcome-box h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-box p {
+            color: #8391a1;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .quick-action {
+            border: 1px solid #202b36;
+            background: #101821;
+            color: #dbe4ed;
+            padding: 17px;
+            border-radius: 10px;
+            text-align: left;
+            transition: .2s;
+        }
+
+        .quick-action:hover {
+            border-color: #315d94;
+            background: #142131;
+        }
+
+        .quick-action strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .quick-action span {
+            color: #718096;
+            font-size: 11px;
+        }
+
+        /* =========================
+           DEVICE LIST
+        ========================= */
+
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .device-item {
+            border: 1px solid #202b36;
+            background: #0d151d;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .device-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .device-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: #172536;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .device-info {
+            min-width: 0;
+        }
+
+        .device-info strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .device-info span {
+            color: #6f7d8d;
+            font-size: 10px;
+        }
+
+        .device-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            color: #8b99a8;
+        }
+
+        .device-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #6b7280;
+        }
+
+        .device-status.online .device-status-dot {
+            background: #22c55e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 20px;
+            color: #687789;
+        }
+
+        .empty-state strong {
+            display: block;
+            color: #a7b2bf;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .empty-state span {
+            font-size: 11px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            border: 1px solid #2a3948;
+            background: #172331;
+            color: #dbe4ed;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-size: 11px;
+            transition: .2s;
+        }
+
+        .btn:hover {
+            background: #1d3044;
+            border-color: #3b5875;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .btn-danger {
+            color: #fca5a5;
+            border-color: #5b2b32;
+            background: #25161a;
+        }
+
+        .btn-danger:hover {
+            background: #321a1f;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================
+           TRACKER
+        ========================= */
+
+        .tracker-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px;
+        }
+
+        .map-card {
+            min-width: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 520px;
+            background: #111827;
+        }
+
+        .map-wrapper {
+            position: relative;
+        }
+
+        .map-toolbar {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            z-index: 5;
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .map-toolbar::-webkit-scrollbar {
+            height: 0;
+        }
+
+        .map-toolbar .btn {
+            white-space: nowrap;
+            background: rgba(16, 24, 33, .94);
+            backdrop-filter: blur(8px);
+        }
+
+        .tracker-side {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tracker-device {
+            padding: 18px;
+        }
+
+        .tracker-device-name {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tracker-device-type {
+            color: #718096;
+            font-size: 11px;
+            margin-bottom: 16px;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #10251b;
+            border: 1px solid #1f4d32;
+            color: #70d69a;
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 10px;
             margin-bottom: 15px;
+        }
+
+        .live-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .location-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 9px;
+        }
+
+        .info-box {
+            background: #0d151d;
+            border: 1px solid #202b36;
+            border-radius: 8px;
+            padding: 11px;
+        }
+
+        .info-box span {
+            display: block;
+            color: #667486;
+            font-size: 9px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 11px;
+            word-break: break-word;
+        }
+
+        .no-location {
+            color: #718096;
+            font-size: 11px;
+            line-height: 1.6;
+            padding: 15px;
+            background: #0d151d;
+            border: 1px solid #202b36;
+            border-radius: 9px;
+        }
+
+        /* =========================
+           MAP INFO
+        ========================= */
+
+        .map-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid #202b36;
+        }
+
+        .map-info-item {
+            padding: 13px 15px;
+            border-right: 1px solid #202b36;
+        }
+
+        .map-info-item:last-child {
+            border-right: 0;
+        }
+
+        .map-info-item span {
+            display: block;
+            color: #667486;
+            font-size: 9px;
+            margin-bottom: 4px;
+        }
+
+        .map-info-item strong {
+            font-size: 11px;
         }
 
         /* =========================
            DEVICES
         ========================= */
 
-        .device-grid {
+        .devices-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
         }
 
         .device-card {
-            background: #0d151e;
+            background: #101821;
             border: 1px solid #202b36;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
+            border-radius: 12px;
+            padding: 17px;
             transition: .2s;
         }
 
         .device-card:hover {
-            border-color: #31557f;
-            transform: translateY(-1px);
+            border-color: #30475e;
         }
 
-        .device-top {
+        .device-card-top {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            justify-content: space-between;
+            margin-bottom: 15px;
         }
 
-        .device-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .device-code {
-            color: #627082;
-            font-size: 10px;
-            margin-top: 4px;
-        }
-
-        .online-badge,
-        .offline-badge {
-            padding: 4px 7px;
-            border-radius: 20px;
-            font-size: 9px;
-        }
-
-        .online-badge {
-            background: #123522;
-            color: #55d98a;
-        }
-
-        .offline-badge {
-            background: #252b32;
-            color: #8993a0;
-        }
-
-        .device-info {
-            color: #7b8897;
-            font-size: 11px;
-            line-height: 1.8;
-        }
-
-        .empty {
-            padding: 35px 15px;
-            text-align: center;
-            color: #687585;
-            font-size: 13px;
-        }
-
-        /* =========================
-           MAP
-        ========================= */
-
-        .tracker-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 285px;
-            gap: 15px;
-        }
-
-        .map-card {
-            padding: 0;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        #map {
-            width: 100%;
-            height: 560px;
-            background: #111820;
-        }
-
-        .map-toolbar {
+        .device-card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #172536;
             display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
-            padding: 12px;
-            background: #101821;
-            border-bottom: 1px solid #202b36;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
         }
 
-        .map-btn {
-            border: 1px solid #2a3745;
-            background: #141e28;
-            color: #aab5c2;
-            padding: 8px 10px;
-            border-radius: 7px;
-            font-size: 11px;
-        }
-
-        .map-btn:hover {
-            background: #1d2935;
-            color: #fff;
-        }
-
-        .map-btn.active {
-            background: #24559b;
-            border-color: #3271c5;
-            color: white;
-        }
-
-        .map-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            padding: 12px;
-            background: #0d151e;
-            border-top: 1px solid #202b36;
-        }
-
-        .map-info-item {
-            background: #101821;
-            border: 1px solid #202b36;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .map-info-item span {
-            display: block;
-            color: #657487;
-            font-size: 9px;
+        .device-card h3 {
+            font-size: 14px;
             margin-bottom: 5px;
         }
 
-        .map-info-item strong {
-            font-size: 11px;
-            word-break: break-word;
+        .device-card p {
+            color: #718096;
+            font-size: 10px;
+            line-height: 1.5;
         }
 
-        .tracker-side {
+        .device-card-details {
+            border-top: 1px solid #202b36;
+            margin-top: 15px;
+            padding-top: 13px;
+        }
+
+        .device-detail-row {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .selected-device {
-            color: #8794a3;
-            font-size: 12px;
-            line-height: 1.8;
-        }
-
-        .selected-device strong {
-            color: #e4e9ef;
-        }
-
-        /* =========================
-           FORMS
-        ========================= */
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-label {
-            display: block;
-            color: #8996a5;
-            font-size: 11px;
+            justify-content: space-between;
+            gap: 10px;
             margin-bottom: 7px;
         }
 
-        .form-input {
-            width: 100%;
-            background: #0c141c;
-            border: 1px solid #263340;
-            border-radius: 8px;
-            color: #e8edf3;
-            padding: 11px;
-            outline: none;
+        .device-detail-row span:first-child {
+            color: #687789;
+            font-size: 10px;
         }
 
-        .form-input:focus {
-            border-color: #3674c5;
-        }
-
-        .primary-btn {
-            border: 0;
-            background: #2563eb;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .primary-btn:hover {
-            background: #1d4ed8;
-        }
-
-        .secondary-btn {
-            border: 1px solid #2a3745;
-            background: #141e28;
-            color: #b5bfcb;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-
-        .secondary-btn:hover {
-            background: #1d2935;
-        }
-
-        .danger-btn {
-            width: 100%;
-            border: 1px solid #63323a;
-            background: #27171b;
-            color: #ef929d;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-
-        .message {
-            margin-top: 12px;
-            font-size: 12px;
-            color: #7f8c9b;
+        .device-detail-row span:last-child {
+            color: #b8c2cd;
+            font-size: 10px;
+            text-align: right;
         }
 
         /* =========================
@@ -539,19 +733,63 @@
 
         .location-table th,
         .location-table td {
-            padding: 12px 9px;
-            border-bottom: 1px solid #202b36;
             text-align: left;
+            padding: 13px 15px;
+            border-bottom: 1px solid #202b36;
             font-size: 11px;
         }
 
         .location-table th {
-            color: #657487;
-            font-weight: normal;
+            color: #687789;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
         }
 
         .location-table td {
-            color: #b6c0cb;
+            color: #b7c2ce;
+        }
+
+        .location-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alert-item {
+            display: flex;
+            gap: 13px;
+            padding: 16px;
+            border-bottom: 1px solid #202b36;
+        }
+
+        .alert-item:last-child {
+            border-bottom: 0;
+        }
+
+        .alert-icon {
+            width: 35px;
+            height: 35px;
+            flex-shrink: 0;
+            border-radius: 9px;
+            background: #251f14;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-content strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .alert-content span {
+            color: #718096;
+            font-size: 10px;
         }
 
         /* =========================
@@ -560,16 +798,12 @@
 
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
         .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 13px 0;
+            padding: 15px 0;
             border-bottom: 1px solid #202b36;
         }
 
@@ -580,332 +814,401 @@
         .setting-row strong {
             display: block;
             font-size: 12px;
+            margin-bottom: 4px;
         }
 
-        .setting-row small {
-            display: block;
-            color: #697889;
+        .setting-row span {
+            color: #718096;
             font-size: 10px;
-            margin-top: 4px;
             line-height: 1.5;
         }
 
-        .setting-status {
-            background: #123522;
-            color: #55d98a;
-            border-radius: 20px;
-            padding: 5px 8px;
-            font-size: 9px;
-            white-space: nowrap;
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 13px 0;
-            border-bottom: 1px solid #202b36;
-        }
-
-        .toggle-row:last-child {
-            border-bottom: 0;
-        }
-
-        .toggle-row strong {
-            display: block;
-            font-size: 12px;
-        }
-
-        .toggle-row small {
-            display: block;
-            color: #697889;
-            font-size: 10px;
-            margin-top: 4px;
-        }
-
-        .toggle-row input {
-            width: 18px;
-            height: 18px;
-            accent-color: #2563eb;
-            cursor: pointer;
-        }
-
-        .setting-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-        }
-
-        .setting-button {
-            width: 100%;
-            background: #141e28;
-            color: #b7c1cc;
-            border: 1px solid #2a3745;
-            padding: 10px;
-            border-radius: 7px;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .setting-button:hover {
-            background: #1c2834;
-            color: white;
-        }
-
-        .system-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 11px 0;
-            border-bottom: 1px solid #202b36;
-            color: #7b8897;
-            font-size: 11px;
-        }
-
-        .system-row strong {
-            color: #b9c3ce;
-            font-weight: normal;
-        }
-
         /* =========================
-           ALERTS
+           FORMS
         ========================= */
 
-        .alert-box {
-            border: 1px solid #202b36;
-            border-radius: 10px;
-            background: #0d151e;
-            padding: 16px;
-            color: #758294;
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #aab5c1;
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0c141c;
+            color: #e8edf3;
+            border: 1px solid #263340;
+            border-radius: 8px;
+            padding: 11px 12px;
+            outline: none;
             font-size: 12px;
-            line-height: 1.6;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+        }
+
+        .form-help {
+            color: #657486;
+            font-size: 9px;
+            margin-top: 5px;
+            line-height: 1.5;
         }
 
         /* =========================
-           QR MODAL
+           ADD DEVICE
+        ========================= */
+
+        .add-device-layout {
+            max-width: 650px;
+        }
+
+        .code-box {
+            background: #0c141c;
+            border: 1px dashed #304052;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .code-box strong {
+            display: block;
+            font-size: 19px;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .code-box span {
+            color: #718096;
+            font-size: 10px;
+        }
+
+        /* =========================
+           MODAL
         ========================= */
 
         .modal {
-            display: none;
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, .72);
-            z-index: 100;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            z-index: 100;
         }
 
         .modal.show {
             display: flex;
         }
 
-        .modal-card {
-            width: 390px;
-            max-width: 100%;
+        .modal-box {
+            width: 100%;
+            max-width: 390px;
             background: #101821;
-            border: 1px solid #293643;
-            border-radius: 13px;
+            border: 1px solid #263340;
+            border-radius: 14px;
             padding: 22px;
-            text-align: center;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .4);
         }
 
-        .modal-card h2 {
-            font-size: 17px;
-            margin-bottom: 7px;
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 17px;
         }
 
-        .modal-card p {
-            color: #718092;
-            font-size: 11px;
-            line-height: 1.6;
+        .modal-header h3 {
+            font-size: 15px;
         }
 
-        #qrcode {
-            background: white;
-            padding: 12px;
-            display: inline-block;
-            margin: 18px 0;
-            border-radius: 8px;
+        .modal-close {
+            border: 0;
+            background: transparent;
+            color: #718096;
+            font-size: 20px;
+        }
+
+        .qr-container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            min-height: 250px;
+        }
+
+        .qr-container img,
+        .qr-container canvas {
+            max-width: 100%;
         }
 
         .qr-link {
-            background: #0b1118;
-            border: 1px solid #273442;
-            border-radius: 7px;
-            padding: 9px;
+            background: #0c141c;
+            border: 1px solid #202b36;
+            border-radius: 8px;
+            padding: 10px;
             font-size: 9px;
-            color: #788697;
+            color: #8290a0;
             word-break: break-all;
-            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: #172331;
+            border: 1px solid #304052;
+            color: #e8edf3;
+            border-radius: 9px;
+            padding: 12px 15px;
+            font-size: 11px;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: .25s;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* =========================
            MOBILE
         ========================= */
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1100px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .devices-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .tracker-layout {
                 grid-template-columns: 1fr;
             }
 
             .tracker-side {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-       ```css
-@media (max-width: 800px) {
+        @media (max-width: 800px) {
+            body {
+                padding-bottom: 67px;
+            }
 
-    .app {
-        display: block;
-    }
+            .sidebar {
+                width: 100%;
+                height: 67px;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 0;
+                border-right: 0;
+                border-top: 1px solid #202b36;
+                display: flex;
+                align-items: center;
+                overflow-x: auto;
+                background: #101821;
+            }
 
-    .sidebar {
-        position: fixed;
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 0;
+            .brand,
+            .nav-label,
+            .sidebar-bottom {
+                display: none;
+            }
 
-        width: 100%;
-        height: 68px;
+            .nav-btn {
+                width: auto;
+                min-width: 90px;
+                height: 50px;
+                margin: 0;
+                padding: 7px 9px;
+                border-radius: 7px;
+                text-align: center;
+                font-size: 10px;
+                flex-shrink: 0;
+            }
 
-        padding: 7px 8px;
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
 
-        border-right: none;
-        border-top: 1px solid #202b36;
+            .topbar {
+                height: auto;
+                min-height: 62px;
+                padding: 12px 15px;
+                position: sticky;
+                top: 0;
+                z-index: 15;
+            }
 
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
+            .topbar-title {
+                font-size: 15px;
+            }
 
-        background: #101821;
+            .account-pill {
+                max-width: 145px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                padding: 7px 9px;
+                font-size: 10px;
+            }
 
-        overflow-x: auto;
-    }
-
-    .brand {
-        display: none;
-    }
-
-    .nav-label {
-        display: none;
-    }
-
-    .sidebar-bottom {
-        display: none;
-    }
-
-    .nav-btn {
-        width: auto;
-        min-width: 58px;
-
-        margin: 0;
-        padding: 8px 6px;
-
-        text-align: center;
-
-        font-size: 9px;
-        white-space: nowrap;
-    }
-
-    .nav-btn::first-letter {
-        font-size: 15px;
-    }
-
-    .main {
-        margin-left: 0;
-        width: 100%;
-
-        padding-bottom: 75px;
-    }
-
-    .topbar {
-        height: auto;
-        min-height: 68px;
-
-        padding: 14px 15px;
-    }
-
-    .topbar-title {
-        font-size: 16px;
-    }
-
-    .topbar-subtitle {
-        font-size: 10px;
-    }
-
-    .account-pill {
-        display: none;
-    }
-
-    .content {
-        padding: 15px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .settings-grid,
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .tracker-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .tracker-side {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    #map {
-        height: 360px;
-    }
-
-    .map-info {
-        grid-template-columns: 1fr;
-    }
-
-    .device-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .page-heading h1 {
-        font-size: 21px;
-    }
-}
-```
-
-        @media (max-width: 600px) {
             .content {
                 padding: 15px;
             }
 
-            .topbar {
-                padding: 0 15px;
+            .page-heading h1 {
+                font-size: 20px;
             }
 
-            .account-pill {
-                display: none;
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
 
-            .tracker-side {
+            .stat-card {
+                padding: 15px;
+            }
+
+            .quick-actions {
                 grid-template-columns: 1fr;
             }
 
+            .devices-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tracker-side {
+                display: flex;
+            }
+
             #map {
-                height: 430px;
+                height: 390px;
+            }
+
+            .map-toolbar {
+                left: 8px;
+                right: 8px;
+                top: 8px;
+            }
+
+            .map-info {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .map-info-item {
+                border-right: 1px solid #202b36;
+            }
+
+            .map-info-item:nth-child(2) {
+                border-right: 0;
+            }
+
+            .map-info-item:nth-child(3) {
+                grid-column: 1 / -1;
+                border-top: 1px solid #202b36;
+                border-right: 0;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .location-table {
+                min-width: 650px;
+            }
+
+            .card {
+                overflow-x: auto;
+            }
+
+            .card-header,
+            .card-body {
+                min-width: 0;
+            }
+
+            .device-item {
+                align-items: flex-start;
+            }
+
+            .button-row {
+                flex-direction: row;
+            }
+
+            .btn {
+                padding: 9px 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 12px;
+            }
+
+            .topbar {
+                padding: 10px 12px;
+            }
+
+            .topbar-subtitle {
+                font-size: 9px;
+            }
+
+            .account-pill {
+                max-width: 105px;
+            }
+
+            .nav-btn {
+                min-width: 82px;
+                font-size: 9px;
+            }
+
+            #map {
+                height: 340px;
+            }
+
+            .location-info {
+                grid-template-columns: 1fr;
             }
 
             .map-info {
                 grid-template-columns: 1fr;
+            }
+
+            .map-info-item,
+            .map-info-item:nth-child(2),
+            .map-info-item:nth-child(3) {
+                grid-column: auto;
+                border-right: 0;
+                border-top: 1px solid #202b36;
+            }
+
+            .map-info-item:first-child {
+                border-top: 0;
             }
         }
     </style>
@@ -922,53 +1225,76 @@
     <aside class="sidebar">
 
         <div class="brand">
-            <div class="brand-icon">T</div>
+            <div class="brand-icon">⌖</div>
 
             <div class="brand-text">
                 <strong>TrackPoint</strong>
-                <span>Device Management</span>
+                <span>Device Tracking</span>
             </div>
         </div>
 
         <div class="nav-label">Main</div>
 
-        <button class="nav-btn active" onclick="showSection('overview', this)">
+        <button
+            class="nav-btn active"
+            onclick="showSection('overview', this)"
+        >
             ◉ &nbsp; Overview
         </button>
 
-        <button class="nav-btn" onclick="showSection('tracker', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('tracker', this)"
+        >
             ◈ &nbsp; Phone Tracker
         </button>
 
-        <button class="nav-btn" onclick="showSection('devices', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('devices', this)"
+        >
             ▣ &nbsp; My Devices
         </button>
 
-        <button class="nav-btn" onclick="showSection('locations', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('locations', this)"
+        >
             ◎ &nbsp; Locations
         </button>
 
-        <button class="nav-btn" onclick="showSection('alerts', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('alerts', this)"
+        >
             ! &nbsp; Alerts
         </button>
 
         <div class="nav-label">System</div>
 
-        <button class="nav-btn" onclick="showSection('settings', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('settings', this)"
+        >
             ⚙ &nbsp; Settings
         </button>
 
-        <button class="nav-btn" onclick="showSection('add-device', this)">
+        <button
+            class="nav-btn"
+            onclick="showSection('add-device', this)"
+        >
             + &nbsp; Add Device
         </button>
 
         <div class="sidebar-bottom">
             <div class="connection-box">
-                <div class="connection-title">DATABASE</div>
+                <div class="connection-title">
+                    SYSTEM STATUS
+                </div>
 
                 <div class="connection-status">
-                    <span class="status-dot" id="sidebarStatusDot"></span>
-                    <span id="sidebarStatus">Checking...</span>
+                    <span class="status-dot"></span>
+                    Connected
                 </div>
             </div>
         </div>
@@ -985,14 +1311,20 @@
         <header class="topbar">
 
             <div>
-                <div class="topbar-title">TrackPoint Dashboard</div>
+                <div class="topbar-title">
+                    TrackPoint Dashboard
+                </div>
+
                 <div class="topbar-subtitle">
-                    Device monitoring and location management
+                    Manage and monitor your connected devices
                 </div>
             </div>
 
-            <div class="account-pill">
-                TrackPoint Account
+            <div
+                class="account-pill"
+                id="accountEmail"
+            >
+                Loading...
             </div>
 
         </header>
@@ -1004,41 +1336,200 @@
                  OVERVIEW
             ========================= -->
 
-            <section id="overview" class="section active">
+            <section
+                id="overview"
+                class="section active"
+            >
 
                 <div class="page-heading">
                     <h1>Overview</h1>
-                    <p>Monitor your connected devices and their latest locations.</p>
+
+                    <p>
+                        Monitor your devices and their latest locations.
+                    </p>
                 </div>
+
 
                 <div class="stats">
 
                     <div class="stat-card">
-                        <div class="stat-label">TOTAL DEVICES</div>
-                        <div class="stat-value" id="totalDevices">0</div>
-                        <div class="stat-small">Registered devices</div>
+                        <div class="stat-label">
+                            TOTAL DEVICES
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="totalDevices"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-small">
+                            Registered devices
+                        </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-label">ONLINE DEVICES</div>
-                        <div class="stat-value" id="onlineDevices">0</div>
-                        <div class="stat-small">Currently reporting</div>
-                    </div>
 
                     <div class="stat-card">
-                        <div class="stat-label">DEVICES WITH LOCATIONS</div>
-                        <div class="stat-value" id="locatedDevices">0</div>
-                        <div class="stat-small">Have location data</div>
+                        <div class="stat-label">
+                            ONLINE
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="onlineDevices"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-small">
+                            Currently online
+                        </div>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-label">
+                            LOCATED
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="locatedDevices"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-small">
+                            Devices with GPS data
+                        </div>
                     </div>
 
                 </div>
 
-                <div class="card">
 
-                    <div class="card-title">Your Devices</div>
+                <div class="welcome-box">
 
-                    <div id="overviewDevices" class="device-grid">
-                        <div class="empty">Loading devices...</div>
+                    <h2>
+                        Welcome to TrackPoint
+                    </h2>
+
+                    <p>
+                        Connect your phone or other supported device,
+                        then use the Phone Tracker section to view its
+                        latest GPS position.
+                    </p>
+
+                </div>
+
+
+                <div class="overview-grid">
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <h3>
+                                Quick Actions
+                            </h3>
+
+                            <span>
+                                Get started
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="quick-actions">
+
+                                <button
+                                    class="quick-action"
+                                    onclick="showSection('add-device', document.querySelector('.nav-btn[onclick*=\\'add-device\\']'))"
+                                >
+                                    <strong>
+                                        + Add Device
+                                    </strong>
+
+                                    <span>
+                                        Register a new phone or device
+                                    </span>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    onclick="showSection('devices', document.querySelector('.nav-btn[onclick*=\\'devices\\']'))"
+                                >
+                                    <strong>
+                                        ▣ My Devices
+                                    </strong>
+
+                                    <span>
+                                        View all connected devices
+                                    </span>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    onclick="showSection('tracker', document.querySelector('.nav-btn[onclick*=\\'tracker\\']'))"
+                                >
+                                    <strong>
+                                        ◈ Phone Tracker
+                                    </strong>
+
+                                    <span>
+                                        Open the live tracking map
+                                    </span>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    onclick="locateMe()"
+                                >
+                                    <strong>
+                                        ◎ Locate Me
+                                    </strong>
+
+                                    <span>
+                                        Show this browser's location
+                                    </span>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <h3>
+                                Recent Devices
+                            </h3>
+
+                            <span id="deviceCountLabel">
+                                0 devices
+                            </span>
+                        </div>
+
+                        <div
+                            class="card-body"
+                            id="recentDevices"
+                        >
+                            <div class="empty-state">
+                                <strong>
+                                    No devices yet
+                                </strong>
+
+                                <span>
+                                    Add a device to get started.
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -1050,82 +1541,133 @@
                  TRACKER
             ========================= -->
 
-            <section id="tracker" class="section">
+            <section
+                id="tracker"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>Phone Tracker</h1>
-                    <p>View the latest authorized device location.</p>
+
+                    <h1>
+                        Phone Tracker
+                    </h1>
+
+                    <p>
+                        View the latest GPS position of your selected device.
+                    </p>
+
                 </div>
+
 
                 <div class="tracker-layout">
 
                     <div class="card map-card">
 
-                        <div class="map-toolbar">
+                        <div class="card-header">
 
-                            <button
-                                class="map-btn active"
-                                id="standardBtn"
-                                onclick="setMapMode('standard')">
-                                Standard
-                            </button>
+                            <h3>
+                                Live Map
+                            </h3>
 
-                            <button
-                                class="map-btn"
-                                id="satelliteBtn"
-                                onclick="setMapMode('satellite')">
-                                Satellite
-                            </button>
-
-                            <button
-                                class="map-btn"
-                                id="threeDBtn"
-                                onclick="setMapMode('3d')">
-                                3D
-                            </button>
-
-                            <button
-                                class="map-btn"
-                                onclick="locateMe()">
-                                📍 Locate Me
-                            </button>
-
-                            <button
-                                class="map-btn"
-                                onclick="openStreetView()">
-                                Street View
-                            </button>
-
-                            <button
-                                class="map-btn"
-                                onclick="resetMapView()">
-                                Reset
-                            </button>
+                            <span id="mapDeviceName">
+                                No device selected
+                            </span>
 
                         </div>
 
-                        <div id="map"></div>
+
+                        <div class="map-wrapper">
+
+                            <div class="map-toolbar">
+
+                                <button
+                                    class="btn"
+                                    onclick="resetMapView()"
+                                >
+                                    Reset View
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="setSatelliteView()"
+                                >
+                                    Satellite
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="setNormalView()"
+                                >
+                                    Map
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="set3DView()"
+                                >
+                                    3D
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="locateMe()"
+                                >
+                                    Locate Me
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="openStreetView()"
+                                >
+                                    Street View
+                                </button>
+
+                            </div>
+
+
+                            <div id="map"></div>
+
+                        </div>
+
 
                         <div class="map-info">
 
                             <div class="map-info-item">
-                                <span>LATITUDE</span>
-                                <strong id="latitude">—</strong>
+
+                                <span>
+                                    Latitude
+                                </span>
+
+                                <strong id="mapLatitude">
+                                    —
+                                </strong>
+
                             </div>
 
-                            <div class="map-info-item">
-                                <span>LONGITUDE</span>
-                                <strong id="longitude">—</strong>
-                            </div>
 
                             <div class="map-info-item">
-                                <span>ACCURACY</span>
-                                <strong id="accuracy">—</strong>
+
+                                <span>
+                                    Longitude
+                                </span>
+
+                                <strong id="mapLongitude">
+                                    —
+                                </strong>
+
                             </div>
 
+
                             <div class="map-info-item">
-                                <span>LAST UPDATE</span>
-                                <strong id="lastUpdate">—</strong>
+
+                                <span>
+                                    Last Updated
+                                </span>
+
+                                <strong id="mapLastSeen">
+                                    —
+                                </strong>
+
                             </div>
 
                         </div>
@@ -1137,12 +1679,27 @@
 
                         <div class="card">
 
-                            <div class="card-title">Selected Device</div>
+                            <div class="card-header">
+                                <h3>
+                                    Selected Device
+                                </h3>
+                            </div>
 
                             <div
-                                id="selectedDevice"
-                                class="selected-device">
-                                No device selected.
+                                class="tracker-device"
+                                id="trackerDeviceInfo"
+                            >
+
+                                <div class="empty-state">
+                                    <strong>
+                                        No device selected
+                                    </strong>
+
+                                    <span>
+                                        Select a device from My Devices.
+                                    </span>
+                                </div>
+
                             </div>
 
                         </div>
@@ -1150,24 +1707,23 @@
 
                         <div class="card">
 
-                            <div class="card-title">Map Status</div>
-
-                            <div
-                                id="mapStatus"
-                                class="selected-device">
-                                Standard map ready.
+                            <div class="card-header">
+                                <h3>
+                                    Location Details
+                                </h3>
                             </div>
 
-                        </div>
+                            <div
+                                class="card-body"
+                                id="locationDetails"
+                            >
 
+                                <div class="no-location">
+                                    No location data available yet.
+                                    Connect the phone and allow GPS
+                                    permission.
+                                </div>
 
-                        <div class="card">
-
-                            <div class="card-title">Important</div>
-
-                            <div class="selected-device">
-                                Location tracking only works when the device
-                                owner has explicitly allowed location access.
                             </div>
 
                         </div>
@@ -1183,45 +1739,119 @@
                  DEVICES
             ========================= -->
 
-            <section id="devices" class="section">
+            <section
+                id="devices"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>My Devices</h1>
-                    <p>Manage your connected TrackPoint devices.</p>
+
+                    <h1>
+                        My Devices
+                    </h1>
+
+                    <p>
+                        Manage all devices connected to your TrackPoint account.
+                    </p>
+
                 </div>
 
-                <div class="card">
 
-                    <div class="card-title">Registered Devices</div>
+                <div class="button-row" style="margin-bottom: 16px;">
 
-                    <div id="deviceList" class="device-grid">
-                        <div class="empty">Loading devices...</div>
+                    <button
+                        class="btn btn-primary"
+                        onclick="showSection('add-device', document.querySelector('.nav-btn[onclick*=\\'add-device\\']'))"
+                    >
+                        + Add Device
+                    </button>
+
+                    <button
+                        class="btn"
+                        onclick="loadDevices()"
+                    >
+                        Refresh
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="devices-grid"
+                    id="devicesGrid"
+                >
+
+                    <div class="card">
+                        <div class="empty-state">
+                            <strong>
+                                Loading devices...
+                            </strong>
+
+                            <span>
+                                Please wait.
+                            </span>
+                        </div>
                     </div>
 
                 </div>
 
             </section>
 
-
             <!-- =========================
                  LOCATIONS
             ========================= -->
 
-            <section id="locations" class="section">
+            <section
+                id="locations"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>Locations</h1>
-                    <p>Latest location records from your devices.</p>
+
+                    <h1>
+                        Location History
+                    </h1>
+
+                    <p>
+                        View recent GPS locations reported by your selected device.
+                    </p>
+
                 </div>
+
 
                 <div class="card">
 
-                    <div class="card-title">Location History</div>
+                    <div class="card-header">
 
-                    <div id="locationTableContainer">
-                        <div class="empty">
-                            Select a device to load its locations.
+                        <h3>
+                            Recent Locations
+                        </h3>
+
+                        <span id="locationDeviceLabel">
+                            No device selected
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="locationsContainer"
+                        style="overflow-x:auto;"
+                    >
+
+                        <div class="empty-state">
+
+                            <strong>
+                                No location history
+                            </strong>
+
+                            <span>
+                                Select a device and connect its phone to begin
+                                collecting location history.
+                            </span>
+
                         </div>
+
                     </div>
 
                 </div>
@@ -1233,15 +1863,86 @@
                  ALERTS
             ========================= -->
 
-            <section id="alerts" class="section">
+            <section
+                id="alerts"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>Alerts</h1>
-                    <p>TrackPoint notifications and device events.</p>
+
+                    <h1>
+                        Alerts
+                    </h1>
+
+                    <p>
+                        Important events and device notifications.
+                    </p>
+
                 </div>
 
-                <div class="alert-box">
-                    Alert management is ready for future device events.
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h3>
+                            Notifications
+                        </h3>
+
+                        <span>
+                            System alerts
+                        </span>
+
+                    </div>
+
+
+                    <div id="alertsContainer">
+
+                        <div class="alert-item">
+
+                            <div class="alert-icon">
+                                !
+                            </div>
+
+                            <div class="alert-content">
+
+                                <strong>
+                                    Location alerts are ready
+                                </strong>
+
+                                <span>
+                                    Device location information will appear
+                                    here when available.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="alert-item">
+
+                            <div class="alert-icon">
+                                ◎
+                            </div>
+
+                            <div class="alert-content">
+
+                                <strong>
+                                    GPS tracking
+                                </strong>
+
+                                <span>
+                                    Make sure the connected phone has location
+                                    permission enabled.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </section>
@@ -1251,167 +1952,157 @@
                  SETTINGS
             ========================= -->
 
-            <section id="settings" class="section">
+            <section
+                id="settings"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>Settings</h1>
-                    <p>Manage your TrackPoint dashboard preferences.</p>
+
+                    <h1>
+                        Settings
+                    </h1>
+
+                    <p>
+                        Manage your TrackPoint account and dashboard settings.
+                    </p>
+
                 </div>
+
 
                 <div class="settings-grid">
 
-                    <!-- ACCOUNT -->
-
                     <div class="card">
 
-                        <div class="card-title">Account</div>
+                        <div class="card-header">
 
-                        <div class="setting-row">
-                            <div>
-                                <strong>Dashboard</strong>
-                                <small>
-                                    TrackPoint device management dashboard.
-                                </small>
-                            </div>
+                            <h3>
+                                Account
+                            </h3>
 
-                            <span class="setting-status">
-                                Active
+                            <span>
+                                Your account
                             </span>
+
                         </div>
 
-                        <div class="setting-row">
-                            <div>
-                                <strong>Database</strong>
-                                <small>
-                                    Supabase connection used by TrackPoint.
-                                </small>
+
+                        <div class="card-body">
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    Email
+                                </strong>
+
+                                <span id="settingsEmail">
+                                    Loading...
+                                </span>
+
                             </div>
 
-                            <span
-                                class="setting-status"
-                                id="settingsDbBadge">
-                                Checking
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    Authentication
+                                </strong>
+
+                                <span>
+                                    Your TrackPoint account is protected
+                                    through Supabase authentication.
+                                </span>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    Session
+                                </strong>
+
+                                <span>
+                                    Your dashboard requires an active login
+                                    session.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h3>
+                                Dashboard
+                            </h3>
+
+                            <span>
+                                Preferences
                             </span>
+
                         </div>
 
-                    </div>
 
+                        <div class="card-body">
 
-                    <!-- TRACKER -->
+                            <div class="setting-row">
 
-                    <div class="card">
+                                <strong>
+                                    Automatic updates
+                                </strong>
 
-                        <div class="card-title">Dashboard Behaviour</div>
+                                <span>
+                                    Device information is refreshed
+                                    automatically every few seconds.
+                                </span>
 
-                        <label class="toggle-row">
-
-                            <div>
-                                <strong>Auto refresh</strong>
-
-                                <small>
-                                    Refresh device information every 5 seconds.
-                                </small>
                             </div>
 
-                            <input
-                                type="checkbox"
-                                id="autoRefreshToggle"
-                                checked
-                                onchange="toggleAutoRefresh(this.checked)"
-                            >
 
-                        </label>
+                            <div class="setting-row">
 
-                    </div>
+                                <strong>
+                                    GPS accuracy
+                                </strong>
+
+                                <span>
+                                    The dashboard displays the accuracy
+                                    reported by the connected phone.
+                                </span>
+
+                            </div>
 
 
-                    <!-- MAP -->
+                            <div class="setting-row">
 
-                    <div class="card">
+                                <strong>
+                                    Sign out
+                                </strong>
 
-                        <div class="card-title">Map Preferences</div>
+                                <span>
+                                    End your current TrackPoint session.
+                                </span>
 
-                        <div class="setting-buttons">
+                                <div style="margin-top:10px;">
 
-                            <button
-                                class="setting-button"
-                                onclick="setMapMode('standard')">
-                                🗺️ Use Standard Map
-                            </button>
+                                    <button
+                                        class="btn btn-danger"
+                                        onclick="logout()"
+                                    >
+                                        Sign Out
+                                    </button>
 
-                            <button
-                                class="setting-button"
-                                onclick="setMapMode('satellite')">
-                                🛰️ Use Satellite Map
-                            </button>
+                                </div>
 
-                            <button
-                                class="setting-button"
-                                onclick="setMapMode('3d')">
-                                🏙️ Open 3D Map
-                            </button>
-
-                            <button
-                                class="setting-button"
-                                onclick="locateMe()">
-                                📍 Find My Current Location
-                            </button>
-
-                            <button
-                                class="setting-button"
-                                onclick="resetMapView()">
-                                ↺ Reset Map View
-                            </button>
+                            </div>
 
                         </div>
-
-                    </div>
-
-
-                    <!-- SYSTEM -->
-
-                    <div class="card">
-
-                        <div class="card-title">System</div>
-
-                        <div class="system-row">
-                            <span>Database</span>
-                            <strong id="dbStatus">Checking...</strong>
-                        </div>
-
-                        <div class="system-row">
-                            <span>Map</span>
-                            <strong id="settingsMapStatus">
-                                Standard
-                            </strong>
-                        </div>
-
-                        <div class="system-row">
-                            <span>Auto refresh</span>
-                            <strong id="settingsRefreshStatus">
-                                Enabled
-                            </strong>
-                        </div>
-
-                        <div class="system-row">
-                            <span>Version</span>
-                            <strong>TrackPoint 1.0</strong>
-                        </div>
-
-                        <br>
-
-                        <button
-                            class="secondary-btn"
-                            style="width:100%; margin-bottom:8px;"
-                            onclick="testSupabaseConnection()">
-                            Test Database Connection
-                        </button>
-
-                        <button
-                            class="danger-btn"
-                            onclick="logout()">
-                            Log Out
-                        </button>
 
                     </div>
 
@@ -1424,76 +2115,210 @@
                  ADD DEVICE
             ========================= -->
 
-            <section id="add-device" class="section">
+            <section
+                id="add-device"
+                class="section"
+            >
 
                 <div class="page-heading">
-                    <h1>Add Device</h1>
-                    <p>Create a TrackPoint connection for an authorized device.</p>
+
+                    <h1>
+                        Add Device
+                    </h1>
+
+                    <p>
+                        Register a phone or device with TrackPoint.
+                    </p>
+
                 </div>
 
-                <div class="card">
 
-                    <div class="card-title">Create Device</div>
+                <div class="add-device-layout">
 
-                    <div class="form-grid">
+                    <div class="card">
 
-                        <div class="form-group">
+                        <div class="card-header">
 
-                            <label class="form-label">
-                                Device Name
-                            </label>
+                            <h3>
+                                Device Information
+                            </h3>
 
-                            <input
-                                id="deviceName"
-                                class="form-input"
-                                type="text"
-                                placeholder="My Phone"
-                            >
+                            <span>
+                                New device
+                            </span>
 
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="card-body">
 
-                            <label class="form-label">
-                                Device Type
-                            </label>
+                            <div class="form-group">
 
-                            <select
-                                id="deviceType"
-                                class="form-input">
+                                <label for="deviceName">
+                                    Device Name
+                                </label>
 
-                                <option value="Phone">
-                                    Phone
-                                </option>
+                                <input
+                                    type="text"
+                                    id="deviceName"
+                                    class="form-control"
+                                    placeholder="e.g. My Phone"
+                                >
 
-                                <option value="Tablet">
-                                    Tablet
-                                </option>
+                            </div>
 
-                                <option value="Computer">
-                                    Computer
-                                </option>
 
-                                <option value="Other">
-                                    Other
-                                </option>
+                            <div class="form-group">
 
-                            </select>
+                                <label for="deviceType">
+                                    Device Type
+                                </label>
+
+                                <select
+                                    id="deviceType"
+                                    class="form-control"
+                                >
+
+                                    <option value="phone">
+                                        Phone
+                                    </option>
+
+                                    <option value="tablet">
+                                        Tablet
+                                    </option>
+
+                                    <option value="computer">
+                                        Computer
+                                    </option>
+
+                                    <option value="other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="deviceCode">
+                                    Device Code
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="deviceCode"
+                                    class="form-control"
+                                    placeholder="Enter your device code"
+                                >
+
+                                <div class="form-help">
+                                    Use the device code provided for the
+                                    phone/device you want to connect.
+                                </div>
+
+                            </div>
+
+
+                            <div class="button-row">
+
+                                <button
+                                    class="btn btn-primary"
+                                    onclick="createDevice()"
+                                >
+                                    Add Device
+                                </button>
+
+                                <button
+                                    class="btn"
+                                    onclick="generateDeviceCode()"
+                                >
+                                    Generate Code
+                                </button>
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                    <button
-                        class="primary-btn"
-                        onclick="createDevice()">
-                        Create Device
-                    </button>
 
                     <div
-                        id="addDeviceMessage"
-                        class="message">
+                        class="card"
+                        style="margin-top:16px;"
+                    >
+
+                        <div class="card-header">
+
+                            <h3>
+                                How it works
+                            </h3>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    1. Register the device
+                                </strong>
+
+                                <span>
+                                    Enter a name, choose the device type and
+                                    provide its device code.
+                                </span>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    2. Open the phone connection page
+                                </strong>
+
+                                <span>
+                                    After adding the device, use its QR code
+                                    to open the TrackPoint phone connection
+                                    page.
+                                </span>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    3. Allow location
+                                </strong>
+
+                                <span>
+                                    On the phone, allow browser location
+                                    permission so TrackPoint can receive its
+                                    GPS coordinates.
+                                </span>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <strong>
+                                    4. Track the device
+                                </strong>
+
+                                <span>
+                                    Return to Phone Tracker to see the latest
+                                    reported location on the map.
+                                </span>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -1512,33 +2337,63 @@
 ========================= -->
 
 <div
-    id="qrModal"
     class="modal"
-    onclick="closeQR(event)">
+    id="qrModal"
+>
 
-    <div
-        class="modal-card"
-        onclick="event.stopPropagation()">
+    <div class="modal-box">
 
-        <h2>Connect Device</h2>
+        <div class="modal-header">
 
-        <p>
-            Open this QR code on the authorized phone you want
-            to connect to TrackPoint.
-        </p>
+            <h3>
+                Connect Device
+            </h3>
 
-        <div id="qrcode"></div>
+            <button
+                class="modal-close"
+                onclick="closeQRModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            id="qrContainer"
+            class="qr-container"
+        >
+        </div>
+
 
         <div
             id="qrLink"
-            class="qr-link">
+            class="qr-link"
+        >
+            Generating connection link...
         </div>
 
-        <button
-            class="secondary-btn"
-            onclick="closeQR()">
-            Close
-        </button>
+
+        <div
+            class="button-row"
+            style="margin-top:14px;"
+        >
+
+            <button
+                class="btn btn-primary"
+                onclick="copyQRLink()"
+            >
+                Copy Link
+            </button>
+
+            <button
+                class="btn"
+                onclick="closeQRModal()"
+            >
+                Close
+            </button>
+
+        </div>
 
     </div>
 
@@ -1546,13 +2401,26 @@
 
 
 <!-- =========================
+     TOAST
+========================= -->
+
+<div
+    class="toast"
+    id="toast"
+>
+    Done
+</div>
+
+
+<!-- =========================
      LIBRARIES
 ========================= -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 
@@ -1565,6 +2433,26 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
     "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let currentUser = null;
+
+async function requireAuth() {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        window.location.replace("login.html");
+        return false;
+    }
+
+    currentUser = data.session.user;
+
+    return true;
+}
 
 
 /* =========================================================
@@ -1695,6 +2583,12 @@ async function supabaseRequest(
     options = {}
 ) {
 
+    const { data: sessionData } =
+        await supabaseClient.auth.getSession();
+
+    const accessToken =
+        sessionData?.session?.access_token || SUPABASE_KEY;
+
     const response = await fetch(
         `${SUPABASE_URL}/rest/v1/${endpoint}`,
         {
@@ -1706,7 +2600,7 @@ async function supabaseRequest(
                 "apikey": SUPABASE_KEY,
 
                 "Authorization":
-                    `Bearer ${SUPABASE_KEY}`,
+                    `Bearer ${accessToken}`,
 
                 "Content-Type":
                     "application/json",
@@ -1820,9 +2714,9 @@ function initializeMap() {
 
         style: getStandardStyle(),
 
-        center: [3.3792, 6.5244],
+        center: [0, 20],
 
-        zoom: 10,
+        zoom: 2,
 
         minZoom: 2,
 
@@ -1909,6 +2803,18 @@ function updateMapStatus(message) {
 
 function setMapMode(mode) {
 
+    if (!map) return;
+
+    if (
+        mode !== "standard" &&
+        mode !== "satellite" &&
+        mode !== "3d"
+    ) {
+
+        mode = "standard";
+
+    }
+
     currentMapMode = mode;
 
     localStorage.setItem(
@@ -1917,210 +2823,38 @@ function setMapMode(mode) {
     );
 
 
-    document
-        .querySelectorAll(".map-btn")
-        .forEach(btn => {
-
-            btn.classList.remove("active");
-
-        });
-
-
-    const standardBtn =
-        document.getElementById("standardBtn");
-
-    const satelliteBtn =
-        document.getElementById("satelliteBtn");
-
-    const threeDBtn =
-        document.getElementById("threeDBtn");
-
-
-    if (mode === "standard") {
-
-        standardBtn?.classList.add("active");
-
-    }
-
-    if (mode === "satellite") {
-
-        satelliteBtn?.classList.add("active");
-
-    }
-
-    if (mode === "3d") {
-
-        threeDBtn?.classList.add("active");
-
-    }
-
-
-    if (!map) {
-
-        initializeMap();
-
-        return;
-
-    }
-
-
-    if (mode === "standard") {
-
-        map.setStyle(
-            getStandardStyle()
-        );
-
-        map.once("style.load", () => {
-
-            map.setPitch(0);
-
-            map.setBearing(0);
-
-            updateMapStatus(
-                "Standard map ready."
-            );
-
-            restoreDeviceMarker();
-
-        });
-
-    }
-
-
-    if (mode === "satellite") {
-
-        map.setStyle(
-            getSatelliteStyle()
-        );
-
-        map.once("style.load", () => {
-
-            map.setPitch(0);
-
-            map.setBearing(0);
-
-            updateMapStatus(
-                "Satellite map ready."
-            );
-
-            restoreDeviceMarker();
-
-        });
-
-    }
-
-
     if (mode === "3d") {
 
         map.setStyle(
             THREE_D_STYLE
         );
 
-        map.once("style.load", () => {
-
-            add3DBuildings();
-
-            map.setPitch(55);
-
-            map.setBearing(-20);
-
-            if (map.getZoom() < 15) {
-
-                map.easeTo({
-                    zoom: 15,
-                    duration: 700
-                });
-
-            }
-
-            updateMapStatus(
-                "3D map enabled."
-            );
-
-            restoreDeviceMarker();
-
-        });
+        updateMapStatus(
+            "3D map enabled."
+        );
 
     }
 
-}
+    else if (mode === "satellite") {
 
+        map.setStyle(
+            getSatelliteStyle()
+        );
 
-/* =========================================================
-   3D BUILDINGS
-========================================================= */
+        updateMapStatus(
+            "Satellite map enabled."
+        );
 
-function add3DBuildings() {
+    }
 
-    if (!map) return;
+    else {
 
-    try {
+        map.setStyle(
+            getStandardStyle()
+        );
 
-        if (
-            !map.getSource("openmaptiles")
-        ) {
-
-            return;
-
-        }
-
-        if (
-            map.getLayer("3d-buildings")
-        ) {
-
-            return;
-
-        }
-
-        map.addLayer({
-
-            id: "3d-buildings",
-
-            source: "openmaptiles",
-
-            "source-layer": "building",
-
-            type: "fill-extrusion",
-
-            minzoom: 14,
-
-            paint: {
-
-                "fill-extrusion-color":
-                    "#9aa6b2",
-
-                "fill-extrusion-height":
-                    [
-                        "coalesce",
-                        [
-                            "get",
-                            "render_height"
-                        ],
-                        10
-                    ],
-
-                "fill-extrusion-base":
-                    [
-                        "coalesce",
-                        [
-                            "get",
-                            "render_min_height"
-                        ],
-                        0
-                    ],
-
-                "fill-extrusion-opacity":
-                    0.75
-
-            }
-
-        });
-
-    } catch (error) {
-
-        console.warn(
-            "3D buildings unavailable:",
-            error
+        updateMapStatus(
+            "Standard map enabled."
         );
 
     }
@@ -2129,50 +2863,70 @@ function add3DBuildings() {
 
 
 /* =========================================================
-   RESTORE MARKER
+   DEVICE MARKER
 ========================================================= */
 
 function restoreDeviceMarker() {
 
-    if (
-        !selectedDevice ||
-        !selectedDevice.last_latitude ||
-        !selectedDevice.last_longitude
-    ) {
-
-        return;
-
-    }
+    if (!map || !selectedDevice) return;
 
     const lat =
-        Number(selectedDevice.last_latitude);
+        selectedDevice.last_latitude;
 
     const lng =
-        Number(selectedDevice.last_longitude);
+        selectedDevice.last_longitude;
 
-    if (
-        !Number.isFinite(lat) ||
-        !Number.isFinite(lng)
-    ) {
+
+    if (lat == null || lng == null) {
 
         return;
 
     }
 
 
-    if (!deviceMarker) {
+    const position = [
+        Number(lng),
+        Number(lat)
+    ];
+
+
+    if (deviceMarker) {
+
+        deviceMarker
+            .setLngLat(position);
+
+    }
+
+    else {
+
+        const markerElement =
+            document.createElement("div");
+
+        markerElement.style.width =
+            "18px";
+
+        markerElement.style.height =
+            "18px";
+
+        markerElement.style.borderRadius =
+            "50%";
+
+        markerElement.style.background =
+            "#2563eb";
+
+        markerElement.style.border =
+            "3px solid white";
+
+        markerElement.style.boxShadow =
+            "0 2px 8px rgba(0,0,0,.35)";
+
 
         deviceMarker =
             new maplibregl.Marker({
-                color: "#2563eb"
+                element: markerElement
             })
-            .setLngLat([lng, lat])
+            .setLngLat(position)
             .addTo(map);
-
-    } else {
-
-        deviceMarker
-            .setLngLat([lng, lat]);
 
     }
 
@@ -2180,16 +2934,68 @@ function restoreDeviceMarker() {
 
 
 /* =========================================================
-   LOCATE USER
+   FLY TO DEVICE
+========================================================= */
+
+function flyToDevice() {
+
+    if (!map || !selectedDevice) {
+
+        return;
+
+    }
+
+
+    const lat =
+        selectedDevice.last_latitude;
+
+    const lng =
+        selectedDevice.last_longitude;
+
+
+    if (lat == null || lng == null) {
+
+        updateMapStatus(
+            "This device has no GPS location yet."
+        );
+
+        return;
+
+    }
+
+
+    restoreDeviceMarker();
+
+
+    map.flyTo({
+
+        center: [
+            Number(lng),
+            Number(lat)
+        ],
+
+        zoom: 16,
+
+        speed: 1.2,
+
+        curve: 1.4,
+
+        essential: true
+
+    });
+
+}
+
+
+/* =========================================================
+   LOCATE CURRENT BROWSER
 ========================================================= */
 
 function locateMe() {
 
-    if (
-        !navigator.geolocation
-    ) {
+    if (!navigator.geolocation) {
 
-        alert(
+        updateMapStatus(
             "Geolocation is not supported by this browser."
         );
 
@@ -2199,7 +3005,7 @@ function locateMe() {
 
 
     updateMapStatus(
-        "Requesting your current location..."
+        "Getting your current location..."
     );
 
 
@@ -2213,108 +3019,61 @@ function locateMe() {
             const lng =
                 position.coords.longitude;
 
-            const accuracy =
-                position.coords.accuracy;
+
+            const coordinates = [
+                lng,
+                lat
+            ];
 
 
-            if (!map) {
+            if (userMarker) {
 
-                initializeMap();
+                userMarker
+                    .setLngLat(coordinates);
+
+            }
+
+            else {
+
+                userMarker =
+                    new maplibregl.Marker({
+                        color: "#16a34a"
+                    })
+                    .setLngLat(coordinates)
+                    .addTo(map);
 
             }
 
 
             map.flyTo({
 
-                center: [lng, lat],
+                center: coordinates,
 
                 zoom: 16,
 
-                pitch:
-                    currentMapMode === "3d"
-                        ? 45
-                        : 0,
+                speed: 1.2,
 
-                duration: 1500
+                essential: true
 
             });
 
 
-            if (userMarker) {
-
-                userMarker
-                    .setLngLat([lng, lat]);
-
-            } else {
-
-                userMarker =
-                    new maplibregl.Marker({
-                        color: "#22c55e"
-                    })
-                    .setLngLat([lng, lat])
-                    .addTo(map);
-
-            }
-
-
-            document.getElementById(
-                "latitude"
-            ).textContent =
-                lat.toFixed(6);
-
-            document.getElementById(
-                "longitude"
-            ).textContent =
-                lng.toFixed(6);
-
-            document.getElementById(
-                "accuracy"
-            ).textContent =
-                `${Math.round(accuracy)} m`;
-
-            document.getElementById(
-                "lastUpdate"
-            ).textContent =
-                new Date().toLocaleString();
-
-
             updateMapStatus(
-                "Your browser reported your current location."
+                `Your location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`
             );
 
         },
 
         error => {
 
-            let message =
-                "Unable to get your location.";
-
-            if (error.code === 1) {
-
-                message =
-                    "Location permission was denied.";
-
-            }
-
-            if (error.code === 2) {
-
-                message =
-                    "Your location could not be determined.";
-
-            }
-
-            if (error.code === 3) {
-
-                message =
-                    "Location request timed out.";
-
-            }
-
-            updateMapStatus(
-                message
+            console.warn(
+                "Location error:",
+                error
             );
 
-            alert(message);
+            updateMapStatus(
+                "Could not get your current location."
+            );
 
         },
 
@@ -2341,17 +3100,50 @@ function resetMapView() {
 
     if (!map) return;
 
+
+    if (
+        selectedDevice &&
+        selectedDevice.last_latitude != null &&
+        selectedDevice.last_longitude != null
+    ) {
+
+        map.flyTo({
+
+            center: [
+                Number(
+                    selectedDevice.last_longitude
+                ),
+
+                Number(
+                    selectedDevice.last_latitude
+                )
+            ],
+
+            zoom: 16,
+
+            speed: 1.2,
+
+            essential: true
+
+        });
+
+        return;
+
+    }
+
+
     map.flyTo({
 
-        center: [3.3792, 6.5244],
+        center: [
+            0,
+            20
+        ],
 
-        zoom: 10,
+        zoom: 2,
 
-        pitch: 0,
+        speed: 1.2,
 
-        bearing: 0,
-
-        duration: 1000
+        essential: true
 
     });
 
@@ -2359,19 +3151,15 @@ function resetMapView() {
 
 
 /* =========================================================
-   STREET VIEW
+   GOOGLE STREET VIEW
 ========================================================= */
 
 function openStreetView() {
 
-    if (
-        !selectedDevice ||
-        selectedDevice.last_latitude == null ||
-        selectedDevice.last_longitude == null
-    ) {
+    if (!selectedDevice) {
 
-        alert(
-            "Select a device with a location first."
+        updateMapStatus(
+            "Select a device first."
         );
 
         return;
@@ -2380,14 +3168,26 @@ function openStreetView() {
 
 
     const lat =
-        Number(selectedDevice.last_latitude);
+        selectedDevice.last_latitude;
 
     const lng =
-        Number(selectedDevice.last_longitude);
+        selectedDevice.last_longitude;
+
+
+    if (lat == null || lng == null) {
+
+        updateMapStatus(
+            "This device has no GPS location yet."
+        );
+
+        return;
+
+    }
 
 
     const url =
         `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
+
 
     window.open(
         url,
@@ -2399,7 +3199,7 @@ function openStreetView() {
 
 
 /* =========================================================
-   LOAD DEVICES
+   DEVICE LIST
 ========================================================= */
 
 async function loadDevices() {
@@ -2412,54 +3212,32 @@ async function loadDevices() {
             );
 
 
-        updateStats();
+        if (!Array.isArray(devices)) {
 
-        renderDevices();
-
-        if (
-            selectedDevice
-        ) {
-
-            const updated =
-                devices.find(
-                    device =>
-                        device.id ===
-                        selectedDevice.id
-                );
-
-            if (updated) {
-
-                selectedDevice =
-                    updated;
-
-                updateTracker();
-
-            }
+            devices = [];
 
         }
 
-    } catch (error) {
+
+        renderDevices();
+
+        updateDashboardStats();
+
+        restoreSelectedDevice();
+
+    }
+
+    catch (error) {
 
         console.error(
-            "Device loading error:",
+            "Failed to load devices:",
             error
         );
 
-        document.getElementById(
-            "overviewDevices"
-        ).innerHTML = `
-            <div class="empty">
-                Could not load devices.
-            </div>
-        `;
-
-        document.getElementById(
-            "deviceList"
-        ).innerHTML = `
-            <div class="empty">
-                Database connection error.
-            </div>
-        `;
+        showToast(
+            "Could not load devices.",
+            "error"
+        );
 
     }
 
@@ -2467,13 +3245,14 @@ async function loadDevices() {
 
 
 /* =========================================================
-   STATS
+   DASHBOARD STATS
 ========================================================= */
 
-function updateStats() {
+function updateDashboardStats() {
 
     const total =
         devices.length;
+
 
     const online =
         devices.filter(
@@ -2481,128 +3260,110 @@ function updateStats() {
                 device.status === "online"
         ).length;
 
+
     const located =
         devices.filter(
             device =>
-                device.last_latitude !== null &&
-                device.last_longitude !== null
+                device.last_latitude != null &&
+                device.last_longitude != null
         ).length;
 
 
-    document.getElementById(
-        "totalDevices"
-    ).textContent =
-        total;
+    const totalElement =
+        document.getElementById(
+            "totalDevices"
+        );
 
-    document.getElementById(
-        "onlineDevices"
-    ).textContent =
-        online;
+    const onlineElement =
+        document.getElementById(
+            "onlineDevices"
+        );
 
-    document.getElementById(
-        "locatedDevices"
-    ).textContent =
-        located;
+    const locatedElement =
+        document.getElementById(
+            "locatedDevices"
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            total;
+
+    }
+
+    if (onlineElement) {
+
+        onlineElement.textContent =
+            online;
+
+    }
+
+    if (locatedElement) {
+
+        locatedElement.textContent =
+            located;
+
+    }
 
 }
 
 
 /* =========================================================
-   DEVICE CARD
+   RESTORE SELECTED DEVICE
 ========================================================= */
 
-function createDeviceCard(device) {
+function restoreSelectedDevice() {
 
-    const online =
-        device.status === "online";
-
-    const hasLocation =
-        device.last_latitude !== null &&
-        device.last_longitude !== null;
+    if (!selectedDevice) return;
 
 
-    return `
+    const freshDevice =
+        devices.find(
+            device =>
+                device.id === selectedDevice.id
+        );
 
-        <div
-            class="device-card"
-            onclick="selectDevice('${device.id}')">
 
-            <div class="device-top">
+    if (freshDevice) {
 
-                <div>
+        selectedDevice =
+            freshDevice;
 
-                    <div class="device-name">
-                        ${escapeHTML(device.device_name)}
-                    </div>
+        updateTracker();
 
-                    <div class="device-code">
-                        ${escapeHTML(device.device_code)}
-                    </div>
-
-                </div>
-
-                ${
-                    online
-                        ? `<span class="online-badge">ONLINE</span>`
-                        : `<span class="offline-badge">OFFLINE</span>`
-                }
-
-            </div>
-
-            <div class="device-info">
-
-                Type:
-                ${escapeHTML(device.device_type)}
-                <br>
-
-                Location:
-                ${hasLocation ? "Available" : "Not available"}
-                <br>
-
-                Last seen:
-                ${
-                    device.last_seen
-                        ? formatDate(device.last_seen)
-                        : "Never"
-                }
-
-            </div>
-
-        </div>
-    `;
+    }
 
 }
 
 
 /* =========================================================
-   RENDER DEVICES
+   DEVICE CARD RENDER
 ========================================================= */
 
 function renderDevices() {
 
-    const overview =
-        document.getElementById(
-            "overviewDevices"
-        );
-
-    const list =
+    const container =
         document.getElementById(
             "deviceList"
         );
 
+    if (!container) return;
+
 
     if (!devices.length) {
 
-        overview.innerHTML = `
-            <div class="empty">
-                No devices yet.
-                Add your first device.
-            </div>
-        `;
-
-        list.innerHTML = `
-            <div class="empty">
-                No devices registered.
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">▣</div>
+                <h3>No devices yet</h3>
+                <p>Add your first device to start tracking.</p>
+                <button
+                    class="primary-btn"
+                    onclick="showSection('add-device')"
+                >
+                    + Add Device
+                </button>
             </div>
         `;
 
@@ -2611,47 +3372,122 @@ function renderDevices() {
     }
 
 
-    const html =
-        devices
-            .map(createDeviceCard)
-            .join("");
+    container.innerHTML =
+        devices.map(device => {
+
+            const hasLocation =
+                device.last_latitude != null &&
+                device.last_longitude != null;
 
 
-    overview.innerHTML =
-        html;
+            const lastSeen =
+                formatDate(
+                    device.last_seen ||
+                    device.created_at
+                );
 
-    list.innerHTML =
-        html;
+
+            return `
+                <div
+                    class="device-card"
+                    onclick="selectDevice('${device.id}')"
+                >
+
+                    <div class="device-card-icon">
+                        ${getDeviceIcon(device.device_type)}
+                    </div>
+
+                    <div class="device-card-content">
+
+                        <div class="device-card-title">
+                            ${escapeHtml(
+                                device.device_name ||
+                                "Unnamed Device"
+                            )}
+                        </div>
+
+                        <div class="device-card-meta">
+                            ${escapeHtml(
+                                device.device_type ||
+                                "Phone"
+                            )}
+                        </div>
+
+                        <div class="device-card-location">
+                            ${hasLocation
+                                ? "● Location available"
+                                : "○ Waiting for location"}
+                        </div>
+
+                    </div>
+
+                    <div class="device-card-status ${
+                        device.status === "online"
+                            ? "online"
+                            : "offline"
+                    }">
+
+                        ${
+                            device.status === "online"
+                                ? "Online"
+                                : "Offline"
+                        }
+
+                    </div>
+
+                    <div class="device-card-time">
+                        ${lastSeen}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
 
 }
-
-
 /* =========================================================
    SELECT DEVICE
 ========================================================= */
 
-async function selectDevice(id) {
+function selectDevice(id) {
 
     const device =
         devices.find(
-            item => item.id === id
+            item => String(item.id) === String(id)
         );
 
-    if (!device) return;
+    if (!device) {
 
-    selectedDevice =
-        device;
+        showToast(
+            "Device not found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    selectedDevice = device;
+
+
+    localStorage.setItem(
+        "trackpoint_selected_device",
+        device.id
+    );
 
 
     showSection(
-        "tracker"
+        "tracker",
+        document.querySelector(
+            '.nav-btn[onclick*="tracker"]'
+        )
     );
 
 
     updateTracker();
 
-
-    await loadLocations();
+    loadLocations();
 
 }
 
@@ -2664,114 +3500,146 @@ function updateTracker() {
 
     if (!selectedDevice) {
 
-        document.getElementById(
-            "selectedDevice"
-        ).textContent =
-            "No device selected.";
-
         return;
 
     }
 
 
-    document.getElementById(
-        "selectedDevice"
-    ).innerHTML = `
+    const name =
+        document.getElementById(
+            "trackerDeviceName"
+        );
 
-        <strong>
-            ${escapeHTML(selectedDevice.device_name)}
-        </strong>
-        <br>
+    const type =
+        document.getElementById(
+            "trackerDeviceType"
+        );
 
-        Code:
-        ${escapeHTML(selectedDevice.device_code)}
-        <br>
+    const status =
+        document.getElementById(
+            "trackerDeviceStatus"
+        );
 
-        Status:
-        ${escapeHTML(selectedDevice.status)}
-    `;
+    const coordinates =
+        document.getElementById(
+            "trackerCoordinates"
+        );
+
+    const accuracy =
+        document.getElementById(
+            "trackerAccuracy"
+        );
+
+    const lastSeen =
+        document.getElementById(
+            "trackerLastSeen"
+        );
+
+
+    if (name) {
+
+        name.textContent =
+            selectedDevice.device_name ||
+            "Unnamed Device";
+
+    }
+
+
+    if (type) {
+
+        type.textContent =
+            selectedDevice.device_type ||
+            "Phone";
+
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            selectedDevice.status === "online"
+                ? "Online"
+                : "Offline";
+
+        status.className =
+            `tracker-status ${
+                selectedDevice.status === "online"
+                    ? "online"
+                    : "offline"
+            }`;
+
+    }
+
+
+    const lat =
+        selectedDevice.last_latitude;
+
+    const lng =
+        selectedDevice.last_longitude;
 
 
     if (
-        selectedDevice.last_latitude !== null &&
-        selectedDevice.last_longitude !== null
+        coordinates &&
+        lat != null &&
+        lng != null
     ) {
 
-        const lat =
-            Number(selectedDevice.last_latitude);
+        coordinates.textContent =
+            `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
 
-        const lng =
-            Number(selectedDevice.last_longitude);
+    }
 
+    else if (coordinates) {
 
-        document.getElementById(
-            "latitude"
-        ).textContent =
-            lat.toFixed(6);
+        coordinates.textContent =
+            "Waiting for GPS...";
 
-        document.getElementById(
-            "longitude"
-        ).textContent =
-            lng.toFixed(6);
+    }
 
 
-        document.getElementById(
-            "accuracy"
-        ).textContent =
+    if (accuracy) {
+
+        if (
             selectedDevice.last_accuracy != null
-                ? `${Number(selectedDevice.last_accuracy).toFixed(1)} m`
-                : "—";
+        ) {
 
-
-        document.getElementById(
-            "lastUpdate"
-        ).textContent =
-            selectedDevice.last_seen
-                ? formatDate(selectedDevice.last_seen)
-                : "—";
-
-
-        if (!map) {
-
-            initializeMap();
+            accuracy.textContent =
+                `${Number(
+                    selectedDevice.last_accuracy
+                ).toFixed(1)} m`;
 
         }
 
+        else {
 
-        map.flyTo({
+            accuracy.textContent =
+                "—";
 
-            center: [lng, lat],
+        }
 
-            zoom:
-                Math.max(
-                    map.getZoom(),
-                    15
-                ),
-
-            duration: 1000
-
-        });
+    }
 
 
-        restoreDeviceMarker();
+    if (lastSeen) {
 
-    } else {
+        lastSeen.textContent =
+            formatDate(
+                selectedDevice.last_seen
+            );
 
-        document.getElementById(
-            "latitude"
-        ).textContent = "—";
+    }
 
-        document.getElementById(
-            "longitude"
-        ).textContent = "—";
 
-        document.getElementById(
-            "accuracy"
-        ).textContent = "—";
+    restoreDeviceMarker();
 
-        document.getElementById(
-            "lastUpdate"
-        ).textContent = "—";
+
+    if (
+        map &&
+        lat != null &&
+        lng != null
+    ) {
+
+        map.resize();
 
     }
 
@@ -2779,41 +3647,64 @@ function updateTracker() {
 
 
 /* =========================================================
-   LOAD LOCATIONS
+   LOAD LOCATION HISTORY
 ========================================================= */
 
 async function loadLocations() {
 
+    const container =
+        document.getElementById(
+            "locationHistory"
+        );
+
+
+    if (!container) return;
+
+
     if (!selectedDevice) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">◎</div>
+                <h3>No device selected</h3>
+                <p>Select a device to view its location history.</p>
+            </div>
+        `;
 
         return;
 
     }
 
 
-    const container =
-        document.getElementById(
-            "locationTableContainer"
-        );
+    container.innerHTML = `
+        <div class="loading-state">
+            Loading location history...
+        </div>
+    `;
 
 
     try {
 
         const locations =
             await supabaseRequest(
-
                 `device_locations?device_id=eq.${encodeURIComponent(
                     selectedDevice.id
                 )}&select=*&order=recorded_at.desc&limit=50`
-
             );
 
 
-        if (!locations.length) {
+        if (
+            !locations ||
+            !locations.length
+        ) {
 
             container.innerHTML = `
-                <div class="empty">
-                    No location records yet.
+                <div class="empty-state">
+                    <div class="empty-icon">◎</div>
+                    <h3>No location history</h3>
+                    <p>
+                        Location updates from the phone will appear here.
+                    </p>
                 </div>
             `;
 
@@ -2822,75 +3713,77 @@ async function loadLocations() {
         }
 
 
-        container.innerHTML = `
+        container.innerHTML =
+            locations.map(location => {
 
-            <div style="overflow-x:auto;">
+                const lat =
+                    Number(location.latitude);
 
-                <table class="location-table">
+                const lng =
+                    Number(location.longitude);
 
-                    <thead>
-
-                        <tr>
-
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Accuracy</th>
-                            <th>Recorded</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        ${
-                            locations.map(location => `
-
-                                <tr>
-
-                                    <td>
-                                        ${Number(location.latitude).toFixed(6)}
-                                    </td>
-
-                                    <td>
-                                        ${Number(location.longitude).toFixed(6)}
-                                    </td>
-
-                                    <td>
-                                        ${
-                                            location.accuracy != null
-                                                ? `${Number(location.accuracy).toFixed(1)} m`
-                                                : "—"
-                                        }
-                                    </td>
-
-                                    <td>
-                                        ${formatDate(location.recorded_at)}
-                                    </td>
-
-                                </tr>
-
-                            `).join("")
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-        `;
+                const accuracy =
+                    location.accuracy != null
+                        ? `${Number(
+                            location.accuracy
+                        ).toFixed(1)} m`
+                        : "—";
 
 
-    } catch (error) {
+                return `
+                    <div
+                        class="location-row"
+                        onclick="focusLocation(${lat}, ${lng})"
+                    >
+
+                        <div class="location-icon">
+                            ◎
+                        </div>
+
+                        <div class="location-details">
+
+                            <strong>
+                                ${lat.toFixed(6)},
+                                ${lng.toFixed(6)}
+                            </strong>
+
+                            <span>
+                                Accuracy: ${accuracy}
+                            </span>
+
+                        </div>
+
+                        <div class="location-time">
+                            ${formatDate(
+                                location.recorded_at
+                            )}
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("");
+
+    }
+
+    catch (error) {
 
         console.error(
-            "Location loading error:",
+            "Failed to load location history:",
             error
         );
 
+
         container.innerHTML = `
-            <div class="empty">
-                Could not load location history.
+            <div class="empty-state error">
+                <div class="empty-icon">!</div>
+                <h3>Could not load locations</h3>
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
             </div>
         `;
 
@@ -2899,6 +3792,672 @@ async function loadLocations() {
 }
 
 
+/* =========================================================
+   FOCUS LOCATION
+========================================================= */
+
+function focusLocation(
+    lat,
+    lng
+) {
+
+    if (!map) return;
+
+
+    const coordinates = [
+        Number(lng),
+        Number(lat)
+    ];
+
+
+    map.flyTo({
+
+        center: coordinates,
+
+        zoom: 17,
+
+        speed: 1.2,
+
+        essential: true
+
+    });
+
+
+    if (deviceMarker) {
+
+        deviceMarker
+            .setLngLat(coordinates);
+
+    }
+
+
+    updateMapStatus(
+        `Location: ${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
+    );
+
+
+    showSection(
+        "tracker",
+        document.querySelector(
+            '.nav-btn[onclick*="tracker"]'
+        )
+    );
+
+}
+
+
+/* =========================================================
+   CREATE DEVICE
+========================================================= */
+
+async function createDevice() {
+
+    const nameInput =
+        document.getElementById(
+            "newDeviceName"
+        );
+
+    const codeInput =
+        document.getElementById(
+            "newDeviceCode"
+        );
+
+    const typeInput =
+        document.getElementById(
+            "newDeviceType"
+        );
+
+
+    const name =
+        nameInput?.value.trim();
+
+    const deviceCode =
+        codeInput?.value.trim();
+
+    const type =
+        typeInput?.value ||
+        "Phone";
+
+
+    if (!name) {
+
+        showToast(
+            "Enter a device name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!deviceCode) {
+
+        showToast(
+            "Enter a device code.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await supabaseRequest(
+                "devices",
+                {
+
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        device_code:
+                            deviceCode,
+
+                        device_name:
+                            name,
+
+                        device_type:
+                            type,
+
+                        status:
+                            "offline"
+
+                    })
+
+                }
+            );
+
+
+        const createdDevice =
+            Array.isArray(result)
+                ? result[0]
+                : result;
+
+
+        showToast(
+            "Device added successfully.",
+            "success"
+        );
+
+
+        if (nameInput) {
+
+            nameInput.value = "";
+
+        }
+
+        if (codeInput) {
+
+            codeInput.value = "";
+
+        }
+
+
+        await loadDevices();
+
+
+        if (createdDevice?.id) {
+
+            openQrModal(
+                createdDevice.id
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Create device error:",
+            error
+        );
+
+
+        showToast(
+            "Could not create device.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   QR CODE
+========================================================= */
+
+function openQrModal(deviceId) {
+
+    const modal =
+        document.getElementById(
+            "qrModal"
+        );
+
+    const qrContainer =
+        document.getElementById(
+            "qrcode"
+        );
+
+    const linkElement =
+        document.getElementById(
+            "phoneTrackingLink"
+        );
+
+
+    if (!modal || !qrContainer) {
+
+        return;
+
+    }
+
+
+    const phoneUrl =
+        new URL(
+            "phone.html",
+            window.location.href
+        );
+
+
+    phoneUrl.searchParams.set(
+        "device",
+        deviceId
+    );
+
+
+    const finalUrl =
+        phoneUrl.toString();
+
+
+    qrContainer.innerHTML = "";
+
+
+    new QRCode(
+        qrContainer,
+        {
+
+            text:
+                finalUrl,
+
+            width:
+                220,
+
+            height:
+                220,
+
+            colorDark:
+                "#111827",
+
+            colorLight:
+                "#ffffff",
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+
+        }
+    );
+
+
+    if (linkElement) {
+
+        linkElement.textContent =
+            finalUrl;
+
+        linkElement.href =
+            finalUrl;
+
+    }
+
+
+    modal.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE QR MODAL
+========================================================= */
+
+function closeQrModal() {
+
+    const modal =
+        document.getElementById(
+            "qrModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COPY TRACKING LINK
+========================================================= */
+
+async function copyTrackingLink() {
+
+    const linkElement =
+        document.getElementById(
+            "phoneTrackingLink"
+        );
+
+
+    if (!linkElement) return;
+
+
+    const link =
+        linkElement.href ||
+        linkElement.textContent;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+
+        showToast(
+            "Tracking link copied.",
+            "success"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Could not copy the link.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE DEVICE
+========================================================= */
+
+async function deleteDevice(
+    deviceId
+) {
+
+    if (!deviceId) return;
+
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete this device?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await supabaseRequest(
+            `devices?id=eq.${encodeURIComponent(
+                deviceId
+            )}`,
+            {
+
+                method:
+                    "DELETE"
+
+            }
+        );
+
+
+        if (
+            selectedDevice &&
+            String(selectedDevice.id) ===
+            String(deviceId)
+        ) {
+
+            selectedDevice =
+                null;
+
+            localStorage.removeItem(
+                "trackpoint_selected_device"
+            );
+
+        }
+
+
+        showToast(
+            "Device deleted.",
+            "success"
+        );
+
+
+        await loadDevices();
+
+
+        showSection(
+            "devices",
+            document.querySelector(
+                '.nav-btn[onclick*="devices"]'
+            )
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete device error:",
+            error
+        );
+
+
+        showToast(
+            "Could not delete device.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DEVICE ICON
+========================================================= */
+
+function getDeviceIcon(type) {
+
+    const value =
+        String(type || "")
+            .toLowerCase();
+
+
+    if (
+        value.includes("iphone") ||
+        value.includes("phone")
+    ) {
+
+        return "📱";
+
+    }
+
+
+    if (
+        value.includes("tablet") ||
+        value.includes("ipad")
+    ) {
+
+        return "▯";
+
+    }
+
+
+    if (
+        value.includes("laptop") ||
+        value.includes("computer")
+    ) {
+
+        return "💻";
+
+    }
+
+
+    return "▣";
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+
+        return "Never";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "Unknown";
+
+    }
+
+
+    return date.toLocaleString(
+        undefined,
+        {
+
+            dateStyle:
+                "medium",
+
+            timeStyle:
+                "short"
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(
+    message,
+    type = "info"
+) {
+
+    let container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+
+    if (!container) {
+
+        container =
+            document.createElement(
+                "div"
+            );
+
+        container.id =
+            "toastContainer";
+
+        container.className =
+            "toast-container";
+
+        document.body.appendChild(
+            container
+        );
+
+    }
+
+
+    const toast =
+        document.createElement(
+            "div"
+        );
+
+
+    toast.className =
+        `toast toast-${type}`;
+
+
+    toast.innerHTML = `
+
+        <span class="toast-message">
+            ${escapeHtml(message)}
+        </span>
+
+        <button
+            class="toast-close"
+            onclick="this.parentElement.remove()"
+        >
+            ×
+        </button>
+
+    `;
+
+
+    container.appendChild(
+        toast
+    );
+
+
+    setTimeout(() => {
+
+        toast.classList.add(
+            "hide"
+        );
+
+        setTimeout(() => {
+
+            toast.remove();
+
+        }, 300);
+
+    }, 4000);
+
+}
 /* =========================================================
    CREATE DEVICE
 ========================================================= */
@@ -3095,6 +4654,7 @@ function closeQR(event) {
 
     }
 
+
     document
         .getElementById("qrModal")
         .classList.remove("show");
@@ -3143,6 +4703,7 @@ function toggleAutoRefresh(enabled) {
 
     autoRefreshEnabled =
         enabled;
+
 
     localStorage.setItem(
         "trackpoint_auto_refresh",
@@ -3272,10 +4833,18 @@ function logout() {
             "Log out of TrackPoint?"
         );
 
+
     if (!confirmed) return;
 
-    window.location.href =
-        "login.html";
+
+    supabaseClient.auth.signOut()
+        .finally(() => {
+
+            window.location.replace(
+                "login.html"
+            );
+
+        });
 
 }
 
@@ -3303,23 +4872,30 @@ function formatDate(date) {
 
 function escapeHTML(value) {
 
-    return String(value ?? "")
+    return String(
+        value ?? ""
+    )
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -3336,6 +4912,13 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
+        const authenticated =
+            await requireAuth();
+
+
+        if (!authenticated) return;
+
+
         initializeMap();
 
 
@@ -3343,6 +4926,7 @@ document.addEventListener(
             document.getElementById(
                 "autoRefreshToggle"
             );
+
 
         if (toggle) {
 
@@ -3356,6 +4940,7 @@ document.addEventListener(
             document.getElementById(
                 "settingsRefreshStatus"
             );
+
 
         if (refreshStatus) {
 
@@ -3379,4 +4964,3 @@ document.addEventListener(
 </script>
 
 </body>
-</html>
