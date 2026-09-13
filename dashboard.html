@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>TrackPoint | Connect Device</title>
+    <title>TrackPoint | Dashboard</title>
+
+    <link
+        href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+        rel="stylesheet"
+    >
 
     <style>
         * {
@@ -14,178 +19,1460 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #0b0f14;
-            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b1118;
+            color: #e8edf3;
             min-height: 100vh;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
             display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 245px;
+            background: #101821;
+            border-right: 1px solid #202b36;
+            padding: 22px 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 20;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 5px 10px 25px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .brand-text span {
+            color: #718096;
+            font-size: 11px;
+        }
+
+        .nav-label {
+            color: #596777;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 12px 11px 7px;
+            letter-spacing: .8px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: #8996a5;
+            padding: 11px 12px;
+            border-radius: 9px;
+            text-align: left;
+            margin-bottom: 3px;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .nav-btn:hover {
+            background: #18222d;
+            color: #fff;
+        }
+
+        .nav-btn.active {
+            background: #1c3e72;
+            color: #fff;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 14px;
+            right: 14px;
+        }
+
+        .connection-box {
+            background: #0b1118;
+            border: 1px solid #202b36;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .connection-title {
+            color: #718096;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 245px;
+            width: calc(100% - 245px);
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 68px;
+            background: #101821;
+            border-bottom: 1px solid #202b36;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+        }
+
+        .topbar-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .topbar-subtitle {
+            color: #6e7c8b;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .account-pill {
+            border: 1px solid #263340;
+            border-radius: 9px;
+            padding: 8px 12px;
+            color: #aeb8c4;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .page-heading {
+            margin-bottom: 20px;
+        }
+
+        .page-heading h1 {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .page-heading p {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #101821;
+            border: 1px solid #202b36;
+            border-radius: 12px;
+            padding: 19px;
+        }
+
+        .stat-label {
+            color: #738092;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .stat-small {
+            color: #667486;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: #101821;
+            border: 1px solid #202b36;
+            border-radius: 12px;
+            padding: 19px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .card-subtitle {
+            color: #718096;
+            font-size: 11px;
+            margin-top: -8px;
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           DEVICES
+        ========================= */
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+            gap: 14px;
+        }
+
+        .device-card {
+            background: #0d151e;
+            border: 1px solid #202b36;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .device-card:hover {
+            border-color: #31557f;
+            transform: translateY(-1px);
+        }
+
+        .device-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .device-code {
+            color: #627082;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .online-badge,
+        .offline-badge {
+            padding: 4px 7px;
+            border-radius: 20px;
+            font-size: 9px;
+        }
+
+        .online-badge {
+            background: #123522;
+            color: #55d98a;
+        }
+
+        .offline-badge {
+            background: #252b32;
+            color: #8993a0;
+        }
+
+        .device-info {
+            color: #7b8897;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .empty {
+            padding: 35px 15px;
+            text-align: center;
+            color: #687585;
+            font-size: 13px;
+        }
+
+        /* =========================
+           MAP
+        ========================= */
+
+        .tracker-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 285px;
+            gap: 15px;
+        }
+
+        .map-card {
+            padding: 0;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 560px;
+            background: #111820;
+        }
+
+        .map-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            padding: 12px;
+            background: #101821;
+            border-bottom: 1px solid #202b36;
+        }
+
+        .map-btn {
+            border: 1px solid #2a3745;
+            background: #141e28;
+            color: #aab5c2;
+            padding: 8px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+        }
+
+        .map-btn:hover {
+            background: #1d2935;
+            color: #fff;
+        }
+
+        .map-btn.active {
+            background: #24559b;
+            border-color: #3271c5;
+            color: white;
+        }
+
+        .map-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 12px;
+            background: #0d151e;
+            border-top: 1px solid #202b36;
+        }
+
+        .map-info-item {
+            background: #101821;
+            border: 1px solid #202b36;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .map-info-item span {
+            display: block;
+            color: #657487;
+            font-size: 9px;
+            margin-bottom: 5px;
+        }
+
+        .map-info-item strong {
+            font-size: 11px;
+            word-break: break-word;
+        }
+
+        .tracker-side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .selected-device {
+            color: #8794a3;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .selected-device strong {
+            color: #e4e9ef;
+        }
+
+        /* =========================
+           FORMS
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            color: #8996a5;
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #0c141c;
+            border: 1px solid #263340;
+            border-radius: 8px;
+            color: #e8edf3;
+            padding: 11px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #3674c5;
+        }
+
+        .primary-btn {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary-btn {
+            border: 1px solid #2a3745;
+            background: #141e28;
+            color: #b5bfcb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .secondary-btn:hover {
+            background: #1d2935;
+        }
+
+        .danger-btn {
+            width: 100%;
+            border: 1px solid #63323a;
+            background: #27171b;
+            color: #ef929d;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #7f8c9b;
+        }
+
+        /* =========================
+           LOCATIONS
+        ========================= */
+
+        .location-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .location-table th,
+        .location-table td {
+            padding: 12px 9px;
+            border-bottom: 1px solid #202b36;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .location-table th {
+            color: #657487;
+            font-weight: normal;
+        }
+
+        .location-table td {
+            color: #b6c0cb;
+        }
+
+        /* =========================
+           SETTINGS
+        ========================= */
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid #202b36;
+        }
+
+        .setting-row:last-child {
+            border-bottom: 0;
+        }
+
+        .setting-row strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .setting-row small {
+            display: block;
+            color: #697889;
+            font-size: 10px;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .setting-status {
+            background: #123522;
+            color: #55d98a;
+            border-radius: 20px;
+            padding: 5px 8px;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid #202b36;
+        }
+
+        .toggle-row:last-child {
+            border-bottom: 0;
+        }
+
+        .toggle-row strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .toggle-row small {
+            display: block;
+            color: #697889;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .toggle-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            cursor: pointer;
+        }
+
+        .setting-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .setting-button {
+            width: 100%;
+            background: #141e28;
+            color: #b7c1cc;
+            border: 1px solid #2a3745;
+            padding: 10px;
+            border-radius: 7px;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .setting-button:hover {
+            background: #1c2834;
+            color: white;
+        }
+
+        .system-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 11px 0;
+            border-bottom: 1px solid #202b36;
+            color: #7b8897;
+            font-size: 11px;
+        }
+
+        .system-row strong {
+            color: #b9c3ce;
+            font-weight: normal;
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alert-box {
+            border: 1px solid #202b36;
+            border-radius: 10px;
+            background: #0d151e;
+            padding: 16px;
+            color: #758294;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           QR MODAL
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .72);
+            z-index: 100;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 430px;
-            background: #121821;
-            border: 1px solid #26303d;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.35);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            margin: auto;
-            border-radius: 16px;
-            background: #2563eb;
+        .modal.show {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
         }
 
-        h1 {
+        .modal-card {
+            width: 390px;
+            max-width: 100%;
+            background: #101821;
+            border: 1px solid #293643;
+            border-radius: 13px;
+            padding: 22px;
             text-align: center;
-            margin-top: 15px;
-            font-size: 25px;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #8d99a8;
-            margin-top: 8px;
-            line-height: 1.5;
+        .modal-card h2 {
+            font-size: 17px;
+            margin-bottom: 7px;
         }
 
-        .device-box {
-            margin-top: 25px;
-            background: #0d131b;
-            border: 1px solid #26303d;
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .label {
-            color: #7f8b9a;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .device-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 6px;
-        }
-
-        .device-id {
-            font-size: 12px;
-            color: #6f7a88;
-            margin-top: 7px;
-            word-break: break-all;
-        }
-
-        button {
-            width: 100%;
-            border: none;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            background: #2563eb;
-            color: white;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .status {
-            margin-top: 18px;
-            padding: 13px;
-            border-radius: 10px;
-            background: #0d131b;
-            border: 1px solid #26303d;
-            color: #9ba6b5;
-            text-align: center;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .success {
-            color: #4ade80;
-        }
-
-        .error {
-            color: #f87171;
-        }
-
-        .info {
-            margin-top: 20px;
-            color: #7f8b9a;
-            font-size: 12px;
+        .modal-card p {
+            color: #718092;
+            font-size: 11px;
             line-height: 1.6;
-            text-align: center;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 12px;
+            display: inline-block;
+            margin: 18px 0;
+            border-radius: 8px;
+        }
+
+        .qr-link {
+            background: #0b1118;
+            border: 1px solid #273442;
+            border-radius: 7px;
+            padding: 9px;
+            font-size: 9px;
+            color: #788697;
+            word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 1000px) {
+            .tracker-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .tracker-side {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 5px 0 20px;
+            }
+
+            .brand-text,
+            .nav-label,
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .nav-btn {
+                text-align: center;
+                font-size: 0;
+            }
+
+            .nav-btn::first-letter {
+                font-size: 16px;
+            }
+
+            .main {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-grid,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 15px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .account-pill {
+                display: none;
+            }
+
+            .tracker-side {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 430px;
+            }
+
+            .map-info {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-    <div class="logo">
-        <div class="logo-icon">TP</div>
-    </div>
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
 
-    <h1>Connect Device</h1>
+    <aside class="sidebar">
 
-    <p class="subtitle">
-        This device can share its location with your TrackPoint dashboard
-        after you give permission.
-    </p>
+        <div class="brand">
+            <div class="brand-icon">T</div>
 
-    <div class="device-box">
-        <div class="label">Device</div>
-
-        <div class="device-name" id="deviceName">
-            Loading...
+            <div class="brand-text">
+                <strong>TrackPoint</strong>
+                <span>Device Management</span>
+            </div>
         </div>
 
-        <div class="device-id" id="deviceId"></div>
-    </div>
+        <div class="nav-label">Main</div>
 
-    <button id="connectBtn" onclick="connectDevice()">
-        Allow Location & Connect
-    </button>
+        <button class="nav-btn active" onclick="showSection('overview', this)">
+            ◉ &nbsp; Overview
+        </button>
 
-    <div class="status" id="status">
-        Waiting for connection...
-    </div>
+        <button class="nav-btn" onclick="showSection('tracker', this)">
+            ◈ &nbsp; Phone Tracker
+        </button>
 
-    <div class="info">
-        Your browser will ask for location permission.
-        Location sharing only starts after you press the button above.
+        <button class="nav-btn" onclick="showSection('devices', this)">
+            ▣ &nbsp; My Devices
+        </button>
+
+        <button class="nav-btn" onclick="showSection('locations', this)">
+            ◎ &nbsp; Locations
+        </button>
+
+        <button class="nav-btn" onclick="showSection('alerts', this)">
+            ! &nbsp; Alerts
+        </button>
+
+        <div class="nav-label">System</div>
+
+        <button class="nav-btn" onclick="showSection('settings', this)">
+            ⚙ &nbsp; Settings
+        </button>
+
+        <button class="nav-btn" onclick="showSection('add-device', this)">
+            + &nbsp; Add Device
+        </button>
+
+        <div class="sidebar-bottom">
+            <div class="connection-box">
+                <div class="connection-title">DATABASE</div>
+
+                <div class="connection-status">
+                    <span class="status-dot" id="sidebarStatusDot"></span>
+                    <span id="sidebarStatus">Checking...</span>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+                <div class="topbar-title">TrackPoint Dashboard</div>
+                <div class="topbar-subtitle">
+                    Device monitoring and location management
+                </div>
+            </div>
+
+            <div class="account-pill">
+                TrackPoint Account
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <!-- =========================
+                 OVERVIEW
+            ========================= -->
+
+            <section id="overview" class="section active">
+
+                <div class="page-heading">
+                    <h1>Overview</h1>
+                    <p>Monitor your connected devices and their latest locations.</p>
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat-card">
+                        <div class="stat-label">TOTAL DEVICES</div>
+                        <div class="stat-value" id="totalDevices">0</div>
+                        <div class="stat-small">Registered devices</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">ONLINE DEVICES</div>
+                        <div class="stat-value" id="onlineDevices">0</div>
+                        <div class="stat-small">Currently reporting</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">DEVICES WITH LOCATIONS</div>
+                        <div class="stat-value" id="locatedDevices">0</div>
+                        <div class="stat-small">Have location data</div>
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">Your Devices</div>
+
+                    <div id="overviewDevices" class="device-grid">
+                        <div class="empty">Loading devices...</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 TRACKER
+            ========================= -->
+
+            <section id="tracker" class="section">
+
+                <div class="page-heading">
+                    <h1>Phone Tracker</h1>
+                    <p>View the latest authorized device location.</p>
+                </div>
+
+                <div class="tracker-layout">
+
+                    <div class="card map-card">
+
+                        <div class="map-toolbar">
+
+                            <button
+                                class="map-btn active"
+                                id="standardBtn"
+                                onclick="setMapMode('standard')">
+                                Standard
+                            </button>
+
+                            <button
+                                class="map-btn"
+                                id="satelliteBtn"
+                                onclick="setMapMode('satellite')">
+                                Satellite
+                            </button>
+
+                            <button
+                                class="map-btn"
+                                id="threeDBtn"
+                                onclick="setMapMode('3d')">
+                                3D
+                            </button>
+
+                            <button
+                                class="map-btn"
+                                onclick="locateMe()">
+                                📍 Locate Me
+                            </button>
+
+                            <button
+                                class="map-btn"
+                                onclick="openStreetView()">
+                                Street View
+                            </button>
+
+                            <button
+                                class="map-btn"
+                                onclick="resetMapView()">
+                                Reset
+                            </button>
+
+                        </div>
+
+                        <div id="map"></div>
+
+                        <div class="map-info">
+
+                            <div class="map-info-item">
+                                <span>LATITUDE</span>
+                                <strong id="latitude">—</strong>
+                            </div>
+
+                            <div class="map-info-item">
+                                <span>LONGITUDE</span>
+                                <strong id="longitude">—</strong>
+                            </div>
+
+                            <div class="map-info-item">
+                                <span>ACCURACY</span>
+                                <strong id="accuracy">—</strong>
+                            </div>
+
+                            <div class="map-info-item">
+                                <span>LAST UPDATE</span>
+                                <strong id="lastUpdate">—</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="tracker-side">
+
+                        <div class="card">
+
+                            <div class="card-title">Selected Device</div>
+
+                            <div
+                                id="selectedDevice"
+                                class="selected-device">
+                                No device selected.
+                            </div>
+
+                        </div>
+
+
+                        <div class="card">
+
+                            <div class="card-title">Map Status</div>
+
+                            <div
+                                id="mapStatus"
+                                class="selected-device">
+                                Standard map ready.
+                            </div>
+
+                        </div>
+
+
+                        <div class="card">
+
+                            <div class="card-title">Important</div>
+
+                            <div class="selected-device">
+                                Location tracking only works when the device
+                                owner has explicitly allowed location access.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 DEVICES
+            ========================= -->
+
+            <section id="devices" class="section">
+
+                <div class="page-heading">
+                    <h1>My Devices</h1>
+                    <p>Manage your connected TrackPoint devices.</p>
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">Registered Devices</div>
+
+                    <div id="deviceList" class="device-grid">
+                        <div class="empty">Loading devices...</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 LOCATIONS
+            ========================= -->
+
+            <section id="locations" class="section">
+
+                <div class="page-heading">
+                    <h1>Locations</h1>
+                    <p>Latest location records from your devices.</p>
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">Location History</div>
+
+                    <div id="locationTableContainer">
+                        <div class="empty">
+                            Select a device to load its locations.
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 ALERTS
+            ========================= -->
+
+            <section id="alerts" class="section">
+
+                <div class="page-heading">
+                    <h1>Alerts</h1>
+                    <p>TrackPoint notifications and device events.</p>
+                </div>
+
+                <div class="alert-box">
+                    Alert management is ready for future device events.
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 SETTINGS
+            ========================= -->
+
+            <section id="settings" class="section">
+
+                <div class="page-heading">
+                    <h1>Settings</h1>
+                    <p>Manage your TrackPoint dashboard preferences.</p>
+                </div>
+
+                <div class="settings-grid">
+
+                    <!-- ACCOUNT -->
+
+                    <div class="card">
+
+                        <div class="card-title">Account</div>
+
+                        <div class="setting-row">
+                            <div>
+                                <strong>Dashboard</strong>
+                                <small>
+                                    TrackPoint device management dashboard.
+                                </small>
+                            </div>
+
+                            <span class="setting-status">
+                                Active
+                            </span>
+                        </div>
+
+                        <div class="setting-row">
+                            <div>
+                                <strong>Database</strong>
+                                <small>
+                                    Supabase connection used by TrackPoint.
+                                </small>
+                            </div>
+
+                            <span
+                                class="setting-status"
+                                id="settingsDbBadge">
+                                Checking
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- TRACKER -->
+
+                    <div class="card">
+
+                        <div class="card-title">Dashboard Behaviour</div>
+
+                        <label class="toggle-row">
+
+                            <div>
+                                <strong>Auto refresh</strong>
+
+                                <small>
+                                    Refresh device information every 5 seconds.
+                                </small>
+                            </div>
+
+                            <input
+                                type="checkbox"
+                                id="autoRefreshToggle"
+                                checked
+                                onchange="toggleAutoRefresh(this.checked)"
+                            >
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- MAP -->
+
+                    <div class="card">
+
+                        <div class="card-title">Map Preferences</div>
+
+                        <div class="setting-buttons">
+
+                            <button
+                                class="setting-button"
+                                onclick="setMapMode('standard')">
+                                🗺️ Use Standard Map
+                            </button>
+
+                            <button
+                                class="setting-button"
+                                onclick="setMapMode('satellite')">
+                                🛰️ Use Satellite Map
+                            </button>
+
+                            <button
+                                class="setting-button"
+                                onclick="setMapMode('3d')">
+                                🏙️ Open 3D Map
+                            </button>
+
+                            <button
+                                class="setting-button"
+                                onclick="locateMe()">
+                                📍 Find My Current Location
+                            </button>
+
+                            <button
+                                class="setting-button"
+                                onclick="resetMapView()">
+                                ↺ Reset Map View
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SYSTEM -->
+
+                    <div class="card">
+
+                        <div class="card-title">System</div>
+
+                        <div class="system-row">
+                            <span>Database</span>
+                            <strong id="dbStatus">Checking...</strong>
+                        </div>
+
+                        <div class="system-row">
+                            <span>Map</span>
+                            <strong id="settingsMapStatus">
+                                Standard
+                            </strong>
+                        </div>
+
+                        <div class="system-row">
+                            <span>Auto refresh</span>
+                            <strong id="settingsRefreshStatus">
+                                Enabled
+                            </strong>
+                        </div>
+
+                        <div class="system-row">
+                            <span>Version</span>
+                            <strong>TrackPoint 1.0</strong>
+                        </div>
+
+                        <br>
+
+                        <button
+                            class="secondary-btn"
+                            style="width:100%; margin-bottom:8px;"
+                            onclick="testSupabaseConnection()">
+                            Test Database Connection
+                        </button>
+
+                        <button
+                            class="danger-btn"
+                            onclick="logout()">
+                            Log Out
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 ADD DEVICE
+            ========================= -->
+
+            <section id="add-device" class="section">
+
+                <div class="page-heading">
+                    <h1>Add Device</h1>
+                    <p>Create a TrackPoint connection for an authorized device.</p>
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">Create Device</div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Device Name
+                            </label>
+
+                            <input
+                                id="deviceName"
+                                class="form-input"
+                                type="text"
+                                placeholder="My Phone"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Device Type
+                            </label>
+
+                            <select
+                                id="deviceType"
+                                class="form-input">
+
+                                <option value="Phone">
+                                    Phone
+                                </option>
+
+                                <option value="Tablet">
+                                    Tablet
+                                </option>
+
+                                <option value="Computer">
+                                    Computer
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="primary-btn"
+                        onclick="createDevice()">
+                        Create Device
+                    </button>
+
+                    <div
+                        id="addDeviceMessage"
+                        class="message">
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     QR MODAL
+========================= -->
+
+<div
+    id="qrModal"
+    class="modal"
+    onclick="closeQR(event)">
+
+    <div
+        class="modal-card"
+        onclick="event.stopPropagation()">
+
+        <h2>Connect Device</h2>
+
+        <p>
+            Open this QR code on the authorized phone you want
+            to connect to TrackPoint.
+        </p>
+
+        <div id="qrcode"></div>
+
+        <div
+            id="qrLink"
+            class="qr-link">
+        </div>
+
+        <button
+            class="secondary-btn"
+            onclick="closeQR()">
+            Close
+        </button>
+
     </div>
 
 </div>
 
+
+<!-- =========================
+     LIBRARIES
+========================= -->
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
     "https://zlzbbtoainxzvgocxpmb.supabase.co";
@@ -193,357 +1480,1815 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
-const params = new URLSearchParams(window.location.search);
 
-const deviceId = params.get("device");
+/* =========================================================
+   GLOBALS
+========================================================= */
 
-const deviceNameElement =
-    document.getElementById("deviceName");
+let devices = [];
 
-const deviceIdElement =
-    document.getElementById("deviceId");
+let selectedDevice = null;
 
-const statusElement =
-    document.getElementById("status");
+let map = null;
 
-const connectBtn =
-    document.getElementById("connectBtn");
+let deviceMarker = null;
 
-let watchId = null;
+let userMarker = null;
+
+let refreshTimer = null;
+
+let autoRefreshEnabled =
+    localStorage.getItem("trackpoint_auto_refresh") !== "false";
+
+let currentMapMode =
+    localStorage.getItem("trackpoint_map_mode") || "standard";
 
 
-/* =========================
-   LOAD DEVICE
-========================= */
+/* =========================================================
+   MAP STYLES
+========================================================= */
 
-async function loadDevice() {
+function getStandardStyle() {
 
-    if (!deviceId) {
+    return {
 
-        deviceNameElement.textContent =
-            "Invalid device";
+        version: 8,
 
-        deviceIdElement.textContent =
-            "No device ID was provided.";
+        sources: {
 
-        connectBtn.disabled = true;
+            osm: {
 
-        statusElement.innerHTML =
-            '<span class="error">Invalid connection link.</span>';
+                type: "raster",
 
-        return;
-    }
+                tiles: [
+                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                ],
 
-    deviceIdElement.textContent =
-        deviceId;
+                tileSize: 256,
 
-    try {
+                attribution:
+                    "© OpenStreetMap contributors"
 
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/devices?id=eq.${encodeURIComponent(deviceId)}&select=id,device_name,device_code,status`,
-            {
-                headers: {
-                    apikey: SUPABASE_KEY,
-                    Authorization:
-                        `Bearer ${SUPABASE_KEY}`
-                }
             }
+
+        },
+
+        layers: [
+
+            {
+                id: "osm",
+
+                type: "raster",
+
+                source: "osm"
+            }
+
+        ]
+
+    };
+
+}
+
+
+function getSatelliteStyle() {
+
+    return {
+
+        version: 8,
+
+        sources: {
+
+            satellite: {
+
+                type: "raster",
+
+                tiles: [
+
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+
+                ],
+
+                tileSize: 256,
+
+                attribution:
+                    "Tiles © Esri"
+
+            }
+
+        },
+
+        layers: [
+
+            {
+
+                id: "satellite",
+
+                type: "raster",
+
+                source: "satellite"
+
+            }
+
+        ]
+
+    };
+
+}
+
+
+const THREE_D_STYLE =
+    "https://tiles.openfreemap.org/styles/liberty";
+
+
+/* =========================================================
+   SUPABASE REQUEST
+========================================================= */
+
+async function supabaseRequest(
+    endpoint,
+    options = {}
+) {
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/${endpoint}`,
+        {
+
+            ...options,
+
+            headers: {
+
+                "apikey": SUPABASE_KEY,
+
+                "Authorization":
+                    `Bearer ${SUPABASE_KEY}`,
+
+                "Content-Type":
+                    "application/json",
+
+                "Prefer":
+                    options.method === "POST"
+                        ? "return=representation"
+                        : undefined,
+
+                ...(options.headers || {})
+
+            }
+
+        }
+    );
+
+    if (!response.ok) {
+
+        const text =
+            await response.text();
+
+        throw new Error(
+            text || `HTTP ${response.status}`
         );
 
-        if (!response.ok) {
-            throw new Error("Could not load device.");
-        }
-
-        const devices = await response.json();
-
-        if (!devices.length) {
-
-            deviceNameElement.textContent =
-                "Device not found";
-
-            statusElement.innerHTML =
-                '<span class="error">This device does not exist.</span>';
-
-            connectBtn.disabled = true;
-
-            return;
-        }
-
-        const device = devices[0];
-
-        deviceNameElement.textContent =
-            device.device_name;
-
-        statusElement.textContent =
-            "Ready to connect.";
-
-    } catch (error) {
-
-        console.error(error);
-
-        statusElement.innerHTML =
-            '<span class="error">Unable to connect to TrackPoint.</span>';
     }
+
+    const text =
+        await response.text();
+
+    return text
+        ? JSON.parse(text)
+        : null;
 }
 
 
-/* =========================
-   CONNECT DEVICE
-========================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-async function connectDevice() {
+function showSection(
+    sectionId,
+    button = null
+) {
 
-    if (!deviceId) {
-        return;
+    document
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+            section.classList.remove("active");
+
+        });
+
+    const section =
+        document.getElementById(sectionId);
+
+    if (section) {
+
+        section.classList.add("active");
+
     }
 
-    if (!navigator.geolocation) {
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn => {
 
-        statusElement.innerHTML =
-            '<span class="error">This browser does not support location services.</span>';
+            btn.classList.remove("active");
 
-        return;
+        });
+
+    if (button) {
+
+        button.classList.add("active");
+
     }
 
-    connectBtn.disabled = true;
+    if (sectionId === "tracker") {
 
-    statusElement.textContent =
-        "Requesting location permission...";
+        setTimeout(() => {
 
-    try {
+            if (map) {
 
-        const position =
-            await getCurrentPosition();
+                map.resize();
 
-        await sendLocation(position);
-
-        statusElement.innerHTML =
-            '<span class="success">Device connected successfully.</span>';
-
-        startTracking();
-
-    } catch (error) {
-
-        console.error(error);
-
-        connectBtn.disabled = false;
-
-        if (error.code === 1) {
-
-            statusElement.innerHTML =
-                '<span class="error">Location permission was denied.</span>';
-
-        } else if (error.code === 2) {
-
-            statusElement.innerHTML =
-                '<span class="error">Your location could not be determined.</span>';
-
-        } else if (error.code === 3) {
-
-            statusElement.innerHTML =
-                '<span class="error">Location request timed out.</span>';
-
-        } else {
-
-            statusElement.innerHTML =
-                '<span class="error">Could not connect this device.</span>';
-        }
-    }
-}
-
-
-/* =========================
-   GET LOCATION
-========================= */
-
-function getCurrentPosition() {
-
-    return new Promise((resolve, reject) => {
-
-        navigator.geolocation.getCurrentPosition(
-            resolve,
-            reject,
-            {
-                enableHighAccuracy: true,
-                maximumAge: 5000,
-                timeout: 15000
             }
+
+        }, 100);
+
+    }
+
+    if (sectionId === "locations") {
+
+        loadLocations();
+
+    }
+
+}
+
+
+/* =========================================================
+   MAP INITIALIZATION
+========================================================= */
+
+function initializeMap() {
+
+    if (map) return;
+
+    map = new maplibregl.Map({
+
+        container: "map",
+
+        style: getStandardStyle(),
+
+        center: [3.3792, 6.5244],
+
+        zoom: 10,
+
+        minZoom: 2,
+
+        maxZoom: 19,
+
+        attributionControl: true
+
+    });
+
+
+    map.addControl(
+        new maplibregl.NavigationControl(),
+        "top-right"
+    );
+
+
+    map.on("load", () => {
+
+        updateMapStatus(
+            "Standard map ready."
+        );
+
+        if (currentMapMode !== "standard") {
+
+            setMapMode(currentMapMode);
+
+        }
+
+    });
+
+
+    map.on("error", event => {
+
+        console.warn(
+            "Map error:",
+            event
+        );
+
+        updateMapStatus(
+            "Some map tiles could not be loaded."
         );
 
     });
+
 }
 
 
-/* =========================
-   SEND LOCATION
-========================= */
+/* =========================================================
+   MAP STATUS
+========================================================= */
 
-async function sendLocation(position) {
+function updateMapStatus(message) {
 
-    const latitude =
-        position.coords.latitude;
+    const mapStatus =
+        document.getElementById("mapStatus");
 
-    const longitude =
-        position.coords.longitude;
+    const settingsStatus =
+        document.getElementById("settingsMapStatus");
 
-    const accuracy =
-        position.coords.accuracy;
+    if (mapStatus) {
 
-    const recordedAt =
-        new Date().toISOString();
+        mapStatus.textContent =
+            message;
 
-
-    /* Save location history */
-
-    const locationResponse =
-        await fetch(
-            `${SUPABASE_URL}/rest/v1/device_locations`,
-            {
-                method: "POST",
-
-                headers: {
-                    apikey: SUPABASE_KEY,
-                    Authorization:
-                        `Bearer ${SUPABASE_KEY}`,
-                    "Content-Type":
-                        "application/json",
-                    Prefer: "return=minimal"
-                },
-
-                body: JSON.stringify({
-                    device_id: deviceId,
-                    latitude: latitude,
-                    longitude: longitude,
-                    accuracy: accuracy,
-                    recorded_at: recordedAt
-                })
-            }
-        );
-
-
-    if (!locationResponse.ok) {
-
-        const errorText =
-            await locationResponse.text();
-
-        console.error(errorText);
-
-        throw new Error(
-            "Failed to save location."
-        );
     }
 
+    if (settingsStatus) {
 
-    /* Update device */
+        settingsStatus.textContent =
+            currentMapMode === "3d"
+                ? "3D"
+                : currentMapMode === "satellite"
+                    ? "Satellite"
+                    : "Standard";
 
-    const deviceResponse =
-        await fetch(
-            `${SUPABASE_URL}/rest/v1/devices?id=eq.${encodeURIComponent(deviceId)}`,
-            {
-                method: "PATCH",
-
-                headers: {
-                    apikey: SUPABASE_KEY,
-                    Authorization:
-                        `Bearer ${SUPABASE_KEY}`,
-                    "Content-Type":
-                        "application/json",
-                    Prefer: "return=minimal"
-                },
-
-                body: JSON.stringify({
-
-                    status: "online",
-
-                    last_latitude:
-                        latitude,
-
-                    last_longitude:
-                        longitude,
-
-                    last_accuracy:
-                        accuracy,
-
-                    last_seen:
-                        recordedAt
-                })
-            }
-        );
-
-
-    if (!deviceResponse.ok) {
-
-        throw new Error(
-            "Failed to update device."
-        );
     }
 
+}
 
-    console.log(
-        "Location sent:",
-        latitude,
-        longitude,
-        accuracy
+
+/* =========================================================
+   MAP MODE
+========================================================= */
+
+function setMapMode(mode) {
+
+    currentMapMode = mode;
+
+    localStorage.setItem(
+        "trackpoint_map_mode",
+        mode
     );
+
+
+    document
+        .querySelectorAll(".map-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    const standardBtn =
+        document.getElementById("standardBtn");
+
+    const satelliteBtn =
+        document.getElementById("satelliteBtn");
+
+    const threeDBtn =
+        document.getElementById("threeDBtn");
+
+
+    if (mode === "standard") {
+
+        standardBtn?.classList.add("active");
+
+    }
+
+    if (mode === "satellite") {
+
+        satelliteBtn?.classList.add("active");
+
+    }
+
+    if (mode === "3d") {
+
+        threeDBtn?.classList.add("active");
+
+    }
+
+
+    if (!map) {
+
+        initializeMap();
+
+        return;
+
+    }
+
+
+    if (mode === "standard") {
+
+        map.setStyle(
+            getStandardStyle()
+        );
+
+        map.once("style.load", () => {
+
+            map.setPitch(0);
+
+            map.setBearing(0);
+
+            updateMapStatus(
+                "Standard map ready."
+            );
+
+            restoreDeviceMarker();
+
+        });
+
+    }
+
+
+    if (mode === "satellite") {
+
+        map.setStyle(
+            getSatelliteStyle()
+        );
+
+        map.once("style.load", () => {
+
+            map.setPitch(0);
+
+            map.setBearing(0);
+
+            updateMapStatus(
+                "Satellite map ready."
+            );
+
+            restoreDeviceMarker();
+
+        });
+
+    }
+
+
+    if (mode === "3d") {
+
+        map.setStyle(
+            THREE_D_STYLE
+        );
+
+        map.once("style.load", () => {
+
+            add3DBuildings();
+
+            map.setPitch(55);
+
+            map.setBearing(-20);
+
+            if (map.getZoom() < 15) {
+
+                map.easeTo({
+                    zoom: 15,
+                    duration: 700
+                });
+
+            }
+
+            updateMapStatus(
+                "3D map enabled."
+            );
+
+            restoreDeviceMarker();
+
+        });
+
+    }
+
 }
 
 
-/* =========================
-   CONTINUOUS TRACKING
-========================= */
+/* =========================================================
+   3D BUILDINGS
+========================================================= */
 
-function startTracking() {
+function add3DBuildings() {
 
-    if (watchId !== null) {
-        return;
+    if (!map) return;
+
+    try {
+
+        if (
+            !map.getSource("openmaptiles")
+        ) {
+
+            return;
+
+        }
+
+        if (
+            map.getLayer("3d-buildings")
+        ) {
+
+            return;
+
+        }
+
+        map.addLayer({
+
+            id: "3d-buildings",
+
+            source: "openmaptiles",
+
+            "source-layer": "building",
+
+            type: "fill-extrusion",
+
+            minzoom: 14,
+
+            paint: {
+
+                "fill-extrusion-color":
+                    "#9aa6b2",
+
+                "fill-extrusion-height":
+                    [
+                        "coalesce",
+                        [
+                            "get",
+                            "render_height"
+                        ],
+                        10
+                    ],
+
+                "fill-extrusion-base":
+                    [
+                        "coalesce",
+                        [
+                            "get",
+                            "render_min_height"
+                        ],
+                        0
+                    ],
+
+                "fill-extrusion-opacity":
+                    0.75
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.warn(
+            "3D buildings unavailable:",
+            error
+        );
+
     }
 
-    watchId =
-        navigator.geolocation.watchPosition(
+}
 
-            async position => {
 
-                try {
+/* =========================================================
+   RESTORE MARKER
+========================================================= */
 
-                    await sendLocation(position);
+function restoreDeviceMarker() {
 
-                    statusElement.innerHTML =
-                        '<span class="success">Connected • Location updating</span>';
+    if (
+        !selectedDevice ||
+        !selectedDevice.last_latitude ||
+        !selectedDevice.last_longitude
+    ) {
 
-                } catch (error) {
+        return;
 
-                    console.error(error);
+    }
 
-                    statusElement.innerHTML =
-                        '<span class="error">Connected, but location update failed.</span>';
+    const lat =
+        Number(selectedDevice.last_latitude);
+
+    const lng =
+        Number(selectedDevice.last_longitude);
+
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+    ) {
+
+        return;
+
+    }
+
+
+    if (!deviceMarker) {
+
+        deviceMarker =
+            new maplibregl.Marker({
+                color: "#2563eb"
+            })
+            .setLngLat([lng, lat])
+            .addTo(map);
+
+    } else {
+
+        deviceMarker
+            .setLngLat([lng, lat]);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOCATE USER
+========================================================= */
+
+function locateMe() {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        alert(
+            "Geolocation is not supported by this browser."
+        );
+
+        return;
+
+    }
+
+
+    updateMapStatus(
+        "Requesting your current location..."
+    );
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        position => {
+
+            const lat =
+                position.coords.latitude;
+
+            const lng =
+                position.coords.longitude;
+
+            const accuracy =
+                position.coords.accuracy;
+
+
+            if (!map) {
+
+                initializeMap();
+
+            }
+
+
+            map.flyTo({
+
+                center: [lng, lat],
+
+                zoom: 16,
+
+                pitch:
+                    currentMapMode === "3d"
+                        ? 45
+                        : 0,
+
+                duration: 1500
+
+            });
+
+
+            if (userMarker) {
+
+                userMarker
+                    .setLngLat([lng, lat]);
+
+            } else {
+
+                userMarker =
+                    new maplibregl.Marker({
+                        color: "#22c55e"
+                    })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+
+            }
+
+
+            document.getElementById(
+                "latitude"
+            ).textContent =
+                lat.toFixed(6);
+
+            document.getElementById(
+                "longitude"
+            ).textContent =
+                lng.toFixed(6);
+
+            document.getElementById(
+                "accuracy"
+            ).textContent =
+                `${Math.round(accuracy)} m`;
+
+            document.getElementById(
+                "lastUpdate"
+            ).textContent =
+                new Date().toLocaleString();
+
+
+            updateMapStatus(
+                "Your browser reported your current location."
+            );
+
+        },
+
+        error => {
+
+            let message =
+                "Unable to get your location.";
+
+            if (error.code === 1) {
+
+                message =
+                    "Location permission was denied.";
+
+            }
+
+            if (error.code === 2) {
+
+                message =
+                    "Your location could not be determined.";
+
+            }
+
+            if (error.code === 3) {
+
+                message =
+                    "Location request timed out.";
+
+            }
+
+            updateMapStatus(
+                message
+            );
+
+            alert(message);
+
+        },
+
+        {
+
+            enableHighAccuracy: true,
+
+            timeout: 15000,
+
+            maximumAge: 0
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   RESET MAP
+========================================================= */
+
+function resetMapView() {
+
+    if (!map) return;
+
+    map.flyTo({
+
+        center: [3.3792, 6.5244],
+
+        zoom: 10,
+
+        pitch: 0,
+
+        bearing: 0,
+
+        duration: 1000
+
+    });
+
+}
+
+
+/* =========================================================
+   STREET VIEW
+========================================================= */
+
+function openStreetView() {
+
+    if (
+        !selectedDevice ||
+        selectedDevice.last_latitude == null ||
+        selectedDevice.last_longitude == null
+    ) {
+
+        alert(
+            "Select a device with a location first."
+        );
+
+        return;
+
+    }
+
+
+    const lat =
+        Number(selectedDevice.last_latitude);
+
+    const lng =
+        Number(selectedDevice.last_longitude);
+
+
+    const url =
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD DEVICES
+========================================================= */
+
+async function loadDevices() {
+
+    try {
+
+        devices =
+            await supabaseRequest(
+                "devices?select=*&order=created_at.desc"
+            );
+
+
+        updateStats();
+
+        renderDevices();
+
+        if (
+            selectedDevice
+        ) {
+
+            const updated =
+                devices.find(
+                    device =>
+                        device.id ===
+                        selectedDevice.id
+                );
+
+            if (updated) {
+
+                selectedDevice =
+                    updated;
+
+                updateTracker();
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Device loading error:",
+            error
+        );
+
+        document.getElementById(
+            "overviewDevices"
+        ).innerHTML = `
+            <div class="empty">
+                Could not load devices.
+            </div>
+        `;
+
+        document.getElementById(
+            "deviceList"
+        ).innerHTML = `
+            <div class="empty">
+                Database connection error.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats() {
+
+    const total =
+        devices.length;
+
+    const online =
+        devices.filter(
+            device =>
+                device.status === "online"
+        ).length;
+
+    const located =
+        devices.filter(
+            device =>
+                device.last_latitude !== null &&
+                device.last_longitude !== null
+        ).length;
+
+
+    document.getElementById(
+        "totalDevices"
+    ).textContent =
+        total;
+
+    document.getElementById(
+        "onlineDevices"
+    ).textContent =
+        online;
+
+    document.getElementById(
+        "locatedDevices"
+    ).textContent =
+        located;
+
+}
+
+
+/* =========================================================
+   DEVICE CARD
+========================================================= */
+
+function createDeviceCard(device) {
+
+    const online =
+        device.status === "online";
+
+    const hasLocation =
+        device.last_latitude !== null &&
+        device.last_longitude !== null;
+
+
+    return `
+
+        <div
+            class="device-card"
+            onclick="selectDevice('${device.id}')">
+
+            <div class="device-top">
+
+                <div>
+
+                    <div class="device-name">
+                        ${escapeHTML(device.device_name)}
+                    </div>
+
+                    <div class="device-code">
+                        ${escapeHTML(device.device_code)}
+                    </div>
+
+                </div>
+
+                ${
+                    online
+                        ? `<span class="online-badge">ONLINE</span>`
+                        : `<span class="offline-badge">OFFLINE</span>`
                 }
 
-            },
+            </div>
 
-            error => {
+            <div class="device-info">
 
-                console.error(error);
+                Type:
+                ${escapeHTML(device.device_type)}
+                <br>
 
-                statusElement.innerHTML =
-                    '<span class="error">Location updates stopped.</span>';
+                Location:
+                ${hasLocation ? "Available" : "Not available"}
+                <br>
 
-                connectBtn.disabled = false;
-            },
+                Last seen:
+                ${
+                    device.last_seen
+                        ? formatDate(device.last_seen)
+                        : "Never"
+                }
 
-            {
-                enableHighAccuracy: true,
-                maximumAge: 5000,
-                timeout: 15000
-            }
-        );
+            </div>
+
+        </div>
+    `;
+
 }
 
 
-/* =========================
-   START
-========================= */
+/* =========================================================
+   RENDER DEVICES
+========================================================= */
 
-loadDevice();
+function renderDevices() {
+
+    const overview =
+        document.getElementById(
+            "overviewDevices"
+        );
+
+    const list =
+        document.getElementById(
+            "deviceList"
+        );
+
+
+    if (!devices.length) {
+
+        overview.innerHTML = `
+            <div class="empty">
+                No devices yet.
+                Add your first device.
+            </div>
+        `;
+
+        list.innerHTML = `
+            <div class="empty">
+                No devices registered.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const html =
+        devices
+            .map(createDeviceCard)
+            .join("");
+
+
+    overview.innerHTML =
+        html;
+
+    list.innerHTML =
+        html;
+
+}
+
+
+/* =========================================================
+   SELECT DEVICE
+========================================================= */
+
+async function selectDevice(id) {
+
+    const device =
+        devices.find(
+            item => item.id === id
+        );
+
+    if (!device) return;
+
+    selectedDevice =
+        device;
+
+
+    showSection(
+        "tracker"
+    );
+
+
+    updateTracker();
+
+
+    await loadLocations();
+
+}
+
+
+/* =========================================================
+   UPDATE TRACKER
+========================================================= */
+
+function updateTracker() {
+
+    if (!selectedDevice) {
+
+        document.getElementById(
+            "selectedDevice"
+        ).textContent =
+            "No device selected.";
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "selectedDevice"
+    ).innerHTML = `
+
+        <strong>
+            ${escapeHTML(selectedDevice.device_name)}
+        </strong>
+        <br>
+
+        Code:
+        ${escapeHTML(selectedDevice.device_code)}
+        <br>
+
+        Status:
+        ${escapeHTML(selectedDevice.status)}
+    `;
+
+
+    if (
+        selectedDevice.last_latitude !== null &&
+        selectedDevice.last_longitude !== null
+    ) {
+
+        const lat =
+            Number(selectedDevice.last_latitude);
+
+        const lng =
+            Number(selectedDevice.last_longitude);
+
+
+        document.getElementById(
+            "latitude"
+        ).textContent =
+            lat.toFixed(6);
+
+        document.getElementById(
+            "longitude"
+        ).textContent =
+            lng.toFixed(6);
+
+
+        document.getElementById(
+            "accuracy"
+        ).textContent =
+            selectedDevice.last_accuracy != null
+                ? `${Number(selectedDevice.last_accuracy).toFixed(1)} m`
+                : "—";
+
+
+        document.getElementById(
+            "lastUpdate"
+        ).textContent =
+            selectedDevice.last_seen
+                ? formatDate(selectedDevice.last_seen)
+                : "—";
+
+
+        if (!map) {
+
+            initializeMap();
+
+        }
+
+
+        map.flyTo({
+
+            center: [lng, lat],
+
+            zoom:
+                Math.max(
+                    map.getZoom(),
+                    15
+                ),
+
+            duration: 1000
+
+        });
+
+
+        restoreDeviceMarker();
+
+    } else {
+
+        document.getElementById(
+            "latitude"
+        ).textContent = "—";
+
+        document.getElementById(
+            "longitude"
+        ).textContent = "—";
+
+        document.getElementById(
+            "accuracy"
+        ).textContent = "—";
+
+        document.getElementById(
+            "lastUpdate"
+        ).textContent = "—";
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD LOCATIONS
+========================================================= */
+
+async function loadLocations() {
+
+    if (!selectedDevice) {
+
+        return;
+
+    }
+
+
+    const container =
+        document.getElementById(
+            "locationTableContainer"
+        );
+
+
+    try {
+
+        const locations =
+            await supabaseRequest(
+
+                `device_locations?device_id=eq.${encodeURIComponent(
+                    selectedDevice.id
+                )}&select=*&order=recorded_at.desc&limit=50`
+
+            );
+
+
+        if (!locations.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No location records yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = `
+
+            <div style="overflow-x:auto;">
+
+                <table class="location-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Accuracy</th>
+                            <th>Recorded</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${
+                            locations.map(location => `
+
+                                <tr>
+
+                                    <td>
+                                        ${Number(location.latitude).toFixed(6)}
+                                    </td>
+
+                                    <td>
+                                        ${Number(location.longitude).toFixed(6)}
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            location.accuracy != null
+                                                ? `${Number(location.accuracy).toFixed(1)} m`
+                                                : "—"
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${formatDate(location.recorded_at)}
+                                    </td>
+
+                                </tr>
+
+                            `).join("")
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        `;
+
+
+    } catch (error) {
+
+        console.error(
+            "Location loading error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="empty">
+                Could not load location history.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE DEVICE
+========================================================= */
+
+async function createDevice() {
+
+    const nameInput =
+        document.getElementById(
+            "deviceName"
+        );
+
+    const typeInput =
+        document.getElementById(
+            "deviceType"
+        );
+
+    const message =
+        document.getElementById(
+            "addDeviceMessage"
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+    const type =
+        typeInput.value;
+
+
+    if (!name) {
+
+        message.textContent =
+            "Enter a device name.";
+
+        return;
+
+    }
+
+
+    const deviceCode =
+        "TP-" +
+        Math.random()
+            .toString(36)
+            .substring(2, 10)
+            .toUpperCase();
+
+
+    message.textContent =
+        "Creating device...";
+
+
+    try {
+
+        const created =
+            await supabaseRequest(
+                "devices",
+                {
+
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        device_code:
+                            deviceCode,
+
+                        device_name:
+                            name,
+
+                        device_type:
+                            type,
+
+                        status:
+                            "offline"
+
+                    })
+
+                }
+            );
+
+
+        const device =
+            Array.isArray(created)
+                ? created[0]
+                : created;
+
+
+        message.innerHTML = `
+
+            Device created successfully.
+
+            <br><br>
+
+            Device Code:
+            <strong>
+                ${escapeHTML(device.device_code)}
+            </strong>
+
+            <br><br>
+
+            <button
+                class="primary-btn"
+                onclick="showQRCode('${device.id}')">
+                Show QR Code
+            </button>
+        `;
+
+
+        nameInput.value = "";
+
+
+        await loadDevices();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "Could not create device.";
+
+    }
+
+}
+
+
+/* =========================================================
+   QR CODE
+========================================================= */
+
+function showQRCode(deviceId) {
+
+    const phoneURL =
+        new URL(
+            "phone.html",
+            window.location.href
+        );
+
+
+    phoneURL.searchParams.set(
+        "device",
+        deviceId
+    );
+
+
+    const connectionLink =
+        phoneURL.href;
+
+
+    document.getElementById(
+        "qrcode"
+    ).innerHTML = "";
+
+
+    new QRCode(
+        document.getElementById(
+            "qrcode"
+        ),
+        {
+
+            text:
+                connectionLink,
+
+            width:
+                190,
+
+            height:
+                190
+
+        }
+    );
+
+
+    document.getElementById(
+        "qrLink"
+    ).textContent =
+        connectionLink;
+
+
+    document.getElementById(
+        "qrModal"
+    ).classList.add("show");
+
+}
+
+
+function closeQR(event) {
+
+    if (
+        event &&
+        event.target !== event.currentTarget
+    ) {
+
+        return;
+
+    }
+
+    document
+        .getElementById("qrModal")
+        .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+function startAutoRefresh() {
+
+    if (refreshTimer) {
+
+        clearInterval(
+            refreshTimer
+        );
+
+        refreshTimer = null;
+
+    }
+
+
+    if (!autoRefreshEnabled) {
+
+        return;
+
+    }
+
+
+    refreshTimer =
+        setInterval(
+            async () => {
+
+                await loadDevices();
+
+            },
+            5000
+        );
+
+}
+
+
+function toggleAutoRefresh(enabled) {
+
+    autoRefreshEnabled =
+        enabled;
+
+    localStorage.setItem(
+        "trackpoint_auto_refresh",
+        String(enabled)
+    );
+
+
+    const status =
+        document.getElementById(
+            "settingsRefreshStatus"
+        );
+
+
+    if (status) {
+
+        status.textContent =
+            enabled
+                ? "Enabled"
+                : "Disabled";
+
+    }
+
+
+    startAutoRefresh();
+
+}
+
+
+/* =========================================================
+   DATABASE TEST
+========================================================= */
+
+async function testSupabaseConnection() {
+
+    const dbStatus =
+        document.getElementById(
+            "dbStatus"
+        );
+
+    const settingsBadge =
+        document.getElementById(
+            "settingsDbBadge"
+        );
+
+    const sidebarStatus =
+        document.getElementById(
+            "sidebarStatus"
+        );
+
+
+    if (dbStatus) {
+
+        dbStatus.textContent =
+            "Checking...";
+
+    }
+
+
+    try {
+
+        await supabaseRequest(
+            "devices?select=id&limit=1"
+        );
+
+
+        if (dbStatus) {
+
+            dbStatus.textContent =
+                "Connected";
+
+        }
+
+        if (settingsBadge) {
+
+            settingsBadge.textContent =
+                "Connected";
+
+        }
+
+        if (sidebarStatus) {
+
+            sidebarStatus.textContent =
+                "Connected";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        if (dbStatus) {
+
+            dbStatus.textContent =
+                "Error";
+
+        }
+
+        if (settingsBadge) {
+
+            settingsBadge.textContent =
+                "Error";
+
+        }
+
+        if (sidebarStatus) {
+
+            sidebarStatus.textContent =
+                "Connection error";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    const confirmed =
+        confirm(
+            "Log out of TrackPoint?"
+        );
+
+    if (!confirmed) return;
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function formatDate(date) {
+
+    try {
+
+        return new Date(
+            date
+        ).toLocaleString();
+
+    } catch {
+
+        return "Unknown";
+
+    }
+
+}
+
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        initializeMap();
+
+
+        const toggle =
+            document.getElementById(
+                "autoRefreshToggle"
+            );
+
+        if (toggle) {
+
+            toggle.checked =
+                autoRefreshEnabled;
+
+        }
+
+
+        const refreshStatus =
+            document.getElementById(
+                "settingsRefreshStatus"
+            );
+
+        if (refreshStatus) {
+
+            refreshStatus.textContent =
+                autoRefreshEnabled
+                    ? "Enabled"
+                    : "Disabled";
+
+        }
+
+
+        await testSupabaseConnection();
+
+        await loadDevices();
+
+        startAutoRefresh();
+
+    }
+);
 
 </script>
 
