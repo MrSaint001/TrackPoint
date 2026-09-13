@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>TrackPoint | Connect Device</title>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -21,161 +15,74 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: #0b0f14;
-            color: white;
+            background: #0b1118;
+            color: #ffffff;
             min-height: 100vh;
-
             display: flex;
-            align-items: center;
             justify-content: center;
-
+            align-items: center;
             padding: 20px;
         }
 
-        .container {
+        .box {
             width: 100%;
             max-width: 430px;
-
-            background: #121821;
-
-            border: 1px solid #26303d;
-
-            border-radius: 20px;
-
-            padding: 30px;
-
-            box-shadow:
-                0 20px 60px rgba(0,0,0,.35);
+            background: #111a24;
+            border: 1px solid #263443;
+            border-radius: 18px;
+            padding: 30px 24px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,.35);
         }
 
         .logo {
-            text-align: center;
-            margin-bottom: 25px;
+            font-size: 27px;
+            font-weight: 800;
+            margin-bottom: 10px;
         }
 
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-
-            margin: auto;
-
-            border-radius: 16px;
-
-            background: #2563eb;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 28px;
-            font-weight: bold;
+        .logo span {
+            color: #3b82f6;
         }
 
         h1 {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 25px;
+            font-size: 23px;
+            margin-bottom: 10px;
         }
 
-        .subtitle {
-            text-align: center;
-
-            color: #8d99a8;
-
-            margin-top: 8px;
-
-            line-height: 1.5;
-        }
-
-        .device-box {
-            margin-top: 25px;
-
-            background: #0d131b;
-
-            border: 1px solid #26303d;
-
-            border-radius: 14px;
-
-            padding: 18px;
-        }
-
-        .label {
-            color: #7f8b9a;
-
-            font-size: 12px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-        }
-
-        .device-name {
-            font-size: 20px;
-
-            font-weight: bold;
-
-            margin-top: 6px;
-        }
-
-        .device-id {
-            font-size: 12px;
-
-            color: #6f7a88;
-
-            margin-top: 7px;
-
-            word-break: break-all;
+        p {
+            color: #91a0b2;
+            line-height: 1.6;
+            font-size: 14px;
         }
 
         button {
             width: 100%;
-
-            border: none;
-
-            border-radius: 12px;
-
+            margin-top: 25px;
             padding: 15px;
-
-            margin-top: 20px;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
+            border: 0;
+            border-radius: 11px;
             background: #2563eb;
-
             color: white;
-        }
-
-        button:hover {
-            background: #1d4ed8;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         button:disabled {
-            opacity: .55;
+            opacity: .5;
             cursor: not-allowed;
         }
 
         .status {
-            margin-top: 18px;
-
-            padding: 13px;
-
-            border-radius: 10px;
-
-            background: #0d131b;
-
-            border: 1px solid #26303d;
-
-            color: #9ba6b5;
-
-            text-align: center;
-
-            font-size: 14px;
-
-            line-height: 1.5;
+            margin-top: 20px;
+            padding: 15px;
+            background: #0c141d;
+            border: 1px solid #263443;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.8;
         }
 
         .success {
@@ -186,86 +93,69 @@
             color: #f87171;
         }
 
-        .warning {
-            color: #fbbf24;
+        .location {
+            margin-top: 15px;
+            display: grid;
+            gap: 8px;
         }
 
-        .info {
-            margin-top: 20px;
-
-            color: #7f8b9a;
-
-            font-size: 12px;
-
-            line-height: 1.6;
-
-            text-align: center;
+        .location div {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
         }
 
+        .location span:first-child {
+            color: #7f8da0;
+        }
+
+        .location span:last-child {
+            color: white;
+            font-weight: 600;
+            text-align: right;
+        }
     </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
     <div class="logo">
-
-        <div class="logo-icon">
-            TP
-        </div>
-
+        Track<span>Point</span>
     </div>
 
-    <h1>
-        Connect Device
-    </h1>
+    <h1>Connect This Phone</h1>
 
-    <p class="subtitle">
-        This device can share its location with your TrackPoint
-        dashboard after you give permission.
+    <p>
+        Allow location access so this phone can send its
+        real GPS position to your TrackPoint dashboard.
     </p>
 
-    <div class="device-box">
-
-        <div class="label">
-            Device
-        </div>
-
-        <div
-            class="device-name"
-            id="deviceName"
-        >
-            Loading...
-        </div>
-
-        <div
-            class="device-id"
-            id="deviceId"
-        ></div>
-
-    </div>
-
-    <button
-        id="connectBtn"
-        onclick="connectDevice()"
-    >
+    <button id="connectButton">
         Allow Location & Connect
     </button>
 
-    <div
-        class="status"
-        id="status"
-    >
-        Checking connection...
+    <div class="status" id="status">
+        Waiting for permission...
     </div>
 
-    <div class="info">
+    <div class="location">
 
-        Location sharing only begins after you press
-        the button above and approve your browser's
-        location permission request.
+        <div>
+            <span>Latitude</span>
+            <span id="latitude">—</span>
+        </div>
+
+        <div>
+            <span>Longitude</span>
+            <span id="longitude">—</span>
+        </div>
+
+        <div>
+            <span>Accuracy</span>
+            <span id="accuracy">—</span>
+        </div>
 
     </div>
 
@@ -280,34 +170,35 @@ const SUPABASE_KEY =
     "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+/* =========================
+   DEVICE ID
+========================= */
 
-const deviceId =
-    params.get("device");
+const params = new URLSearchParams(
+    window.location.search
+);
+
+const deviceId = params.get("device");
 
 
-const deviceNameElement =
-    document.getElementById(
-        "deviceName"
-    );
+/* =========================
+   ELEMENTS
+========================= */
 
-const deviceIdElement =
-    document.getElementById(
-        "deviceId"
-    );
+const connectButton =
+    document.getElementById("connectButton");
 
-const statusElement =
-    document.getElementById(
-        "status"
-    );
+const statusBox =
+    document.getElementById("status");
 
-const connectBtn =
-    document.getElementById(
-        "connectBtn"
-    );
+const latitudeElement =
+    document.getElementById("latitude");
+
+const longitudeElement =
+    document.getElementById("longitude");
+
+const accuracyElement =
+    document.getElementById("accuracy");
 
 
 let watchId = null;
@@ -317,271 +208,23 @@ let watchId = null;
    STATUS
 ========================= */
 
-function setStatus(
-    message,
-    type = ""
-) {
+function setStatus(message, type = "") {
 
-    statusElement.className =
-        "status " + type;
+    statusBox.textContent = message;
 
-    statusElement.textContent =
-        message;
-}
+    statusBox.className = "status";
 
-
-/* =========================
-   CHECK BROWSER
-========================= */
-
-function checkBrowser() {
-
-    if (!window.isSecureContext) {
-
-        setStatus(
-            "Location access requires a secure HTTPS connection. The local HTTP address may work on your computer but not on your phone.",
-            "warning"
-        );
-
-        return false;
-    }
-
-    if (!navigator.geolocation) {
-
-        setStatus(
-            "This browser does not support location services.",
-            "error"
-        );
-
-        return false;
-    }
-
-    return true;
-}
-
-
-/* =========================
-   LOAD DEVICE
-========================= */
-
-async function loadDevice() {
-
-    if (!deviceId) {
-
-        deviceNameElement.textContent =
-            "Invalid device";
-
-        deviceIdElement.textContent =
-            "No device ID was provided.";
-
-        connectBtn.disabled = true;
-
-        setStatus(
-            "Invalid connection link.",
-            "error"
-        );
-
-        return;
-    }
-
-    deviceIdElement.textContent =
-        deviceId;
-
-    try {
-
-        const response =
-            await fetch(
-                `${SUPABASE_URL}/rest/v1/devices?id=eq.${encodeURIComponent(deviceId)}&select=id,device_name,device_code,status`,
-                {
-                    headers: {
-                        apikey:
-                            SUPABASE_KEY,
-
-                        Authorization:
-                            `Bearer ${SUPABASE_KEY}`
-                    }
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Supabase request failed"
-            );
-        }
-
-        const devices =
-            await response.json();
-
-        if (!devices.length) {
-
-            deviceNameElement.textContent =
-                "Device not found";
-
-            connectBtn.disabled =
-                true;
-
-            setStatus(
-                "This device does not exist.",
-                "error"
-            );
-
-            return;
-        }
-
-        const device =
-            devices[0];
-
-        deviceNameElement.textContent =
-            device.device_name;
-
-        setStatus(
-            "Ready to connect."
-        );
-
-        checkBrowser();
-
-    } catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            "Unable to reach TrackPoint. Check your internet connection.",
-            "error"
-        );
+    if (type) {
+        statusBox.classList.add(type);
     }
 }
 
 
 /* =========================
-   CONNECT
+   SEND GPS TO SUPABASE
 ========================= */
 
-async function connectDevice() {
-
-    if (!deviceId) {
-        return;
-    }
-
-    if (!checkBrowser()) {
-        return;
-    }
-
-    connectBtn.disabled = true;
-
-    setStatus(
-        "Requesting location permission..."
-    );
-
-    try {
-
-        const position =
-            await getCurrentPosition();
-
-        setStatus(
-            "Location received. Connecting device..."
-        );
-
-        await sendLocation(
-            position
-        );
-
-        setStatus(
-            "Device connected successfully. Location updating.",
-            "success"
-        );
-
-        startTracking();
-
-    } catch (error) {
-
-        console.error(
-            "Location error:",
-            error
-        );
-
-        connectBtn.disabled = false;
-
-        if (error.code === 1) {
-
-            setStatus(
-                "Location permission was denied. Please allow location access in your browser settings.",
-                "error"
-            );
-
-        } else if (error.code === 2) {
-
-            setStatus(
-                "Your phone could not determine its location. Make sure Location Services are enabled.",
-                "error"
-            );
-
-        } else if (error.code === 3) {
-
-            setStatus(
-                "Location request timed out. Try again in an area with a better GPS signal.",
-                "error"
-            );
-
-        } else if (
-            error.message &&
-            error.message.includes("Failed to save")
-        ) {
-
-            setStatus(
-                "Your location was found, but TrackPoint could not save it to the server.",
-                "error"
-            );
-
-        } else {
-
-            setStatus(
-                "Could not connect this device: " +
-                error.message,
-                "error"
-            );
-        }
-    }
-}
-
-
-/* =========================
-   GET LOCATION
-========================= */
-
-function getCurrentPosition() {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            navigator.geolocation.getCurrentPosition(
-
-                resolve,
-
-                reject,
-
-                {
-                    enableHighAccuracy:
-                        true,
-
-                    maximumAge:
-                        5000,
-
-                    timeout:
-                        20000
-                }
-            );
-        }
-    );
-}
-
-
-/* =========================
-   SEND LOCATION
-========================= */
-
-async function sendLocation(
-    position
-) {
+async function sendLocation(position) {
 
     const latitude =
         position.coords.latitude;
@@ -592,218 +235,250 @@ async function sendLocation(
     const accuracy =
         position.coords.accuracy;
 
-    const recordedAt =
-        new Date().toISOString();
+
+    latitudeElement.textContent =
+        latitude.toFixed(6);
+
+    longitudeElement.textContent =
+        longitude.toFixed(6);
+
+    accuracyElement.textContent =
+        `${accuracy.toFixed(1)} m`;
 
 
-    const locationResponse =
-        await fetch(
-            `${SUPABASE_URL}/rest/v1/device_locations`,
-            {
-                method: "POST",
+    setStatus(
+        "GPS location received. Sending to TrackPoint...",
+    );
 
-                headers: {
-                    apikey:
-                        SUPABASE_KEY,
 
-                    Authorization:
-                        `Bearer ${SUPABASE_KEY}`,
+    if (!deviceId) {
 
-                    "Content-Type":
-                        "application/json",
-
-                    Prefer:
-                        "return=minimal"
-                },
-
-                body:
-                    JSON.stringify({
-
-                        device_id:
-                            deviceId,
-
-                        latitude:
-                            latitude,
-
-                        longitude:
-                            longitude,
-
-                        accuracy:
-                            accuracy,
-
-                        recorded_at:
-                            recordedAt
-                    })
-            }
+        setStatus(
+            "No device ID was supplied in the connection link.",
+            "error"
         );
 
-
-    if (!locationResponse.ok) {
-
-        const text =
-            await locationResponse.text();
-
-        console.error(
-            "Location save error:",
-            text
-        );
-
-        throw new Error(
-            "Failed to save location."
-        );
+        return;
     }
 
 
-    const deviceResponse =
-        await fetch(
+    try {
+
+        const response = await fetch(
             `${SUPABASE_URL}/rest/v1/devices?id=eq.${encodeURIComponent(deviceId)}`,
             {
                 method: "PATCH",
 
                 headers: {
-                    apikey:
-                        SUPABASE_KEY,
-
-                    Authorization:
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
                         `Bearer ${SUPABASE_KEY}`,
 
                     "Content-Type":
                         "application/json",
 
-                    Prefer:
+                    "Prefer":
                         "return=minimal"
                 },
 
-                body:
-                    JSON.stringify({
+                body: JSON.stringify({
 
-                        status:
-                            "online",
+                    last_latitude:
+                        latitude,
 
-                        last_latitude:
-                            latitude,
+                    last_longitude:
+                        longitude,
 
-                        last_longitude:
-                            longitude,
+                    last_accuracy:
+                        accuracy,
 
-                        last_accuracy:
-                            accuracy,
+                    last_seen:
+                        new Date().toISOString()
 
-                        last_seen:
-                            recordedAt
-                    })
+                })
             }
         );
 
 
-    if (!deviceResponse.ok) {
+        if (!response.ok) {
 
-        const text =
-            await deviceResponse.text();
+            const errorText =
+                await response.text();
 
-        console.error(
-            "Device update error:",
-            text
+            console.error(
+                "Supabase error:",
+                errorText
+            );
+
+            setStatus(
+                "GPS was received, but TrackPoint could not save it.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        setStatus(
+            "Connected. This phone is now sending its real GPS location.",
+            "success"
         );
 
-        throw new Error(
-            "Failed to update device."
+
+        console.log(
+            "GPS sent:",
+            latitude,
+            longitude,
+            accuracy
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "Could not send GPS location to TrackPoint.",
+            "error"
         );
     }
-
-    console.log(
-        "Location sent:",
-        latitude,
-        longitude,
-        accuracy
-    );
 }
 
 
 /* =========================
-   LIVE TRACKING
+   GPS ERROR
 ========================= */
 
-function startTracking() {
+function gpsError(error) {
 
-    if (watchId !== null) {
+    console.error(error);
+
+    if (error.code === 1) {
+
+        setStatus(
+            "Location permission was denied. Please allow location access.",
+            "error"
+        );
+
+    } else if (error.code === 2) {
+
+        setStatus(
+            "Your phone could not determine its GPS location.",
+            "error"
+        );
+
+    } else if (error.code === 3) {
+
+        setStatus(
+            "GPS request timed out. Trying again...",
+            "error"
+        );
+
+    } else {
+
+        setStatus(
+            "Unable to get GPS location.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================
+   START GPS
+========================= */
+
+function startGPS() {
+
+    if (!navigator.geolocation) {
+
+        setStatus(
+            "This browser does not support GPS location.",
+            "error"
+        );
+
         return;
     }
+
+
+    if (!window.isSecureContext) {
+
+        setStatus(
+            "GPS requires HTTPS. Open the Vercel HTTPS link.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!deviceId) {
+
+        setStatus(
+            "This connection link does not contain a device ID.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    connectButton.disabled = true;
+
+    connectButton.textContent =
+        "Connecting GPS...";
+
+
+    setStatus(
+        "Requesting your phone's GPS location..."
+    );
+
+
+    /*
+       watchPosition continuously watches
+       the REAL GPS location of this phone.
+    */
 
     watchId =
         navigator.geolocation.watchPosition(
 
-            async position => {
+            sendLocation,
 
-                try {
-
-                    await sendLocation(
-                        position
-                    );
-
-                    setStatus(
-                        "Connected • Location updating",
-                        "success"
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        error
-                    );
-
-                    setStatus(
-                        "Connected, but the latest location could not be saved.",
-                        "error"
-                    );
-                }
-            },
-
-            error => {
-
-                console.error(
-                    "Tracking error:",
-                    error
-                );
-
-                if (error.code === 1) {
-
-                    setStatus(
-                        "Location permission was removed.",
-                        "error"
-                    );
-
-                } else {
-
-                    setStatus(
-                        "Location updates stopped.",
-                        "error"
-                    );
-                }
-
-                connectBtn.disabled =
-                    false;
-            },
+            gpsError,
 
             {
-                enableHighAccuracy:
-                    true,
+                enableHighAccuracy: true,
 
-                maximumAge:
-                    5000,
+                maximumAge: 0,
 
-                timeout:
-                    20000
+                timeout: 15000
             }
         );
 }
 
 
 /* =========================
-   START
+   BUTTON
 ========================= */
 
-loadDevice();
+connectButton.addEventListener(
+    "click",
+    startGPS
+);
+
+
+/* =========================
+   CHECK DEVICE LINK
+========================= */
+
+if (!deviceId) {
+
+    connectButton.disabled = true;
+
+    setStatus(
+        "Invalid connection link. No device ID found.",
+        "error"
+    );
+}
 
 </script>
 
