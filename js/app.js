@@ -98,8 +98,8 @@ loginForm.addEventListener(
             const result =
                 await supabaseClient.auth
                     .signInWithPassword({
-                        email: email,
-                        password: password
+                        email: blessingumeh80@gmail.com,
+                        password: Ifech$kwu1
                     });
 
 
