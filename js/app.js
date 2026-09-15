@@ -1,388 +1,293 @@
 const SUPABASE_URL =
-"https://zlzbbtoainxzvgocxpmb.supabase.co";
+    "https://zlzbbtoainxzvgocxpmb.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
+    "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
 /* ========================================
-CREATE SUPABASE CLIENT
+   CREATE SUPABASE CLIENT
 ======================================== */
 
 const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
 
 /* ========================================
-PASSWORD TOGGLE
+   PASSWORD TOGGLE
 ======================================== */
 
 function togglePassword(inputId, button) {
+    const input =
+        document.getElementById(inputId);
 
-```
-const input =
-    document.getElementById(inputId);
+    if (!input) return;
 
-if (!input) return;
-
-if (input.type === "password") {
-
-    input.type = "text";
-    button.textContent = "Hide";
-
-} else {
-
-    input.type = "password";
-    button.textContent = "Show";
-
+    if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "Hide";
+    } else {
+        input.type = "password";
+        button.textContent = "Show";
+    }
 }
-```
 
-}
 
 /* ========================================
-LOGIN
+   LOGIN
 ======================================== */
 
 function setupLogin() {
+    const loginForm =
+        document.getElementById("loginForm");
 
-```
-const loginForm =
-    document.getElementById("loginForm");
+    if (!loginForm) return;
 
-if (!loginForm) return;
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+            event.preventDefault();
 
+            console.log("TrackPoint login started");
 
-loginForm.addEventListener(
-    "submit",
-    async function(event) {
+            const email =
+                document
+                    .getElementById("loginEmail")
+                    .value
+                    .trim();
 
-        event.preventDefault();
+            const password =
+                document
+                    .getElementById("loginPassword")
+                    .value;
 
-        console.log(
-            "TrackPoint login started"
-        );
+            const message =
+                document.getElementById("loginMessage");
 
+            const button =
+                loginForm.querySelector(".auth-button");
 
-        const email =
-            document
-                .getElementById("loginEmail")
-                .value
-                .trim();
+            message.textContent = "Signing in...";
+            button.disabled = true;
 
-        const password =
-            document
-                .getElementById("loginPassword")
-                .value;
-
-        const message =
-            document.getElementById(
-                "loginMessage"
-            );
-
-        const button =
-            loginForm.querySelector(
-                ".auth-button"
-            );
-
-
-        message.textContent =
-            "Signing in...";
-
-        button.disabled = true;
-
-
-        try {
-
-            const result =
-                await supabaseClient.auth
-                    .signInWithPassword({
-                        email: blessingumeh80@gmail.com,
-                        password: Ifech$kwu1
+            try {
+                const result =
+                    await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
                     });
 
+                if (result.error) {
+                    console.error(
+                        "Login error:",
+                        result.error
+                    );
 
-            if (result.error) {
+                    message.textContent =
+                        result.error.message;
 
-                console.error(
-                    "Login error:",
-                    result.error
+                    button.disabled = false;
+                    return;
+                }
+
+                console.log(
+                    "TrackPoint login successful"
                 );
 
                 message.textContent =
-                    result.error.message;
+                    "Login successful. Opening dashboard...";
+
+                window.location.href =
+                    "dashboard.html";
+
+            } catch (error) {
+                console.error(
+                    "Login exception:",
+                    error
+                );
+
+                message.textContent =
+                    error.message ||
+                    "Unable to sign in.";
 
                 button.disabled = false;
-
-                return;
             }
-
-
-            console.log(
-                "TrackPoint login successful"
-            );
-
-
-            message.textContent =
-                "Login successful. Opening dashboard...";
-
-
-            window.location.href =
-                "dashboard.html";
-
-
-        } catch (error) {
-
-            console.error(
-                "Login exception:",
-                error
-            );
-
-            message.textContent =
-                error.message ||
-                "Unable to sign in.";
-
-            button.disabled = false;
-
         }
-
-    }
-);
-```
-
+    );
 }
 
+
 /* ========================================
-SIGN UP
+   SIGN UP
 ======================================== */
 
 function setupSignup() {
+    const signupForm =
+        document.getElementById("signupForm");
 
-```
-const signupForm =
-    document.getElementById(
-        "signupForm"
-    );
+    if (!signupForm) return;
 
-if (!signupForm) return;
+    signupForm.addEventListener(
+        "submit",
+        async function (event) {
+            event.preventDefault();
 
+            const name =
+                document
+                    .getElementById("signupName")
+                    .value
+                    .trim();
 
-signupForm.addEventListener(
-    "submit",
-    async function(event) {
+            const email =
+                document
+                    .getElementById("signupEmail")
+                    .value
+                    .trim();
 
-        event.preventDefault();
+            const password =
+                document
+                    .getElementById("signupPassword")
+                    .value;
 
+            const confirmPassword =
+                document
+                    .getElementById("signupConfirmPassword")
+                    .value;
 
-        const name =
-            document
-                .getElementById(
-                    "signupName"
-                )
-                .value
-                .trim();
+            const message =
+                document.getElementById("signupMessage");
 
-        const email =
-            document
-                .getElementById(
-                    "signupEmail"
-                )
-                .value
-                .trim();
+            const button =
+                signupForm.querySelector(".auth-button");
 
-        const password =
-            document
-                .getElementById(
-                    "signupPassword"
-                )
-                .value;
+            if (password !== confirmPassword) {
+                message.textContent =
+                    "Passwords do not match.";
 
-        const confirmPassword =
-            document
-                .getElementById(
-                    "signupConfirmPassword"
-                )
-                .value;
+                return;
+            }
 
-        const message =
-            document.getElementById(
-                "signupMessage"
-            );
+            if (password.length < 8) {
+                message.textContent =
+                    "Password must be at least 8 characters.";
 
-        const button =
-            signupForm.querySelector(
-                ".auth-button"
-            );
+                return;
+            }
 
-
-        if (password !== confirmPassword) {
-
+            button.disabled = true;
             message.textContent =
-                "Passwords do not match.";
+                "Creating account...";
 
-            return;
-        }
-
-
-        if (password.length < 8) {
-
-            message.textContent =
-                "Password must be at least 8 characters.";
-
-            return;
-        }
-
-
-        button.disabled = true;
-
-        message.textContent =
-            "Creating account...";
-
-
-        try {
-
-            const result =
-                await supabaseClient.auth
-                    .signUp({
-
+            try {
+                const result =
+                    await supabaseClient.auth.signUp({
                         email: email,
-
                         password: password,
-
                         options: {
-
                             data: {
                                 full_name: name
                             }
-
                         }
-
                     });
 
+                if (result.error) {
+                    console.error(
+                        "Signup error:",
+                        result.error
+                    );
 
-            if (result.error) {
+                    message.textContent =
+                        result.error.message;
 
+                    button.disabled = false;
+                    return;
+                }
+
+                if (
+                    result.data.user &&
+                    !result.data.session
+                ) {
+                    message.textContent =
+                        "Account created. Check your email to confirm your account.";
+
+                    button.disabled = false;
+                    return;
+                }
+
+                message.textContent =
+                    "Account created successfully.";
+
+                window.location.href =
+                    "dashboard.html";
+
+            } catch (error) {
                 console.error(
-                    "Signup error:",
-                    result.error
+                    "Signup exception:",
+                    error
                 );
 
                 message.textContent =
-                    result.error.message;
+                    error.message ||
+                    "Unable to create account.";
 
                 button.disabled = false;
-
-                return;
             }
-
-
-            if (
-                result.data.user &&
-                !result.data.session
-            ) {
-
-                message.textContent =
-                    "Account created. Check your email to confirm your account.";
-
-                button.disabled = false;
-
-                return;
-            }
-
-
-            message.textContent =
-                "Account created successfully.";
-
-
-            window.location.href =
-                "dashboard.html";
-
-
-        } catch (error) {
-
-            console.error(
-                "Signup exception:",
-                error
-            );
-
-            message.textContent =
-                error.message ||
-                "Unable to create account.";
-
-            button.disabled = false;
-
         }
-
-    }
-);
-```
-
+    );
 }
 
+
 /* ========================================
-DASHBOARD AUTH
+   DASHBOARD AUTH
 ======================================== */
 
 async function setupDashboard() {
+    if (
+        !window.location.pathname
+            .toLowerCase()
+            .includes("dashboard.html")
+    ) {
+        return;
+    }
 
-```
-if (
-    !window.location.pathname
-        .toLowerCase()
-        .includes("dashboard.html")
-) {
-    return;
-}
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getSession();
 
+    if (
+        error ||
+        !data.session
+    ) {
+        window.location.replace(
+            "login.html"
+        );
 
-const {
-    data,
-    error
-} =
-    await supabaseClient.auth.getSession();
+        return;
+    }
 
-
-if (
-    error ||
-    !data.session
-) {
-
-    window.location.replace(
-        "login.html"
+    console.log(
+        "TrackPoint dashboard authenticated"
     );
-
-    return;
 }
 
-
-console.log(
-    "TrackPoint dashboard authenticated"
-);
-```
-
-}
 
 /* ========================================
-START
+   START
 ======================================== */
 
 document.addEventListener(
-"DOMContentLoaded",
-function() {
+    "DOMContentLoaded",
+    function () {
+        console.log(
+            "TrackPoint app.js loaded"
+        );
 
-```
-    console.log(
-        "TrackPoint app.js loaded"
-    );
-
-    setupLogin();
-
-    setupSignup();
-
-    setupDashboard();
-
-}
-```
-
+        setupLogin();
+        setupSignup();
+        setupDashboard();
+    }
 );
