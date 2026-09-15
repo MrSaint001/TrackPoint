@@ -5,29 +5,17 @@ const SUPABASE_KEY =
 "sb_publishable_MV7UbRGe-c1TiR_YE4s-vA_uX1ThRm_";
 
 /* ========================================
-SUPABASE
+CREATE SUPABASE CLIENT
 ======================================== */
 
-if (!window.supabase) {
-
-```
-console.error("TrackPoint: Supabase did not load.");
-```
-
-} else {
-
-```
-window.supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-```
-
-}
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 /* ========================================
-PASSWORD SHOW / HIDE
+PASSWORD TOGGLE
 ======================================== */
 
 function togglePassword(inputId, button) {
@@ -60,253 +48,291 @@ LOGIN
 function setupLogin() {
 
 ```
-const form =
+const loginForm =
     document.getElementById("loginForm");
 
-if (!form) return;
+if (!loginForm) return;
 
 
-form.addEventListener("submit", async function(event) {
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
 
-    event.preventDefault();
-
-    console.log("TrackPoint: login form submitted.");
-
-
-    const email =
-        document
-            .getElementById("loginEmail")
-            .value
-            .trim();
-
-    const password =
-        document
-            .getElementById("loginPassword")
-            .value;
-
-    const message =
-        document.getElementById("loginMessage");
-
-    const button =
-        document.getElementById("loginButton");
-
-
-    message.textContent = "Signing in...";
-    button.disabled = true;
-
-
-    try {
-
-        if (!window.supabaseClient) {
-
-            throw new Error(
-                "Supabase client was not created."
-            );
-
-        }
-
-
-        const { data, error } =
-            await window.supabaseClient.auth.signInWithPassword({
-
-                email: email,
-                password: password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "TrackPoint login error:",
-                error
-            );
-
-            message.textContent =
-                error.message || "Login failed.";
-
-            button.disabled = false;
-
-            return;
-
-        }
-
+        event.preventDefault();
 
         console.log(
-            "TrackPoint: login successful.",
-            data
+            "TrackPoint login started"
         );
 
 
-        message.textContent =
-            "Login successful. Opening dashboard...";
+        const email =
+            document
+                .getElementById("loginEmail")
+                .value
+                .trim();
 
+        const password =
+            document
+                .getElementById("loginPassword")
+                .value;
 
-        window.location.replace(
-            "dashboard.html"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "TrackPoint login exception:",
-            error
-        );
-
-        message.textContent =
-            error.message ||
-            "Something went wrong.";
-
-        button.disabled = false;
-
-    }
-
-});
-```
-
-}
-
-/* ========================================
-SIGNUP
-======================================== */
-
-function setupSignup() {
-
-```
-const form =
-    document.getElementById("signupForm");
-
-if (!form) return;
-
-
-form.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-
-    const email =
-        document
-            .getElementById("signupEmail")
-            .value
-            .trim();
-
-    const password =
-        document
-            .getElementById("signupPassword")
-            .value;
-
-    const message =
-        document.getElementById("signupMessage");
-
-    const button =
-        document.getElementById("signupButton");
-
-
-    message.textContent =
-        "Creating account...";
-
-    if (button) {
-        button.disabled = true;
-    }
-
-
-    try {
-
-        if (!window.supabaseClient) {
-
-            throw new Error(
-                "Supabase client was not created."
+        const message =
+            document.getElementById(
+                "loginMessage"
             );
 
-        }
+        const button =
+            loginForm.querySelector(
+                ".auth-button"
+            );
 
 
-        const { data, error } =
-            await window.supabaseClient.auth.signUp({
+        message.textContent =
+            "Signing in...";
 
-                email: email,
-                password: password
-
-            });
+        button.disabled = true;
 
 
-        if (error) {
+        try {
+
+            const result =
+                await supabaseClient.auth
+                    .signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+
+            if (result.error) {
+
+                console.error(
+                    "Login error:",
+                    result.error
+                );
+
+                message.textContent =
+                    result.error.message;
+
+                button.disabled = false;
+
+                return;
+            }
+
+
+            console.log(
+                "TrackPoint login successful"
+            );
+
+
+            message.textContent =
+                "Login successful. Opening dashboard...";
+
+
+            window.location.href =
+                "dashboard.html";
+
+
+        } catch (error) {
 
             console.error(
-                "TrackPoint signup error:",
+                "Login exception:",
                 error
             );
 
             message.textContent =
                 error.message ||
-                "Could not create account.";
+                "Unable to sign in.";
 
-            if (button) {
-                button.disabled = false;
-            }
-
-            return;
-
-        }
-
-
-        console.log(
-            "TrackPoint: signup successful.",
-            data
-        );
-
-
-        message.textContent =
-            "Account created successfully.";
-
-
-        setTimeout(function() {
-
-            window.location.replace(
-                "dashboard.html"
-            );
-
-        }, 1000);
-
-
-    } catch (error) {
-
-        console.error(
-            "TrackPoint signup exception:",
-            error
-        );
-
-        message.textContent =
-            error.message ||
-            "Something went wrong.";
-
-        if (button) {
             button.disabled = false;
+
         }
 
     }
-
-});
+);
 ```
 
 }
 
 /* ========================================
-DASHBOARD AUTH CHECK
+SIGN UP
+======================================== */
+
+function setupSignup() {
+
+```
+const signupForm =
+    document.getElementById(
+        "signupForm"
+    );
+
+if (!signupForm) return;
+
+
+signupForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document
+                .getElementById(
+                    "signupName"
+                )
+                .value
+                .trim();
+
+        const email =
+            document
+                .getElementById(
+                    "signupEmail"
+                )
+                .value
+                .trim();
+
+        const password =
+            document
+                .getElementById(
+                    "signupPassword"
+                )
+                .value;
+
+        const confirmPassword =
+            document
+                .getElementById(
+                    "signupConfirmPassword"
+                )
+                .value;
+
+        const message =
+            document.getElementById(
+                "signupMessage"
+            );
+
+        const button =
+            signupForm.querySelector(
+                ".auth-button"
+            );
+
+
+        if (password !== confirmPassword) {
+
+            message.textContent =
+                "Passwords do not match.";
+
+            return;
+        }
+
+
+        if (password.length < 8) {
+
+            message.textContent =
+                "Password must be at least 8 characters.";
+
+            return;
+        }
+
+
+        button.disabled = true;
+
+        message.textContent =
+            "Creating account...";
+
+
+        try {
+
+            const result =
+                await supabaseClient.auth
+                    .signUp({
+
+                        email: email,
+
+                        password: password,
+
+                        options: {
+
+                            data: {
+                                full_name: name
+                            }
+
+                        }
+
+                    });
+
+
+            if (result.error) {
+
+                console.error(
+                    "Signup error:",
+                    result.error
+                );
+
+                message.textContent =
+                    result.error.message;
+
+                button.disabled = false;
+
+                return;
+            }
+
+
+            if (
+                result.data.user &&
+                !result.data.session
+            ) {
+
+                message.textContent =
+                    "Account created. Check your email to confirm your account.";
+
+                button.disabled = false;
+
+                return;
+            }
+
+
+            message.textContent =
+                "Account created successfully.";
+
+
+            window.location.href =
+                "dashboard.html";
+
+
+        } catch (error) {
+
+            console.error(
+                "Signup exception:",
+                error
+            );
+
+            message.textContent =
+                error.message ||
+                "Unable to create account.";
+
+            button.disabled = false;
+
+        }
+
+    }
+);
+```
+
+}
+
+/* ========================================
+DASHBOARD AUTH
 ======================================== */
 
 async function setupDashboard() {
 
 ```
-if (!window.supabaseClient) {
-
-    console.error(
-        "TrackPoint: Supabase client unavailable."
-    );
-
+if (
+    !window.location.pathname
+        .toLowerCase()
+        .includes("dashboard.html")
+) {
     return;
-
 }
 
 
@@ -314,22 +340,24 @@ const {
     data,
     error
 } =
-    await window.supabaseClient.auth.getSession();
+    await supabaseClient.auth.getSession();
 
 
-if (error || !data.session) {
+if (
+    error ||
+    !data.session
+) {
 
     window.location.replace(
         "login.html"
     );
 
     return;
-
 }
 
 
 console.log(
-    "TrackPoint: dashboard authenticated."
+    "TrackPoint dashboard authenticated"
 );
 ```
 
@@ -345,22 +373,14 @@ function() {
 
 ```
     console.log(
-        "TrackPoint app.js loaded."
+        "TrackPoint app.js loaded"
     );
 
-
     setupLogin();
+
     setupSignup();
 
-    if (
-        window.location.pathname
-            .toLowerCase()
-            .includes("dashboard.html")
-    ) {
-
-        setupDashboard();
-
-    }
+    setupDashboard();
 
 }
 ```
