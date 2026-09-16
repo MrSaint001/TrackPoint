@@ -3863,53 +3863,95 @@ function focusLocation(
    CREATE DEVICE
 ========================================================= */
 
+/* =========================================================
+   GENERATE DEVICE CODE
+========================================================= */
+
+function generateDeviceCode() {
+    const codeInput = document.getElementById("deviceCode");
+
+    if (!codeInput) {
+        console.error("deviceCode input not found.");
+        return;
+    }
+
+    const code =
+        "TP-" +
+        Math.random()
+            .toString(36)
+            .substring(2, 10)
+            .toUpperCase();
+
+    codeInput.value = code;
+}
+
+
+/* =========================================================
+   CREATE DEVICE
+========================================================= */
+
 async function createDevice() {
 
     const nameInput =
-        document.getElementById(
-            "deviceName"
-        );
+        document.getElementById("deviceName");
 
     const typeInput =
-        document.getElementById(
-            "deviceType"
-        );
+        document.getElementById("deviceType");
 
     const codeInput =
-        document.getElementById(
-            "deviceCode"
-        );
+        document.getElementById("deviceCode");
+
+    const message =
+        document.getElementById("addDeviceMessage");
+
 
     const name =
         nameInput?.value.trim();
 
     const type =
-        typeInput?.value ||
-        "phone";
+        typeInput?.value || "phone";
 
-    const deviceCode =
-        codeInput?.value.trim() ||
-        generateDeviceCode();
+    let deviceCode =
+        codeInput?.value.trim();
+
 
     if (!name) {
 
-        showToast(
-            "Enter a device name.",
-            "error"
-        );
+        if (message) {
+            message.textContent =
+                "Enter a device name.";
+        }
 
         return;
     }
+
+
+    /*
+       If the user didn't generate a code,
+       automatically create one.
+    */
 
     if (!deviceCode) {
 
-        showToast(
-            "Could not generate a device code.",
-            "error"
-        );
+        deviceCode =
+            "TP-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 10)
+                .toUpperCase();
 
-        return;
+        if (codeInput) {
+            codeInput.value =
+                deviceCode;
+        }
     }
+
+
+    if (message) {
+        message.textContent =
+            "Creating device...";
+    }
+
 
     try {
 
@@ -3918,38 +3960,78 @@ async function createDevice() {
                 "devices",
                 {
                     method: "POST",
+
                     body: JSON.stringify({
-                        device_code: deviceCode,
-                        device_name: name,
-                        device_type: type,
-                        status: "offline"
+
+                        device_code:
+                            deviceCode,
+
+                        device_name:
+                            name,
+
+                        device_type:
+                            type,
+
+                        status:
+                            "offline"
                     })
                 }
             );
+
 
         const device =
             Array.isArray(created)
                 ? created[0]
                 : created;
 
-        showToast(
-            "Device added successfully.",
-            "success"
-        );
+
+        if (!device) {
+            throw new Error(
+                "Device was not returned by Supabase."
+            );
+        }
+
+
+        if (message) {
+
+            message.innerHTML = `
+                <div>
+                    Device created successfully.
+                </div>
+
+                <br>
+
+                <div>
+                    Device Code:
+                    <strong>
+                        ${escapeHTML(device.device_code)}
+                    </strong>
+                </div>
+
+                <br>
+
+                <button
+                    class="primary-btn"
+                    onclick="openQrModal('${device.id}')"
+                >
+                    Show QR Code
+                </button>
+            `;
+        }
+
 
         if (nameInput) {
             nameInput.value = "";
         }
 
+
         if (codeInput) {
             codeInput.value = "";
         }
 
+
         await loadDevices();
 
-        if (device?.id) {
-            showQRCode(device.id);
-        }
 
     } catch (error) {
 
@@ -3958,11 +4040,12 @@ async function createDevice() {
             error
         );
 
-        showToast(
-            "Could not create device.",
-            "error"
-        );
 
+        if (message) {
+            message.textContent =
+                error?.message ||
+                "Could not create device.";
+        }
     }
 }
 
