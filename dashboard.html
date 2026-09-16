@@ -1443,7 +1443,7 @@
 
                                 <button
                                     class="quick-action"
-                                    onclick="showSection('add-device', document.querySelector('.nav-btn[onclick*=\\'add-device\\']'))"
+                                    onclick="showSection('add-device')"
                                 >
                                     <strong>
                                         + Add Device
@@ -1457,7 +1457,7 @@
 
                                 <button
                                     class="quick-action"
-                                    onclick="showSection('devices', document.querySelector('.nav-btn[onclick*=\\'devices\\']'))"
+                                    onclick="showSection('devices')"
                                 >
                                     <strong>
                                         ▣ My Devices
@@ -1471,7 +1471,7 @@
 
                                 <button
                                     class="quick-action"
-                                    onclick="showSection('tracker', document.querySelector('.nav-btn[onclick*=\\'tracker\\']'))"
+                                    onclick="showSection('tracker'); initializeMap()"
                                 >
                                     <strong>
                                         ◈ Phone Tracker
@@ -1485,7 +1485,7 @@
 
                                 <button
                                     class="quick-action"
-                                    onclick="locateMe()"
+                                    onclick="showSection('tracker'); initializeMap(); setTimeout(locateMe, 100)"
                                 >
                                     <strong>
                                         ◎ Locate Me
@@ -1761,7 +1761,7 @@
 
                     <button
                         class="btn btn-primary"
-                        onclick="showSection('add-device', document.querySelector('.nav-btn[onclick*=\\'add-device\\']'))"
+                        onclick="showSection('add-device')"
                     >
                         + Add Device
                     </button>
@@ -3009,6 +3009,10 @@ function flyToDevice() {
 
 function locateMe() {
 
+    if (!map) {
+        initializeMap();
+    }
+
     if (!navigator.geolocation) {
 
         updateMapStatus(
@@ -3073,6 +3077,11 @@ function locateMe() {
 
             });
 
+
+            const mapLatitude = document.getElementById("mapLatitude");
+            const mapLongitude = document.getElementById("mapLongitude");
+            if (mapLatitude) mapLatitude.textContent = lat.toFixed(6);
+            if (mapLongitude) mapLongitude.textContent = lng.toFixed(6);
 
             updateMapStatus(
                 `Your location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`
@@ -3250,6 +3259,19 @@ async function loadDevices() {
             error
         );
 
+        const container = document.getElementById("devicesGrid");
+        if (container) {
+            container.innerHTML = `
+                <div class="card">
+                    <div class="empty-state">
+                        <strong>Could not load devices</strong>
+                        <span>${escapeHTML(error?.message || "Please try again.")}</span>
+                        <button class="btn btn-primary" type="button" onclick="loadDevices()">Retry</button>
+                    </div>
+                </div>
+            `;
+        }
+
         showToast(
             "Could not load devices.",
             "error"
@@ -3361,7 +3383,7 @@ function renderDevices() {
 
     const container =
         document.getElementById(
-            "deviceList"
+            "devicesGrid"
         );
 
     if (!container) return;
@@ -3593,6 +3615,22 @@ function updateTracker() {
     const lng =
         selectedDevice.last_longitude;
 
+    const mapLatitude = document.getElementById("mapLatitude");
+    const mapLongitude = document.getElementById("mapLongitude");
+    const locationDetails = document.getElementById("locationDetails");
+
+    if (mapLatitude) {
+        mapLatitude.textContent = lat != null ? Number(lat).toFixed(6) : "—";
+    }
+    if (mapLongitude) {
+        mapLongitude.textContent = lng != null ? Number(lng).toFixed(6) : "—";
+    }
+    if (locationDetails) {
+        locationDetails.innerHTML = lat != null && lng != null
+            ? `<div><strong>Latitude:</strong> ${Number(lat).toFixed(6)}</div><div><strong>Longitude:</strong> ${Number(lng).toFixed(6)}</div><div><strong>Accuracy:</strong> ${selectedDevice.last_accuracy != null ? Number(selectedDevice.last_accuracy).toFixed(1) + " m" : "—"}</div><div><strong>Last seen:</strong> ${escapeHTML(formatDate(selectedDevice.last_seen || selectedDevice.updated_at || selectedDevice.created_at))}</div>`
+            : `<div class="no-location">No location data available yet. Connect the phone and allow GPS permission.</div>`;
+    }
+
 
     if (
         coordinates &&
@@ -3670,7 +3708,7 @@ async function loadLocations() {
 
     const container =
         document.getElementById(
-            "locationHistory"
+            "locationsContainer"
         );
 
 
@@ -4389,84 +4427,6 @@ function showToast(
 
     }, 4000);
 
-}
-/* =========================================================
-   CREATE DEVICE
-========================================================= */
-
-async function createDevice() {
-    const nameInput = document.getElementById("deviceName");
-    const typeInput = document.getElementById("deviceType");
-    const codeInput = document.getElementById("deviceCode");
-    const message = document.getElementById("addDeviceMessage");
-
-    const name = nameInput?.value.trim();
-    const type = typeInput?.value || "phone";
-
-    if (!name) {
-        if (message) message.textContent = "Enter a device name.";
-        showToast("Enter a device name.", "error");
-        return;
-    }
-
-    let deviceCode = codeInput?.value.trim();
-
-    if (!deviceCode) {
-        deviceCode = generateDeviceCode();
-    }
-
-    if (message) message.textContent = "Creating device...";
-
-    try {
-        const created = await supabaseRequest("devices", {
-            method: "POST",
-            body: JSON.stringify({
-                device_code: deviceCode,
-                device_name: name,
-                device_type: type,
-                status: "offline"
-            })
-        });
-
-        const device = Array.isArray(created) ? created[0] : created;
-
-        if (!device?.id) {
-            throw new Error("Supabase did not return the new device.");
-        }
-
-        if (nameInput) nameInput.value = "";
-        if (codeInput) codeInput.value = "";
-
-        await loadDevices();
-
-        if (message) {
-            const safeCode = escapeHTML(device.device_code || deviceCode);
-            message.innerHTML = `
-                <div style="margin-top:14px;padding:14px;border:1px solid #263340;border-radius:10px;background:#0c141c;">
-                    <strong style="display:block;margin-bottom:8px;color:#70d69a;">
-                        Device created successfully
-                    </strong>
-                    <div style="font-size:11px;color:#8b99a8;margin-bottom:6px;">Device Code</div>
-                    <div style="font-size:18px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;">
-                        ${safeCode}
-                    </div>
-                    <button class="btn btn-primary" type="button"
-                        onclick="openQrModal('${device.id}')">
-                        Show QR Code & Link
-                    </button>
-                </div>
-            `;
-        }
-
-        showToast("Device added successfully.", "success");
-        openQrModal(device.id);
-
-    } catch (error) {
-        console.error("Create device error:", error);
-        const detail = error?.message || "Could not create device.";
-        if (message) message.textContent = detail;
-        showToast(detail, "error");
-    }
 }
 /* =========================================================
    QR CODE
