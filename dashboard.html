@@ -1212,6 +1212,33 @@
             }
         }
     </style>
+
+<style>
+:root { --tp-blue:#2387ff; --tp-green:#20e58a; }
+body { background:#06111d; }
+.sidebar,.topbar,.card,.stat-card,.device-card { background:#081725; border-color:#17304a; }
+.brand-icon { background:linear-gradient(135deg,#1683ff,#1f5eea); box-shadow:0 8px 24px rgba(35,135,255,.25); }
+.nav-btn.active { background:linear-gradient(90deg,rgba(24,105,219,.42),rgba(24,105,219,.12)); border:1px solid rgba(35,135,255,.25); }
+.map-card { overflow:hidden; border-radius:14px; box-shadow:0 20px 55px rgba(0,0,0,.28); }
+#map { height:590px; }
+.map-toolbar { left:16px; right:16px; top:16px; }
+.map-toolbar .btn { border:1px solid rgba(255,255,255,.12); background:rgba(5,16,29,.82); color:#eaf4ff; backdrop-filter:blur(12px); box-shadow:0 8px 22px rgba(0,0,0,.22); }
+.map-toolbar .btn:hover { border-color:rgba(35,135,255,.65); background:rgba(11,34,59,.92); }
+.live-tracking-strip { min-height:74px; display:grid; grid-template-columns:1.4fr repeat(3,1fr); align-items:center; padding:12px 16px; background:linear-gradient(180deg,#091a2a,#071522); border-top:1px solid #17304a; }
+.live-indicator,.live-stat { min-height:42px; display:flex; align-items:center; gap:9px; padding:0 15px; border-right:1px solid #17304a; }
+.live-indicator { padding-left:2px; }
+.live-stat { flex-direction:column; align-items:flex-start; justify-content:center; gap:3px; color:#7188a0; font-size:10px; }
+.live-stat strong { color:#eaf4ff; font-size:11px; }
+.live-dot { width:10px; height:10px; border-radius:50%; background:#64748b; }
+.live-dot.online { background:var(--tp-green); box-shadow:0 0 0 5px rgba(32,229,138,.09),0 0 18px rgba(32,229,138,.55); }
+.live-dot.offline { background:#ef4444; box-shadow:0 0 0 5px rgba(239,68,68,.08); }
+.device-marker-wrap { position:relative; width:32px; height:32px; }
+.device-marker-pulse { position:absolute; inset:0; border-radius:50%; background:rgba(35,135,255,.20); animation:tpPulse 2s infinite; }
+.device-marker-core { position:absolute; left:7px; top:7px; width:18px; height:18px; border-radius:50%; background:#2387ff; border:4px solid #fff; box-shadow:0 4px 14px rgba(0,0,0,.45),0 0 20px rgba(35,135,255,.75); }
+.accuracy-ring { position:absolute; left:50%; top:50%; border-radius:50%; transform:translate(-50%,-50%); background:rgba(35,135,255,.13); border:1px solid rgba(35,135,255,.52); pointer-events:none; }
+@keyframes tpPulse { 0%{transform:scale(.72);opacity:.75} 70%{transform:scale(1.35);opacity:.08} 100%{transform:scale(1.35);opacity:0} }
+@media (max-width:980px) { .live-tracking-strip{grid-template-columns:1fr 1fr;} .live-indicator,.live-stat{border-right:0;border-bottom:1px solid #17304a;} #map{height:500px;} }
+</style>
 </head>
 
 <body>
@@ -1485,7 +1512,7 @@
 
                                 <button
                                     class="quick-action"
-                                    onclick="showSection('tracker'); initializeMap(); setTimeout(locateMe, 100)"
+                                    onclick="showSection('tracker'); initializeMap(); setTimeout(() => { if (selectedDevice) renderSelectedDeviceOnMap({follow:true}); }, 100)"
                                 >
                                     <strong>
                                         ◎ Locate Me
@@ -1553,7 +1580,7 @@
                     </h1>
 
                     <p>
-                        View the latest GPS position of your selected device.
+                        Live GPS tracking for your selected device. The map follows the phone automatically when live data is available.
                     </p>
 
                 </div>
@@ -1584,7 +1611,7 @@
                                     class="btn"
                                     onclick="resetMapView()"
                                 >
-                                    Reset View
+                                    Center Phone
                                 </button>
 
                                 <button
@@ -1610,9 +1637,17 @@
 
                                 <button
                                     class="btn"
+                                    id="followDeviceBtn"
+                                    onclick="toggleDeviceFollow()"
+                                >
+                                    🎯 Follow Phone
+                                </button>
+
+                                <button
+                                    class="btn"
                                     onclick="locateMe()"
                                 >
-                                    Locate Me
+                                    PC Location
                                 </button>
 
                                 <button
@@ -1670,6 +1705,16 @@
 
                             </div>
 
+                        </div>
+
+                        <div class="live-tracking-strip" id="liveTrackingStrip">
+                            <div class="live-indicator">
+                                <span class="live-dot" id="liveDot"></span>
+                                <strong id="liveTrackingTitle">Waiting for device</strong>
+                            </div>
+                            <div class="live-stat">Accuracy <strong id="liveAccuracy">—</strong></div>
+                            <div class="live-stat">Last seen <strong id="liveLastSeen">—</strong></div>
+                            <div class="live-stat">Status <strong id="liveStatus">—</strong></div>
                         </div>
 
                     </div>
@@ -2472,14 +2517,17 @@ let map = null;
 let deviceMarker = null;
 
 let userMarker = null;
+let accuracyRingElement = null;
+let deviceMarkerElement = null;
+let autoFollowDevice = localStorage.getItem("trackpoint_follow_device") !== "false";
+let lastRenderedDeviceLocation = null;
 
 let refreshTimer = null;
 
 let autoRefreshEnabled =
     localStorage.getItem("trackpoint_auto_refresh") !== "false";
 
-let currentMapMode =
-    localStorage.getItem("trackpoint_map_mode") || "standard";
+let currentMapMode = "satellite";
 
 
 /* =========================================================
@@ -2716,11 +2764,11 @@ function initializeMap() {
 
         container: "map",
 
-        style: getStandardStyle(),
+        style: getSatelliteStyle(),
 
-        center: [0, 20],
+        center: [3.3792, 6.5244],
 
-        zoom: 2,
+        zoom: 11,
 
         minZoom: 2,
 
@@ -2740,7 +2788,7 @@ function initializeMap() {
     map.on("load", () => {
 
         updateMapStatus(
-            "Standard map ready."
+            "Satellite map ready. Waiting for live phone GPS."
         );
 
         if (currentMapMode !== "standard") {
@@ -2764,6 +2812,9 @@ function initializeMap() {
         );
 
     });
+
+    map.on("zoom", updateAccuracyRing);
+    map.on("resize", updateAccuracyRing);
 
 }
 
@@ -4700,6 +4751,219 @@ function escapeHTML(value) {
 
 }
 
+
+/* =========================================================
+   LIVE DEVICE TRACKING ENGINE
+========================================================= */
+
+function deviceLastSeenMs(device) {
+    const value = device?.last_seen || device?.updated_at || device?.created_at;
+    const time = value ? new Date(value).getTime() : 0;
+    return Number.isFinite(time) ? time : 0;
+}
+
+function getLiveState(device) {
+    if (!device) return "offline";
+    const age = Date.now() - deviceLastSeenMs(device);
+    return device.status === "online" && age >= 0 && age <= 45000 ? "online" : "offline";
+}
+
+function getDeviceAccuracy(device) {
+    const value = Number(device?.last_accuracy);
+    return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function ensureLiveUI() {
+    const dot = document.getElementById("liveDot");
+    const follow = document.getElementById("followDeviceBtn");
+    if (follow) {
+        follow.textContent = autoFollowDevice ? "🎯 Following Phone" : "🎯 Follow Phone";
+        follow.classList.toggle("btn-primary", autoFollowDevice);
+    }
+    if (!selectedDevice) {
+        if (dot) dot.className = "live-dot";
+        return;
+    }
+    const state = getLiveState(selectedDevice);
+    if (dot) dot.className = `live-dot ${state}`;
+    const title = document.getElementById("liveTrackingTitle");
+    const status = document.getElementById("liveStatus");
+    const accuracy = document.getElementById("liveAccuracy");
+    const lastSeen = document.getElementById("liveLastSeen");
+    if (title) title.textContent = state === "online" ? `Tracking ${selectedDevice.device_name || "device"}` : "Device not reporting";
+    if (status) status.textContent = state === "online" ? "Online" : "Offline";
+    if (accuracy) {
+        const acc = getDeviceAccuracy(selectedDevice);
+        accuracy.textContent = acc == null ? "—" : `${acc.toFixed(1)} m`;
+    }
+    if (lastSeen) lastSeen.textContent = formatDate(selectedDevice.last_seen || selectedDevice.updated_at || selectedDevice.created_at);
+}
+
+function createDeviceMarkerElement() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "device-marker-wrap";
+    wrapper.setAttribute("aria-label", "Selected phone location");
+    wrapper.innerHTML = `<div class="accuracy-ring"></div><div class="device-marker-pulse"></div><div class="device-marker-core"></div>`;
+    accuracyRingElement = wrapper.querySelector(".accuracy-ring");
+    deviceMarkerElement = wrapper;
+    return wrapper;
+}
+
+function updateAccuracyRing() {
+    if (!map || !accuracyRingElement || !selectedDevice) return;
+    const accuracy = getDeviceAccuracy(selectedDevice);
+    if (accuracy == null || selectedDevice.last_latitude == null || selectedDevice.last_longitude == null) {
+        accuracyRingElement.style.display = "none";
+        return;
+    }
+    const lat = Number(selectedDevice.last_latitude);
+    const lng = Number(selectedDevice.last_longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    const center = map.project([lng, lat]);
+    const earthRadius = 6378137;
+    const dLat = (accuracy / earthRadius) * (180 / Math.PI);
+    const north = map.project([lng, lat + dLat]);
+    const radiusPx = Math.max(12, Math.abs(center.y - north.y));
+    const diameter = Math.min(1800, Math.max(28, radiusPx * 2));
+    accuracyRingElement.style.display = "block";
+    accuracyRingElement.style.width = `${diameter}px`;
+    accuracyRingElement.style.height = `${diameter}px`;
+}
+
+function renderSelectedDeviceOnMap({follow = autoFollowDevice, animate = true} = {}) {
+    if (!map || !selectedDevice) return false;
+    const lat = Number(selectedDevice.last_latitude);
+    const lng = Number(selectedDevice.last_longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+    const position = [lng, lat];
+    if (!deviceMarker) {
+        deviceMarker = new maplibregl.Marker({element:createDeviceMarkerElement(), anchor:"center"}).setLngLat(position).addTo(map);
+    } else {
+        deviceMarker.setLngLat(position);
+    }
+    updateAccuracyRing();
+    const changed = !lastRenderedDeviceLocation || Math.abs(lastRenderedDeviceLocation[0]-lng)>0.000001 || Math.abs(lastRenderedDeviceLocation[1]-lat)>0.000001;
+    lastRenderedDeviceLocation = [lng, lat];
+    if (follow && changed && !map.isMoving()) {
+        const options = {center:position, zoom:Math.max(map.getZoom(),16), essential:true, duration:animate?900:0};
+        if (animate) map.easeTo(options); else map.jumpTo(options);
+    }
+    return true;
+}
+
+function clearDeviceMarker() {
+    if (deviceMarker) deviceMarker.remove();
+    deviceMarker = null;
+    accuracyRingElement = null;
+    deviceMarkerElement = null;
+    lastRenderedDeviceLocation = null;
+}
+
+function toggleDeviceFollow() {
+    autoFollowDevice = !autoFollowDevice;
+    localStorage.setItem("trackpoint_follow_device", String(autoFollowDevice));
+    ensureLiveUI();
+    if (autoFollowDevice) {
+        renderSelectedDeviceOnMap({follow:true, animate:true});
+        updateMapStatus("Live follow enabled.");
+    } else {
+        updateMapStatus("Live follow paused. The phone marker will still update.");
+    }
+}
+
+function selectDevice(id) {
+    const device = devices.find(item => String(item.id) === String(id));
+    if (!device) { showToast("Device not found.", "error"); return; }
+    selectedDevice = device;
+    localStorage.setItem("trackpoint_selected_device", device.id);
+    clearDeviceMarker();
+    showSection("tracker", document.querySelector('.nav-btn[onclick*="tracker"]'));
+    initializeMap();
+    updateTracker();
+    loadLocations();
+    ensureLiveUI();
+    renderSelectedDeviceOnMap({follow:true, animate:true});
+}
+
+function updateTracker() {
+    if (!selectedDevice) return;
+    const name=document.getElementById("trackerDeviceName");
+    const type=document.getElementById("trackerDeviceType");
+    const status=document.getElementById("trackerDeviceStatus");
+    const coordinates=document.getElementById("trackerCoordinates");
+    const accuracy=document.getElementById("trackerAccuracy");
+    const lastSeen=document.getElementById("trackerLastSeen");
+    const lat=selectedDevice.last_latitude, lng=selectedDevice.last_longitude, acc=getDeviceAccuracy(selectedDevice), liveState=getLiveState(selectedDevice);
+    if(name) name.textContent=selectedDevice.device_name||"Unnamed Device";
+    if(type) type.textContent=selectedDevice.device_type||"Phone";
+    if(status){status.textContent=liveState==="online"?"Online":"Offline";status.className=`tracker-status ${liveState}`;}
+    if(coordinates) coordinates.textContent=lat!=null&&lng!=null?`${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`:"Waiting for GPS...";
+    if(accuracy) accuracy.textContent=acc==null?"—":`${acc.toFixed(1)} m`;
+    if(lastSeen) lastSeen.textContent=formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at);
+    const mapLatitude=document.getElementById("mapLatitude"), mapLongitude=document.getElementById("mapLongitude"), mapLastSeen=document.getElementById("mapLastSeen"), locationDetails=document.getElementById("locationDetails"), mapDeviceName=document.getElementById("mapDeviceName");
+    if(mapDeviceName) mapDeviceName.textContent=selectedDevice.device_name||"Selected device";
+    if(mapLatitude) mapLatitude.textContent=lat!=null?Number(lat).toFixed(6):"—";
+    if(mapLongitude) mapLongitude.textContent=lng!=null?Number(lng).toFixed(6):"—";
+    if(mapLastSeen) mapLastSeen.textContent=formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at);
+    if(locationDetails){locationDetails.innerHTML=lat!=null&&lng!=null?`<div class="location-info"><div class="info-box"><span>Latitude</span><strong>${Number(lat).toFixed(6)}</strong></div><div class="info-box"><span>Longitude</span><strong>${Number(lng).toFixed(6)}</strong></div><div class="info-box"><span>Accuracy</span><strong>${acc==null?"—":acc.toFixed(1)+" m"}</strong></div><div class="info-box"><span>Last Seen</span><strong>${escapeHTML(formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at))}</strong></div></div>`:`<div class="no-location">No GPS location has been reported yet. Open the phone connection page and allow location access.</div>`;}
+    restoreDeviceMarker();
+    ensureLiveUI();
+}
+
+function restoreDeviceMarker(){ renderSelectedDeviceOnMap({follow:autoFollowDevice,animate:true}); }
+
+async function refreshSelectedDevice(){
+    if(!selectedDevice?.id) return;
+    try{
+        const rows=await supabaseRequest(`devices?id=eq.${encodeURIComponent(selectedDevice.id)}&select=*`);
+        if(!Array.isArray(rows)||!rows[0]) return;
+        const fresh=rows[0];
+        const index=devices.findIndex(d=>String(d.id)===String(fresh.id));
+        if(index>=0) devices[index]=fresh;
+        selectedDevice=fresh;
+        updateTracker();
+        renderSelectedDeviceOnMap({follow:autoFollowDevice,animate:true});
+    }catch(error){ console.warn("Live device refresh failed:",error); }
+}
+
+async function loadDevices(){
+    try{
+        devices=await supabaseRequest("devices?select=*&order=created_at.desc");
+        if(!Array.isArray(devices)) devices=[];
+        renderDevices();
+        updateDashboardStats();
+        restoreSelectedDevice();
+        ensureLiveUI();
+    }catch(error){console.error("Failed to load devices:",error);showToast("Could not load devices.","error");}
+}
+
+function startAutoRefresh(){
+    if(refreshTimer) clearInterval(refreshTimer);
+    refreshTimer=null;
+    if(!autoRefreshEnabled) return;
+    refreshTimer=setInterval(async()=>{
+        if(selectedDevice?.id) await refreshSelectedDevice(); else await loadDevices();
+        ensureLiveUI();
+    },3000);
+}
+
+function locateMe(){
+    if(!map) initializeMap();
+    if(!navigator.geolocation){updateMapStatus("Browser geolocation is not supported.");return;}
+    updateMapStatus("Getting this PC's location…");
+    navigator.geolocation.getCurrentPosition(position=>{
+        const lat=position.coords.latitude,lng=position.coords.longitude,coordinates=[lng,lat];
+        if(!userMarker) userMarker=new maplibregl.Marker({color:"#f59e0b"});
+        userMarker.setLngLat(coordinates).addTo(map);
+        updateMapStatus(`PC location only: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+    },error=>{console.warn("PC location error:",error);updateMapStatus("Could not get the PC location. Phone tracking is unaffected.");},{enableHighAccuracy:true,timeout:30000,maximumAge:0});
+}
+
+function resetMapView(){
+    if(!map) return;
+    if(selectedDevice?.last_latitude!=null&&selectedDevice?.last_longitude!=null){renderSelectedDeviceOnMap({follow:true,animate:true});return;}
+    map.flyTo({center:[3.3792,6.5244],zoom:11,speed:.9,essential:true});
+}
 
 /* =========================================================
    START
