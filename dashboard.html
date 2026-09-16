@@ -2542,6 +2542,138 @@ async function requireAuth() {
 
 
 /* =========================================================
+   TRACKPOINT CORE HELPERS
+========================================================= */
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeHtml(value) {
+    return escapeHTML(value);
+}
+
+function formatDate(value) {
+    if (!value) return "Never";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Unknown";
+    }
+
+    return date.toLocaleString();
+}
+
+function showToast(message, type = "info") {
+    let toast = document.getElementById("trackpointToast");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "trackpointToast";
+
+        Object.assign(toast.style, {
+            position: "fixed",
+            right: "22px",
+            bottom: "22px",
+            zIndex: "99999",
+            padding: "13px 17px",
+            borderRadius: "10px",
+            background: "#101821",
+            border: "1px solid #26384a",
+            color: "#ffffff",
+            fontSize: "13px",
+            boxShadow: "0 12px 35px rgba(0,0,0,.35)",
+            maxWidth: "360px",
+            transition: "opacity .25s ease"
+        });
+
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+
+    if (type === "success") {
+        toast.style.borderColor = "#22c55e";
+    } else if (type === "error") {
+        toast.style.borderColor = "#ef4444";
+    } else {
+        toast.style.borderColor = "#2563eb";
+    }
+
+    toast.style.opacity = "1";
+
+    clearTimeout(window.trackpointToastTimer);
+
+    window.trackpointToastTimer = setTimeout(() => {
+        toast.style.opacity = "0";
+    }, 3500);
+}
+
+
+/*
+    We intentionally do not test the PC's location here.
+    The dashboard tracks the selected phone through Supabase.
+*/
+async function testSupabaseConnection() {
+    try {
+        await supabaseRequest(
+            "devices?select=id&limit=1"
+        );
+
+        return true;
+    } catch (error) {
+        console.warn(
+            "Supabase connection check failed:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/*
+    Location history placeholder.
+    This keeps the tracker stable even when there
+    is no separate locations table yet.
+*/
+async function loadLocations() {
+    const container =
+        document.getElementById("locationsContainer");
+
+    if (!container) return;
+
+    if (!selectedDevice) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <strong>No device selected</strong>
+                <span>Select a phone from My Devices first.</span>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="empty-state">
+            <strong>Live location history</strong>
+            <span>
+                ${escapeHTML(
+                    selectedDevice.device_name ||
+                    "Selected device"
+                )}
+                is currently being monitored from its latest GPS data.
+            </span>
+        </div>
+    `;
+}
+
+/* =========================================================
    GLOBALS
 ========================================================= */
 
@@ -2618,46 +2750,55 @@ function getStandardStyle() {
 function getSatelliteStyle() {
 
     return {
-
         version: 8,
 
         sources: {
 
             satellite: {
-
                 type: "raster",
 
                 tiles: [
-
                     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-
                 ],
 
                 tileSize: 256,
 
                 attribution:
-                    "Tiles © Esri"
+                    "Imagery © Esri"
+            },
 
+            reference: {
+                type: "raster",
+
+                tiles: [
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+                ],
+
+                tileSize: 256,
+
+                attribution:
+                    "Boundaries & Places © Esri"
             }
-
         },
 
         layers: [
 
             {
-
-                id: "satellite",
-
+                id: "satellite-imagery",
                 type: "raster",
-
                 source: "satellite"
+            },
 
+            {
+                id: "satellite-reference",
+                type: "raster",
+                source: "reference",
+                paint: {
+                    "raster-opacity": 0.95
+                }
             }
-
         ]
-
     };
-
 }
 
 
@@ -2907,16 +3048,17 @@ function set3DView() {
 
 function setMapMode(mode) {
 
-    if (!map) return;
+    if (!map) {
+        initializeMap();
+        return;
+    }
 
     if (
         mode !== "standard" &&
         mode !== "satellite" &&
         mode !== "3d"
     ) {
-
         mode = "standard";
-
     }
 
     currentMapMode = mode;
@@ -2926,8 +3068,17 @@ function setMapMode(mode) {
         mode
     );
 
+    if (mode === "satellite") {
 
-    if (mode === "3d") {
+        map.setStyle(
+            getSatelliteStyle()
+        );
+
+        updateMapStatus(
+            "Satellite imagery enabled."
+        );
+
+    } else if (mode === "3d") {
 
         map.setStyle(
             THREE_D_STYLE
@@ -2937,32 +3088,37 @@ function setMapMode(mode) {
             "3D map enabled."
         );
 
-    }
-
-    else if (mode === "satellite") {
-
-        map.setStyle(
-            getSatelliteStyle()
-        );
-
-        updateMapStatus(
-            "Satellite map enabled."
-        );
-
-    }
-
-    else {
+    } else {
 
         map.setStyle(
             getStandardStyle()
         );
 
         updateMapStatus(
-            "Standard map enabled."
+            "Standard street map enabled."
         );
-
     }
 
+    /*
+        Map styles can temporarily remove visual layers.
+        Re-render our phone marker after the new style loads.
+    */
+    map.once("styledata", () => {
+
+        setTimeout(() => {
+
+            if (selectedDevice) {
+
+                renderSelectedDeviceOnMap({
+                    follow: autoFollowDevice,
+                    animate: false
+                });
+
+                updateAccuracyRing();
+            }
+
+        }, 100);
+    });
 }
 
 
@@ -3317,20 +3473,35 @@ function openStreetView() {
 
 async function loadDevices() {
 
+    const container =
+        document.getElementById(
+            "devicesGrid"
+        );
+
     try {
 
-        devices =
+        if (container) {
+
+            container.innerHTML = `
+                <div class="card">
+                    <div class="empty-state">
+                        <strong>Loading your devices...</strong>
+                        <span>Connecting to TrackPoint.</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const result =
             await supabaseRequest(
                 "devices?select=*&order=created_at.desc"
             );
 
-
-        if (!Array.isArray(devices)) {
-
+        if (!Array.isArray(result)) {
             devices = [];
-
+        } else {
+            devices = result;
         }
-
 
         renderDevices();
 
@@ -3338,37 +3509,56 @@ async function loadDevices() {
 
         restoreSelectedDevice();
 
-    }
+        ensureLiveUI();
 
-    catch (error) {
+        console.log(
+            "TrackPoint devices loaded:",
+            devices
+        );
+
+    } catch (error) {
 
         console.error(
-            "Failed to load devices:",
+            "TrackPoint loadDevices error:",
             error
         );
 
-        const container = document.getElementById("devicesGrid");
         if (container) {
+
             container.innerHTML = `
                 <div class="card">
                     <div class="empty-state">
-                        <strong>Could not load devices</strong>
-                        <span>${escapeHTML(error?.message || "Please try again.")}</span>
-                        <button class="btn btn-primary" type="button" onclick="loadDevices()">Retry</button>
+
+                        <strong>
+                            Could not load your devices
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                error?.message ||
+                                "Supabase request failed."
+                            )}
+                        </span>
+
+                        <button
+                            class="btn btn-primary"
+                            type="button"
+                            onclick="loadDevices()"
+                        >
+                            Try Again
+                        </button>
+
                     </div>
                 </div>
             `;
         }
 
         showToast(
-            "Could not load devices.",
+            "TrackPoint could not load your devices.",
             "error"
         );
-
     }
-
 }
-
 
 /* =========================================================
    DASHBOARD STATS
@@ -3441,25 +3631,43 @@ function updateDashboardStats() {
 
 function restoreSelectedDevice() {
 
-    if (!selectedDevice) return;
+    const savedId =
+        localStorage.getItem(
+            "trackpoint_selected_device"
+        );
 
+    if (!savedId) {
+        selectedDevice = null;
+        ensureLiveUI();
+        return;
+    }
 
     const freshDevice =
         devices.find(
             device =>
-                device.id === selectedDevice.id
+                String(device.id) ===
+                String(savedId)
         );
 
-
-    if (freshDevice) {
-
-        selectedDevice =
-            freshDevice;
-
-        updateTracker();
-
+    if (!freshDevice) {
+        selectedDevice = null;
+        localStorage.removeItem(
+            "trackpoint_selected_device"
+        );
+        ensureLiveUI();
+        return;
     }
 
+    selectedDevice = freshDevice;
+
+    updateTracker();
+
+    renderSelectedDeviceOnMap({
+        follow: autoFollowDevice,
+        animate: false
+    });
+
+    ensureLiveUI();
 }
 
 
@@ -3621,15 +3829,47 @@ function ensureLiveUI() {
 }
 
 function createDeviceMarkerElement() {
-    const wrapper = document.createElement("div");
-    wrapper.className = "device-marker-wrap";
-    wrapper.setAttribute("aria-label", "Selected phone location");
-    wrapper.innerHTML = `<div class="accuracy-ring"></div><div class="device-marker-pulse"></div><div class="device-marker-core"></div>`;
-    accuracyRingElement = wrapper.querySelector(".accuracy-ring");
-    deviceMarkerElement = wrapper;
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "device-marker-wrap";
+
+    wrapper.setAttribute(
+        "aria-label",
+        "Selected phone location"
+    );
+
+    wrapper.innerHTML = `
+
+        <div class="device-accuracy-glow"></div>
+
+        <div class="device-marker-pulse"></div>
+
+        <div class="device-marker-body">
+
+            <div class="device-marker-icon">
+                📱
+            </div>
+
+        </div>
+
+        <div class="device-marker-label">
+            LIVE PHONE
+        </div>
+    `;
+
+    accuracyRingElement =
+        wrapper.querySelector(
+            ".device-accuracy-glow"
+        );
+
+    deviceMarkerElement =
+        wrapper;
+
     return wrapper;
 }
-
 function updateAccuracyRing() {
     if (!map || !accuracyRingElement || !selectedDevice) return;
     const accuracy = getDeviceAccuracy(selectedDevice);
@@ -3854,52 +4094,103 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
+        console.log(
+            "TrackPoint dashboard starting..."
+        );
+
         const authenticated =
             await requireAuth();
 
+        if (!authenticated) {
+            return;
+        }
 
-        if (!authenticated) return;
-
+        console.log(
+            "TrackPoint authentication confirmed."
+        );
 
         initializeMap();
-
 
         const toggle =
             document.getElementById(
                 "autoRefreshToggle"
             );
 
-
         if (toggle) {
 
             toggle.checked =
                 autoRefreshEnabled;
 
-        }
+            toggle.addEventListener(
+                "change",
+                () => {
 
+                    autoRefreshEnabled =
+                        toggle.checked;
 
-        const refreshStatus =
-            document.getElementById(
-                "settingsRefreshStatus"
+                    localStorage.setItem(
+                        "trackpoint_auto_refresh",
+                        String(
+                            autoRefreshEnabled
+                        )
+                    );
+
+                    if (autoRefreshEnabled) {
+
+                        startAutoRefresh();
+
+                    } else {
+
+                        if (refreshTimer) {
+                            clearInterval(
+                                refreshTimer
+                            );
+                        }
+
+                        refreshTimer = null;
+                    }
+
+                    const status =
+                        document.getElementById(
+                            "settingsRefreshStatus"
+                        );
+
+                    if (status) {
+
+                        status.textContent =
+                            autoRefreshEnabled
+                                ? "Enabled"
+                                : "Disabled";
+                    }
+                }
             );
-
-
-        if (refreshStatus) {
-
-            refreshStatus.textContent =
-                autoRefreshEnabled
-                    ? "Enabled"
-                    : "Disabled";
-
         }
 
+        /*
+            Do not let a connection diagnostic
+            prevent the actual dashboard from loading.
+        */
+        testSupabaseConnection()
+            .catch(error => {
+                console.warn(
+                    "Connection diagnostic:",
+                    error
+                );
+            });
 
-        await testSupabaseConnection();
-
+        /*
+            THIS is the important part.
+            Always load the actual devices.
+        */
         await loadDevices();
 
         startAutoRefresh();
 
+        ensureLiveUI();
+
+        console.log(
+            "TrackPoint dashboard ready."
+        );
     }
 );
 
