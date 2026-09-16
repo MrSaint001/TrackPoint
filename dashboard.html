@@ -2554,6 +2554,115 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 }
 
+function generateDeviceCode() {
+    const code =
+        "TP-" +
+        Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    const input = document.getElementById("deviceCode");
+
+    if (input) {
+        input.value = code;
+    }
+
+    return code;
+}
+
+
+async function createDevice() {
+    const nameInput = document.getElementById("deviceName");
+    const typeInput = document.getElementById("deviceType");
+    const codeInput = document.getElementById("deviceCode");
+    const message = document.getElementById("addDeviceMessage");
+
+    const name = nameInput ? nameInput.value.trim() : "";
+    const type = typeInput ? typeInput.value : "phone";
+
+    if (!name) {
+        if (message) {
+            message.textContent = "Please enter a device name.";
+        }
+
+        if (typeof showToast === "function") {
+            showToast("Please enter a device name.", "error");
+        }
+
+        return;
+    }
+
+    let deviceCode = codeInput ? codeInput.value.trim() : "";
+
+    if (!deviceCode) {
+        deviceCode = generateDeviceCode();
+    }
+
+    if (message) {
+        message.textContent = "Creating device...";
+    }
+
+    try {
+        const created = await supabaseRequest("devices", {
+            method: "POST",
+            body: JSON.stringify({
+                device_code: deviceCode,
+                device_name: name,
+                device_type: type,
+                status: "offline"
+            })
+        });
+
+        const device = Array.isArray(created) ? created[0] : created;
+
+        if (!device || !device.id) {
+            throw new Error(
+                "Device was created, but Supabase did not return its ID."
+            );
+        }
+
+        if (nameInput) {
+            nameInput.value = "";
+        }
+
+        if (codeInput) {
+            codeInput.value = "";
+        }
+
+        if (message) {
+            message.innerHTML =
+                "Device created successfully.<br>" +
+                "Device Code: <strong>" +
+                deviceCode +
+                "</strong>";
+        }
+
+        if (typeof showToast === "function") {
+            showToast("Device added successfully.", "success");
+        }
+
+        await loadDevices();
+
+        if (typeof openQrModal === "function") {
+            openQrModal(device.id);
+        }
+
+    } catch (error) {
+        console.error("Create device error:", error);
+
+        const detail =
+            error && error.message
+                ? error.message
+                : "Could not create device.";
+
+        if (message) {
+            message.textContent = detail;
+        }
+
+        if (typeof showToast === "function") {
+            showToast(detail, "error");
+        }
+    }
+}
+
 function getDeviceIcon(type) {
     const deviceType = String(type || "").toLowerCase();
 
