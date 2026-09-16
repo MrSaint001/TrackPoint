@@ -1,163 +1,200 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>TrackPoint | Connect Device</title>
+```
+<title>TrackPoint | Connect Device</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #0b1118;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        background: #0b1118;
+        color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
 
-        .box {
-            width: 100%;
-            max-width: 430px;
-            background: #111a24;
-            border: 1px solid #263443;
-            border-radius: 18px;
-            padding: 30px 24px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,.35);
-        }
+    .box {
+        width: 100%;
+        max-width: 460px;
+        background: #111a24;
+        border: 1px solid #263443;
+        border-radius: 18px;
+        padding: 30px 24px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
 
-        .logo {
-            font-size: 27px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
+    .logo {
+        font-size: 27px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
 
-        .logo span {
-            color: #3b82f6;
-        }
+    .logo span {
+        color: #3b82f6;
+    }
 
-        h1 {
-            font-size: 23px;
-            margin-bottom: 10px;
-        }
+    h1 {
+        font-size: 23px;
+        margin-bottom: 10px;
+    }
 
-        p {
-            color: #91a0b2;
-            line-height: 1.6;
-            font-size: 14px;
-        }
+    p {
+        color: #91a0b2;
+        line-height: 1.6;
+        font-size: 14px;
+    }
 
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 15px;
-            border: 0;
-            border-radius: 11px;
-            background: #2563eb;
-            color: white;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+    button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 15px;
+        border: 0;
+        border-radius: 11px;
+        background: #2563eb;
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+    }
 
-        button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
+    button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
 
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            background: #0c141d;
-            border: 1px solid #263443;
-            border-radius: 12px;
-            text-align: left;
-            font-size: 13px;
-            line-height: 1.8;
-        }
+    .status {
+        margin-top: 20px;
+        padding: 15px;
+        background: #0c141d;
+        border: 1px solid #263443;
+        border-radius: 12px;
+        text-align: left;
+        font-size: 13px;
+        line-height: 1.8;
+    }
 
-        .success {
-            color: #4ade80;
-        }
+    .success {
+        color: #4ade80;
+    }
 
-        .error {
-            color: #f87171;
-        }
+    .error {
+        color: #f87171;
+    }
 
-        .location {
-            margin-top: 15px;
-            display: grid;
-            gap: 8px;
-        }
+    .warning {
+        color: #fbbf24;
+    }
 
-        .location div {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
+    .location {
+        margin-top: 15px;
+        display: grid;
+        gap: 8px;
+    }
 
-        .location span:first-child {
-            color: #7f8da0;
-        }
+    .location div {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
 
-        .location span:last-child {
-            color: white;
-            font-weight: 600;
-            text-align: right;
-        }
-    </style>
+    .location span:first-child {
+        color: #7f8da0;
+    }
+
+    .location span:last-child {
+        color: white;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .accuracy-good {
+        color: #4ade80 !important;
+    }
+
+    .accuracy-medium {
+        color: #fbbf24 !important;
+    }
+
+    .accuracy-poor {
+        color: #f87171 !important;
+    }
+
+    .small {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #6f7d8e;
+    }
+</style>
+```
+
 </head>
 
 <body>
 
 <div class="box">
 
-    <div class="logo">
-        Track<span>Point</span>
+```
+<div class="logo">
+    Track<span>Point</span>
+</div>
+
+<h1>Connect This Phone</h1>
+
+<p>
+    Allow location access so this phone can send its
+    current GPS position to your TrackPoint dashboard.
+</p>
+
+<button id="connectButton">
+    Allow Location & Connect
+</button>
+
+<div class="status" id="status">
+    Ready to request GPS permission.
+</div>
+
+<div class="location">
+
+    <div>
+        <span>Latitude</span>
+        <span id="latitude">—</span>
     </div>
 
-    <h1>Connect This Phone</h1>
-
-    <p>
-        Allow location access so this phone can send its
-        real GPS position to your TrackPoint dashboard.
-    </p>
-
-    <button id="connectButton">
-        Allow Location & Connect
-    </button>
-
-    <div class="status" id="status">
-        Waiting for permission...
+    <div>
+        <span>Longitude</span>
+        <span id="longitude">—</span>
     </div>
 
-    <div class="location">
-
-        <div>
-            <span>Latitude</span>
-            <span id="latitude">—</span>
-        </div>
-
-        <div>
-            <span>Longitude</span>
-            <span id="longitude">—</span>
-        </div>
-
-        <div>
-            <span>Accuracy</span>
-            <span id="accuracy">—</span>
-        </div>
-
+    <div>
+        <span>Accuracy</span>
+        <span id="accuracy">—</span>
     </div>
+
+    <div>
+        <span>Last Update</span>
+        <span id="lastUpdate">—</span>
+    </div>
+
+</div>
+
+<div class="small">
+    Keep this page open while testing live location updates.
+</div>
+```
 
 </div>
 
@@ -200,8 +237,42 @@ const longitudeElement =
 const accuracyElement =
     document.getElementById("accuracy");
 
+const lastUpdateElement =
+    document.getElementById("lastUpdate");
+
+
+/* =========================
+   GPS STATE
+========================= */
 
 let watchId = null;
+
+let bestAccuracy = Infinity;
+
+let lastSentAt = 0;
+
+let lastLatitude = null;
+
+let lastLongitude = null;
+
+let connected = false;
+
+
+/*
+   We don't want a terrible location estimate
+   overwriting a good GPS fix.
+
+   1000m is still useful as a fallback,
+   but the dashboard will know the accuracy.
+*/
+const MAX_ACCEPTABLE_ACCURACY = 1000;
+
+
+/*
+   Avoid hammering Supabase if the browser
+   fires many GPS updates very quickly.
+*/
+const MIN_SEND_INTERVAL = 3000;
 
 
 /* =========================
@@ -221,44 +292,60 @@ function setStatus(message, type = "") {
 
 
 /* =========================
-   SEND GPS TO SUPABASE
+   ACCURACY DISPLAY
 ========================= */
 
-async function sendLocation(position) {
-
-    const latitude =
-        position.coords.latitude;
-
-    const longitude =
-        position.coords.longitude;
-
-    const accuracy =
-        position.coords.accuracy;
-
-
-    latitudeElement.textContent =
-        latitude.toFixed(6);
-
-    longitudeElement.textContent =
-        longitude.toFixed(6);
+function updateAccuracyDisplay(accuracy) {
 
     accuracyElement.textContent =
         `${accuracy.toFixed(1)} m`;
 
-
-    setStatus(
-        "GPS location received. Sending to TrackPoint...",
+    accuracyElement.classList.remove(
+        "accuracy-good",
+        "accuracy-medium",
+        "accuracy-poor"
     );
 
+    if (accuracy <= 30) {
+
+        accuracyElement.classList.add(
+            "accuracy-good"
+        );
+
+    } else if (accuracy <= 100) {
+
+        accuracyElement.classList.add(
+            "accuracy-medium"
+        );
+
+    } else {
+
+        accuracyElement.classList.add(
+            "accuracy-poor"
+        );
+    }
+}
+
+
+/* =========================
+   SUPABASE UPDATE
+========================= */
+
+async function saveLocation(
+    latitude,
+    longitude,
+    accuracy,
+    timestamp
+) {
 
     if (!deviceId) {
 
         setStatus(
-            "No device ID was supplied in the connection link.",
+            "No device ID was supplied in this connection link.",
             "error"
         );
 
-        return;
+        return false;
     }
 
 
@@ -271,6 +358,7 @@ async function sendLocation(position) {
 
                 headers: {
                     "apikey": SUPABASE_KEY,
+
                     "Authorization":
                         `Bearer ${SUPABASE_KEY}`,
 
@@ -293,7 +381,10 @@ async function sendLocation(position) {
                         accuracy,
 
                     last_seen:
-                        new Date().toISOString()
+                        new Date(timestamp).toISOString(),
+
+                    status:
+                        "online"
 
                 })
             }
@@ -306,41 +397,219 @@ async function sendLocation(position) {
                 await response.text();
 
             console.error(
-                "Supabase error:",
+                "Supabase location error:",
+                response.status,
                 errorText
             );
 
             setStatus(
-                "GPS was received, but TrackPoint could not save it.",
+                "GPS works, but TrackPoint could not save the location.",
                 "error"
             );
 
-            return;
+            return false;
         }
 
 
-        setStatus(
-            "Connected. This phone is now sending its real GPS location.",
-            "success"
-        );
-
-
-        console.log(
-            "GPS sent:",
-            latitude,
-            longitude,
-            accuracy
-        );
+        return true;
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Network error:",
+            error
+        );
 
         setStatus(
-            "Could not send GPS location to TrackPoint.",
+            "GPS works, but the location could not reach TrackPoint.",
             "error"
         );
+
+        return false;
     }
+}
+
+
+/* =========================
+   GPS POSITION
+========================= */
+
+async function handlePosition(position) {
+
+    const latitude =
+        position.coords.latitude;
+
+    const longitude =
+        position.coords.longitude;
+
+    const accuracy =
+        Number(position.coords.accuracy);
+
+    const timestamp =
+        position.timestamp || Date.now();
+
+
+    console.log(
+        "GPS position:",
+        {
+            latitude,
+            longitude,
+            accuracy,
+            timestamp
+        }
+    );
+
+
+    /*
+       Ignore invalid coordinates.
+    */
+
+    if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        !Number.isFinite(accuracy)
+    ) {
+
+        setStatus(
+            "The phone returned invalid GPS data. Waiting for another fix...",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    /*
+       Don't allow an extremely poor location
+       to replace a much better GPS location.
+    */
+
+    if (accuracy > MAX_ACCEPTABLE_ACCURACY) {
+
+        latitudeElement.textContent =
+            latitude.toFixed(6);
+
+        longitudeElement.textContent =
+            longitude.toFixed(6);
+
+        updateAccuracyDisplay(accuracy);
+
+        setStatus(
+            `Location found, but accuracy is too low (${Math.round(accuracy)} m). Waiting for a better GPS fix...`,
+            "warning"
+        );
+
+        return;
+    }
+
+
+    /*
+       If we already have a significantly better
+       location, don't immediately replace it with
+       a much worse one.
+    */
+
+    if (
+        bestAccuracy !== Infinity &&
+        accuracy > bestAccuracy * 3
+    ) {
+
+        console.log(
+            "Ignoring worse GPS fix:",
+            accuracy,
+            "previous:",
+            bestAccuracy
+        );
+
+        return;
+    }
+
+
+    /*
+       Remember the best accuracy we have seen.
+    */
+
+    if (accuracy < bestAccuracy) {
+        bestAccuracy = accuracy;
+    }
+
+
+    latitudeElement.textContent =
+        latitude.toFixed(6);
+
+    longitudeElement.textContent =
+        longitude.toFixed(6);
+
+    updateAccuracyDisplay(accuracy);
+
+
+    lastUpdateElement.textContent =
+        new Date(timestamp).toLocaleTimeString();
+
+
+    /*
+       Don't repeatedly send the exact same
+       coordinates every few milliseconds.
+    */
+
+    const now = Date.now();
+
+    const samePosition =
+        lastLatitude === latitude &&
+        lastLongitude === longitude;
+
+    if (
+        samePosition &&
+        now - lastSentAt < MIN_SEND_INTERVAL
+    ) {
+        return;
+    }
+
+
+    if (
+        now - lastSentAt < MIN_SEND_INTERVAL
+    ) {
+        return;
+    }
+
+
+    setStatus(
+        accuracy <= 50
+            ? "Excellent GPS fix. Sending location to TrackPoint..."
+            : "GPS fix received. Sending location to TrackPoint..."
+    );
+
+
+    const saved =
+        await saveLocation(
+            latitude,
+            longitude,
+            accuracy,
+            timestamp
+        );
+
+
+    if (!saved) {
+        return;
+    }
+
+
+    lastLatitude =
+        latitude;
+
+    lastLongitude =
+        longitude;
+
+    lastSentAt =
+        now;
+
+    connected = true;
+
+
+    setStatus(
+        `Connected. GPS location updated successfully. Accuracy: ${Math.round(accuracy)} m`,
+        "success"
+    );
 }
 
 
@@ -350,36 +619,54 @@ async function sendLocation(position) {
 
 function gpsError(error) {
 
-    console.error(error);
+    console.error(
+        "GPS error:",
+        error
+    );
+
 
     if (error.code === 1) {
 
         setStatus(
-            "Location permission was denied. Please allow location access.",
+            "Location permission was denied. Allow location permission for this site and try again.",
             "error"
         );
 
-    } else if (error.code === 2) {
+        connectButton.disabled = false;
 
-        setStatus(
-            "Your phone could not determine its GPS location.",
-            "error"
-        );
+        connectButton.textContent =
+            "Try Location Again";
 
-    } else if (error.code === 3) {
-
-        setStatus(
-            "GPS request timed out. Trying again...",
-            "error"
-        );
-
-    } else {
-
-        setStatus(
-            "Unable to get GPS location.",
-            "error"
-        );
+        return;
     }
+
+
+    if (error.code === 2) {
+
+        setStatus(
+            "The phone could not get a GPS fix. Move somewhere with a clearer view of the sky and try again.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    if (error.code === 3) {
+
+        setStatus(
+            "GPS is taking too long to get a fix. Waiting for another GPS reading...",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    setStatus(
+        "Unable to determine the phone's location. Waiting for another reading...",
+        "error"
+    );
 }
 
 
@@ -392,7 +679,7 @@ function startGPS() {
     if (!navigator.geolocation) {
 
         setStatus(
-            "This browser does not support GPS location.",
+            "This browser does not support device location.",
             "error"
         );
 
@@ -403,7 +690,7 @@ function startGPS() {
     if (!window.isSecureContext) {
 
         setStatus(
-            "GPS requires HTTPS. Open the Vercel HTTPS link.",
+            "GPS requires HTTPS. Open the TrackPoint Vercel HTTPS link.",
             "error"
         );
 
@@ -414,7 +701,7 @@ function startGPS() {
     if (!deviceId) {
 
         setStatus(
-            "This connection link does not contain a device ID.",
+            "Invalid connection link. No device ID was supplied.",
             "error"
         );
 
@@ -422,37 +709,126 @@ function startGPS() {
     }
 
 
-    connectButton.disabled = true;
+    /*
+       Stop an old watcher before creating
+       another one.
+    */
+
+    if (watchId !== null) {
+
+        navigator.geolocation.clearWatch(
+            watchId
+        );
+
+        watchId = null;
+    }
+
+
+    bestAccuracy =
+        Infinity;
+
+    lastLatitude =
+        null;
+
+    lastLongitude =
+        null;
+
+    lastSentAt =
+        0;
+
+
+    connectButton.disabled =
+        true;
 
     connectButton.textContent =
-        "Connecting GPS...";
+        "Finding GPS...";
 
 
     setStatus(
-        "Requesting your phone's GPS location..."
+        "Searching for the phone's most accurate available location..."
     );
 
 
     /*
-       watchPosition continuously watches
-       the REAL GPS location of this phone.
+       FIRST:
+       Request one fresh position.
+
+       This gets the initial fix before
+       continuous tracking starts.
     */
 
-    watchId =
-        navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
 
-            sendLocation,
+        async function(position) {
 
-            gpsError,
+            await handlePosition(
+                position
+            );
 
-            {
-                enableHighAccuracy: true,
 
-                maximumAge: 0,
+            connectButton.textContent =
+                "GPS Connected";
 
-                timeout: 15000
-            }
-        );
+
+            /*
+               THEN:
+               Start continuous tracking.
+            */
+
+            watchId =
+                navigator.geolocation.watchPosition(
+
+                    handlePosition,
+
+                    gpsError,
+
+                    {
+                        enableHighAccuracy: true,
+
+                        maximumAge: 0,
+
+                        timeout: 30000
+                    }
+                );
+
+        },
+
+        function(error) {
+
+            gpsError(error);
+
+
+            /*
+               Even if the first request fails,
+               start watching for a later fix.
+            */
+
+            watchId =
+                navigator.geolocation.watchPosition(
+
+                    handlePosition,
+
+                    gpsError,
+
+                    {
+                        enableHighAccuracy: true,
+
+                        maximumAge: 0,
+
+                        timeout: 30000
+                    }
+                );
+
+        },
+
+        {
+            enableHighAccuracy: true,
+
+            maximumAge: 0,
+
+            timeout: 30000
+        }
+    );
 }
 
 
@@ -467,12 +843,54 @@ connectButton.addEventListener(
 
 
 /* =========================
-   CHECK DEVICE LINK
+   PAGE VISIBILITY
+========================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState === "visible" &&
+            connected
+        ) {
+
+            setStatus(
+                "TrackPoint is active. Checking for the latest GPS position..."
+            );
+
+            /*
+               Ask for a fresh fix whenever the
+               user returns to the page.
+            */
+
+            navigator.geolocation.getCurrentPosition(
+
+                handlePosition,
+
+                gpsError,
+
+                {
+                    enableHighAccuracy: true,
+
+                    maximumAge: 0,
+
+                    timeout: 30000
+                }
+            );
+        }
+    }
+);
+
+
+/* =========================
+   INITIAL VALIDATION
 ========================= */
 
 if (!deviceId) {
 
-    connectButton.disabled = true;
+    connectButton.disabled =
+        true;
 
     setStatus(
         "Invalid connection link. No device ID found.",
