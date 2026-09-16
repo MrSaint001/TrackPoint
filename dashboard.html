@@ -1239,6 +1239,43 @@ body { background:#06111d; }
 @keyframes tpPulse { 0%{transform:scale(.72);opacity:.75} 70%{transform:scale(1.35);opacity:.08} 100%{transform:scale(1.35);opacity:0} }
 @media (max-width:980px) { .live-tracking-strip{grid-template-columns:1fr 1fr;} .live-indicator,.live-stat{border-right:0;border-bottom:1px solid #17304a;} #map{height:500px;} }
 </style>
+
+<style>
+/* TrackPoint polished tracker v5 */
+.tracker-layout { grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; }
+.map-card { background: #071321; }
+.map-card > .card-header { background: linear-gradient(180deg,#0a1a2b,#071321); }
+.map-wrapper { position: relative; background: #020a12; }
+.map-toolbar .btn { border-radius: 9px; font-weight: 600; transition: transform .18s, border-color .18s, background .18s; }
+.map-toolbar .btn:active { transform: translateY(1px); }
+.map-toolbar .btn-primary { background: linear-gradient(135deg,#146fe8,#0b55bd) !important; border-color: rgba(93,170,255,.8) !important; box-shadow: 0 8px 24px rgba(20,111,232,.28); }
+.selected-device-hero { display:flex; align-items:center; gap:12px; padding:2px 0 16px; }
+.selected-device-icon { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; background:linear-gradient(135deg,#0d4f9e,#12305b); border:1px solid #25517c; font-size:21px; }
+.selected-device-copy { min-width:0; flex:1; }
+.selected-device-copy .tracker-device-name { font-size:16px; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.selected-device-copy .tracker-device-type { margin:0; }
+.device-live-pill { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:5px 8px; font-size:9px; font-weight:800; letter-spacing:.5px; border:1px solid #3a4653; background:#101820; }
+.device-live-pill span { width:6px; height:6px; border-radius:50%; background:#64748b; }
+.device-live-pill.online { color:#79e8ab; border-color:#235e3c; background:#0b2116; }
+.device-live-pill.online span { background:#20e58a; box-shadow:0 0 10px #20e58a; }
+.device-live-pill.stale { color:#f8cf77; border-color:#6c5520; background:#261e0b; }
+.device-live-pill.stale span { background:#f5b942; }
+.device-live-pill.offline { color:#ff8585; border-color:#642d35; background:#241015; }
+.device-live-pill.offline span { background:#ef4444; }
+.device-health { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.device-health > div, .device-coordinates { background:#091724; border:1px solid #17304a; border-radius:9px; padding:10px; }
+.device-health span, .device-coordinates span { display:block; color:#7188a0; font-size:9px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+.device-health strong { font-size:11px; color:#edf6ff; }
+.device-coordinates strong { font-size:11px; color:#8dc7ff; word-break:break-word; }
+.location-info .info-box.wide { grid-column:1 / -1; }
+.live-tracking-strip { border-bottom-left-radius:14px; border-bottom-right-radius:14px; }
+.live-dot.stale { background:#f5b942; box-shadow:0 0 0 5px rgba(245,185,66,.09); }
+.maplibregl-ctrl-group { background:#081725 !important; border-color:#17304a !important; }
+.maplibregl-ctrl-group button { filter:brightness(1.15); }
+@media (max-width:1100px) { .tracker-layout { grid-template-columns:1fr; } .tracker-side { display:grid; grid-template-columns:1fr 1fr; } }
+@media (max-width:700px) { .tracker-side { grid-template-columns:1fr; } #map { height:460px !important; } .map-toolbar { flex-wrap:nowrap; } }
+</style>
+
 </head>
 
 <body>
@@ -2528,6 +2565,8 @@ let autoRefreshEnabled =
     localStorage.getItem("trackpoint_auto_refresh") !== "false";
 
 let currentMapMode = "satellite";
+// TrackPoint starts in satellite mode so the tracker opens on imagery by default.
+localStorage.setItem("trackpoint_map_mode", "satellite");
 
 
 /* =========================================================
@@ -2791,11 +2830,9 @@ function initializeMap() {
             "Satellite map ready. Waiting for live phone GPS."
         );
 
-        if (currentMapMode !== "standard") {
-
-            setMapMode(currentMapMode);
-
-        }
+        // Always open the upgraded tracker in satellite imagery.
+        setMapMode("satellite");
+        renderSelectedDeviceOnMap({follow:autoFollowDevice, animate:false});
 
     });
 
@@ -3535,1224 +3572,6 @@ function renderDevices() {
 
 }
 /* =========================================================
-   SELECT DEVICE
-========================================================= */
-
-function selectDevice(id) {
-
-    const device =
-        devices.find(
-            item => String(item.id) === String(id)
-        );
-
-    if (!device) {
-
-        showToast(
-            "Device not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    selectedDevice = device;
-
-
-    localStorage.setItem(
-        "trackpoint_selected_device",
-        device.id
-    );
-
-
-    showSection(
-        "tracker",
-        document.querySelector(
-            '.nav-btn[onclick*="tracker"]'
-        )
-    );
-
-
-    updateTracker();
-
-    loadLocations();
-
-}
-
-
-/* =========================================================
-   UPDATE TRACKER
-========================================================= */
-
-function updateTracker() {
-
-    if (!selectedDevice) {
-
-        return;
-
-    }
-
-
-    const name =
-        document.getElementById(
-            "trackerDeviceName"
-        );
-
-    const type =
-        document.getElementById(
-            "trackerDeviceType"
-        );
-
-    const status =
-        document.getElementById(
-            "trackerDeviceStatus"
-        );
-
-    const coordinates =
-        document.getElementById(
-            "trackerCoordinates"
-        );
-
-    const accuracy =
-        document.getElementById(
-            "trackerAccuracy"
-        );
-
-    const lastSeen =
-        document.getElementById(
-            "trackerLastSeen"
-        );
-
-
-    if (name) {
-
-        name.textContent =
-            selectedDevice.device_name ||
-            "Unnamed Device";
-
-    }
-
-
-    if (type) {
-
-        type.textContent =
-            selectedDevice.device_type ||
-            "Phone";
-
-    }
-
-
-    if (status) {
-
-        status.textContent =
-            selectedDevice.status === "online"
-                ? "Online"
-                : "Offline";
-
-        status.className =
-            `tracker-status ${
-                selectedDevice.status === "online"
-                    ? "online"
-                    : "offline"
-            }`;
-
-    }
-
-
-    const lat =
-        selectedDevice.last_latitude;
-
-    const lng =
-        selectedDevice.last_longitude;
-
-    const mapLatitude = document.getElementById("mapLatitude");
-    const mapLongitude = document.getElementById("mapLongitude");
-    const locationDetails = document.getElementById("locationDetails");
-
-    if (mapLatitude) {
-        mapLatitude.textContent = lat != null ? Number(lat).toFixed(6) : "—";
-    }
-    if (mapLongitude) {
-        mapLongitude.textContent = lng != null ? Number(lng).toFixed(6) : "—";
-    }
-    if (locationDetails) {
-        locationDetails.innerHTML = lat != null && lng != null
-            ? `<div><strong>Latitude:</strong> ${Number(lat).toFixed(6)}</div><div><strong>Longitude:</strong> ${Number(lng).toFixed(6)}</div><div><strong>Accuracy:</strong> ${selectedDevice.last_accuracy != null ? Number(selectedDevice.last_accuracy).toFixed(1) + " m" : "—"}</div><div><strong>Last seen:</strong> ${escapeHTML(formatDate(selectedDevice.last_seen || selectedDevice.updated_at || selectedDevice.created_at))}</div>`
-            : `<div class="no-location">No location data available yet. Connect the phone and allow GPS permission.</div>`;
-    }
-
-
-    if (
-        coordinates &&
-        lat != null &&
-        lng != null
-    ) {
-
-        coordinates.textContent =
-            `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
-
-    }
-
-    else if (coordinates) {
-
-        coordinates.textContent =
-            "Waiting for GPS...";
-
-    }
-
-
-    if (accuracy) {
-
-        if (
-            selectedDevice.last_accuracy != null
-        ) {
-
-            accuracy.textContent =
-                `${Number(
-                    selectedDevice.last_accuracy
-                ).toFixed(1)} m`;
-
-        }
-
-        else {
-
-            accuracy.textContent =
-                "—";
-
-        }
-
-    }
-
-
-    if (lastSeen) {
-
-        lastSeen.textContent =
-            formatDate(
-                selectedDevice.last_seen
-            );
-
-    }
-
-
-    restoreDeviceMarker();
-
-
-    if (
-        map &&
-        lat != null &&
-        lng != null
-    ) {
-
-        map.resize();
-
-    }
-
-}
-
-
-/* =========================================================
-   LOAD LOCATION HISTORY
-========================================================= */
-
-async function loadLocations() {
-
-    const container =
-        document.getElementById(
-            "locationsContainer"
-        );
-
-
-    if (!container) return;
-
-
-    if (!selectedDevice) {
-
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">◎</div>
-                <h3>No device selected</h3>
-                <p>Select a device to view its location history.</p>
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML = `
-        <div class="loading-state">
-            Loading location history...
-        </div>
-    `;
-
-
-    try {
-
-        const locations =
-            await supabaseRequest(
-                `device_locations?device_id=eq.${encodeURIComponent(
-                    selectedDevice.id
-                )}&select=*&order=recorded_at.desc&limit=50`
-            );
-
-
-        if (
-            !locations ||
-            !locations.length
-        ) {
-
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">◎</div>
-                    <h3>No location history</h3>
-                    <p>
-                        Location updates from the phone will appear here.
-                    </p>
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        container.innerHTML =
-            locations.map(location => {
-
-                const lat =
-                    Number(location.latitude);
-
-                const lng =
-                    Number(location.longitude);
-
-                const accuracy =
-                    location.accuracy != null
-                        ? `${Number(
-                            location.accuracy
-                        ).toFixed(1)} m`
-                        : "—";
-
-
-                return `
-                    <div
-                        class="location-row"
-                        onclick="focusLocation(${lat}, ${lng})"
-                    >
-
-                        <div class="location-icon">
-                            ◎
-                        </div>
-
-                        <div class="location-details">
-
-                            <strong>
-                                ${lat.toFixed(6)},
-                                ${lng.toFixed(6)}
-                            </strong>
-
-                            <span>
-                                Accuracy: ${accuracy}
-                            </span>
-
-                        </div>
-
-                        <div class="location-time">
-                            ${formatDate(
-                                location.recorded_at
-                            )}
-                        </div>
-
-                    </div>
-                `;
-
-            }).join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Failed to load location history:",
-            error
-        );
-
-
-        container.innerHTML = `
-            <div class="empty-state error">
-                <div class="empty-icon">!</div>
-                <h3>Could not load locations</h3>
-                <p>
-                    ${escapeHtml(
-                        error.message ||
-                        "Unknown error"
-                    )}
-                </p>
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   FOCUS LOCATION
-========================================================= */
-
-function focusLocation(
-    lat,
-    lng
-) {
-
-    if (!map) return;
-
-
-    const coordinates = [
-        Number(lng),
-        Number(lat)
-    ];
-
-
-    map.flyTo({
-
-        center: coordinates,
-
-        zoom: 17,
-
-        speed: 1.2,
-
-        essential: true
-
-    });
-
-
-    if (deviceMarker) {
-
-        deviceMarker
-            .setLngLat(coordinates);
-
-    }
-
-
-    updateMapStatus(
-        `Location: ${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
-    );
-
-
-    showSection(
-        "tracker",
-        document.querySelector(
-            '.nav-btn[onclick*="tracker"]'
-        )
-    );
-
-}
-
-
-/* =========================================================
-   CREATE DEVICE
-========================================================= */
-
-function generateDeviceCode() {
-    const codeInput = document.getElementById("deviceCode");
-
-    const code =
-        "TP-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 10)
-            .toUpperCase();
-
-    if (codeInput) {
-        codeInput.value = code;
-    }
-
-    return code;
-}
-
-
-async function createDevice() {
-    const nameInput = document.getElementById("deviceName");
-    const typeInput = document.getElementById("deviceType");
-    const codeInput = document.getElementById("deviceCode");
-    const message = document.getElementById("addDeviceMessage");
-
-    const name = nameInput?.value.trim();
-    const type = typeInput?.value || "phone";
-
-    if (!name) {
-        if (message) message.textContent = "Enter a device name.";
-        showToast("Enter a device name.", "error");
-        return;
-    }
-
-    let deviceCode = codeInput?.value.trim();
-
-    if (!deviceCode) {
-        deviceCode = generateDeviceCode();
-    }
-
-    if (message) message.textContent = "Creating device...";
-
-    try {
-        const created = await supabaseRequest("devices", {
-            method: "POST",
-            body: JSON.stringify({
-                device_code: deviceCode,
-                device_name: name,
-                device_type: type,
-                status: "offline"
-            })
-        });
-
-        const device = Array.isArray(created) ? created[0] : created;
-
-        if (!device?.id) {
-            throw new Error("Supabase did not return the new device.");
-        }
-
-        if (nameInput) nameInput.value = "";
-        if (codeInput) codeInput.value = "";
-
-        await loadDevices();
-
-        if (message) {
-            const safeCode = escapeHTML(device.device_code || deviceCode);
-            message.innerHTML = `
-                <div style="margin-top:14px;padding:14px;border:1px solid #263340;border-radius:10px;background:#0c141c;">
-                    <strong style="display:block;margin-bottom:8px;color:#70d69a;">
-                        Device created successfully
-                    </strong>
-                    <div style="font-size:11px;color:#8b99a8;margin-bottom:6px;">Device Code</div>
-                    <div style="font-size:18px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;">
-                        ${safeCode}
-                    </div>
-                    <button class="btn btn-primary" type="button"
-                        onclick="openQrModal('${device.id}')">
-                        Show QR Code & Link
-                    </button>
-                </div>
-            `;
-        }
-
-        showToast("Device added successfully.", "success");
-        openQrModal(device.id);
-
-    } catch (error) {
-        console.error("Create device error:", error);
-        const detail = error?.message || "Could not create device.";
-        if (message) message.textContent = detail;
-        showToast(detail, "error");
-    }
-}
-/* =========================================================
-   QR CODE
-========================================================= */
-
-function openQrModal(deviceId) {
-    const modal = document.getElementById("qrModal");
-    const qrContainer = document.getElementById("qrContainer");
-    const linkElement = document.getElementById("qrLink");
-
-    if (!modal || !qrContainer) {
-        console.error("QR modal elements are missing.");
-        return;
-    }
-
-    if (typeof QRCode === "undefined") {
-        console.error("QRCode library is not loaded.");
-        if (linkElement) {
-            linkElement.textContent =
-                "QR library failed to load. Use the connection link instead.";
-        }
-        return;
-    }
-
-    const phoneUrl = new URL("phone.html", window.location.href);
-    phoneUrl.searchParams.set("device", deviceId);
-    const finalUrl = phoneUrl.toString();
-
-    qrContainer.innerHTML = "";
-
-    new QRCode(qrContainer, {
-        text: finalUrl,
-        width: 220,
-        height: 220,
-        colorDark: "#111827",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
-
-    if (linkElement) {
-        linkElement.innerHTML = `
-            <div style="margin-bottom:8px;color:#aeb8c4;">
-                Phone connection link
-            </div>
-            <a href="${escapeHTML(finalUrl)}"
-               target="_blank"
-               rel="noopener"
-               style="color:#60a5fa;text-decoration:none;">
-                ${escapeHTML(finalUrl)}
-            </a>
-        `;
-        linkElement.dataset.url = finalUrl;
-    }
-
-    modal.classList.add("show");
-}
-/* =========================================================
-   CLOSE QR MODAL
-========================================================= */
-
-function closeQrModal() {
-
-    const modal =
-        document.getElementById(
-            "qrModal"
-        );
-
-
-    if (modal) {
-
-        modal.classList.remove(
-            "show"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   COPY TRACKING LINK
-========================================================= */
-
-async function copyTrackingLink() {
-
-    const linkElement =
-        document.getElementById(
-            "phoneTrackingLink"
-        );
-
-
-    if (!linkElement) return;
-
-
-    const link =
-        linkElement.href ||
-        linkElement.textContent;
-
-
-    try {
-
-        await navigator.clipboard.writeText(
-            link
-        );
-
-
-        showToast(
-            "Tracking link copied.",
-            "success"
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            error
-        );
-
-        showToast(
-            "Could not copy the link.",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DELETE DEVICE
-========================================================= */
-
-async function deleteDevice(
-    deviceId
-) {
-
-    if (!deviceId) return;
-
-
-    const confirmed =
-        window.confirm(
-            "Are you sure you want to delete this device?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await supabaseRequest(
-            `devices?id=eq.${encodeURIComponent(
-                deviceId
-            )}`,
-            {
-
-                method:
-                    "DELETE"
-
-            }
-        );
-
-
-        if (
-            selectedDevice &&
-            String(selectedDevice.id) ===
-            String(deviceId)
-        ) {
-
-            selectedDevice =
-                null;
-
-            localStorage.removeItem(
-                "trackpoint_selected_device"
-            );
-
-        }
-
-
-        showToast(
-            "Device deleted.",
-            "success"
-        );
-
-
-        await loadDevices();
-
-
-        showSection(
-            "devices",
-            document.querySelector(
-                '.nav-btn[onclick*="devices"]'
-            )
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Delete device error:",
-            error
-        );
-
-
-        showToast(
-            "Could not delete device.",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DEVICE ICON
-========================================================= */
-
-function getDeviceIcon(type) {
-
-    const value =
-        String(type || "")
-            .toLowerCase();
-
-
-    if (
-        value.includes("iphone") ||
-        value.includes("phone")
-    ) {
-
-        return "📱";
-
-    }
-
-
-    if (
-        value.includes("tablet") ||
-        value.includes("ipad")
-    ) {
-
-        return "▯";
-
-    }
-
-
-    if (
-        value.includes("laptop") ||
-        value.includes("computer")
-    ) {
-
-        return "💻";
-
-    }
-
-
-    return "▣";
-
-}
-
-
-/* =========================================================
-   DATE FORMAT
-========================================================= */
-
-function formatDate(
-    value
-) {
-
-    if (!value) {
-
-        return "Never";
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "Unknown";
-
-    }
-
-
-    return date.toLocaleString(
-        undefined,
-        {
-
-            dateStyle:
-                "medium",
-
-            timeStyle:
-                "short"
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function showToast(
-    message,
-    type = "info"
-) {
-
-    let container =
-        document.getElementById(
-            "toastContainer"
-        );
-
-
-    if (!container) {
-
-        container =
-            document.createElement(
-                "div"
-            );
-
-        container.id =
-            "toastContainer";
-
-        container.className =
-            "toast-container";
-
-        document.body.appendChild(
-            container
-        );
-
-    }
-
-
-    const toast =
-        document.createElement(
-            "div"
-        );
-
-
-    toast.className =
-        `toast toast-${type}`;
-
-
-    toast.innerHTML = `
-
-        <span class="toast-message">
-            ${escapeHtml(message)}
-        </span>
-
-        <button
-            class="toast-close"
-            onclick="this.parentElement.remove()"
-        >
-            ×
-        </button>
-
-    `;
-
-
-    container.appendChild(
-        toast
-    );
-
-
-    setTimeout(() => {
-
-        toast.classList.add(
-            "hide"
-        );
-
-        setTimeout(() => {
-
-            toast.remove();
-
-        }, 300);
-
-    }, 4000);
-
-}
-/* =========================================================
-   QR CODE
-========================================================= */
-
-function closeQRModal() {
-    const modal = document.getElementById("qrModal");
-    if (modal) modal.classList.remove("show");
-}
-
-async function copyQRLink() {
-    const linkElement = document.getElementById("qrLink");
-    const url = linkElement?.dataset?.url;
-
-    if (!url) {
-        showToast("No connection link is available.", "error");
-        return;
-    }
-
-    try {
-        await navigator.clipboard.writeText(url);
-        showToast("Connection link copied.", "success");
-    } catch (error) {
-        console.error("Copy link error:", error);
-        showToast("Could not copy the link.", "error");
-    }
-}
-
-
-function showQRCode(deviceId) {
-    openQrModal(deviceId);
-}
-/* =========================================================
-   AUTO REFRESH
-========================================================= */
-
-function startAutoRefresh() {
-
-    if (refreshTimer) {
-
-        clearInterval(
-            refreshTimer
-        );
-
-        refreshTimer = null;
-
-    }
-
-
-    if (!autoRefreshEnabled) {
-
-        return;
-
-    }
-
-
-    refreshTimer =
-        setInterval(
-            async () => {
-
-                await loadDevices();
-
-            },
-            5000
-        );
-
-}
-
-
-function toggleAutoRefresh(enabled) {
-
-    autoRefreshEnabled =
-        enabled;
-
-
-    localStorage.setItem(
-        "trackpoint_auto_refresh",
-        String(enabled)
-    );
-
-
-    const status =
-        document.getElementById(
-            "settingsRefreshStatus"
-        );
-
-
-    if (status) {
-
-        status.textContent =
-            enabled
-                ? "Enabled"
-                : "Disabled";
-
-    }
-
-
-    startAutoRefresh();
-
-}
-
-
-/* =========================================================
-   DATABASE TEST
-========================================================= */
-
-async function testSupabaseConnection() {
-
-    const dbStatus =
-        document.getElementById(
-            "dbStatus"
-        );
-
-    const settingsBadge =
-        document.getElementById(
-            "settingsDbBadge"
-        );
-
-    const sidebarStatus =
-        document.getElementById(
-            "sidebarStatus"
-        );
-
-
-    if (dbStatus) {
-
-        dbStatus.textContent =
-            "Checking...";
-
-    }
-
-
-    try {
-
-        await supabaseRequest(
-            "devices?select=id&limit=1"
-        );
-
-
-        if (dbStatus) {
-
-            dbStatus.textContent =
-                "Connected";
-
-        }
-
-        if (settingsBadge) {
-
-            settingsBadge.textContent =
-                "Connected";
-
-        }
-
-        if (sidebarStatus) {
-
-            sidebarStatus.textContent =
-                "Connected";
-
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        if (dbStatus) {
-
-            dbStatus.textContent =
-                "Error";
-
-        }
-
-        if (settingsBadge) {
-
-            settingsBadge.textContent =
-                "Error";
-
-        }
-
-        if (sidebarStatus) {
-
-            sidebarStatus.textContent =
-                "Connection error";
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function logout() {
-
-    const confirmed =
-        confirm(
-            "Log out of TrackPoint?"
-        );
-
-
-    if (!confirmed) return;
-
-
-    supabaseClient.auth.signOut()
-        .finally(() => {
-
-            window.location.replace(
-                "login.html"
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function formatDate(date) {
-
-    try {
-
-        return new Date(
-            date
-        ).toLocaleString();
-
-    } catch {
-
-        return "Unknown";
-
-    }
-
-}
-
-
-function escapeHTML(value) {
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
    LIVE DEVICE TRACKING ENGINE
 ========================================================= */
 
@@ -4765,7 +3584,9 @@ function deviceLastSeenMs(device) {
 function getLiveState(device) {
     if (!device) return "offline";
     const age = Date.now() - deviceLastSeenMs(device);
-    return device.status === "online" && age >= 0 && age <= 45000 ? "online" : "offline";
+    if (device.status === "online" && age >= 0 && age <= 30000) return "online";
+    if (age >= 0 && age <= 120000) return "stale";
+    return "offline";
 }
 
 function getDeviceAccuracy(device) {
@@ -4790,8 +3611,8 @@ function ensureLiveUI() {
     const status = document.getElementById("liveStatus");
     const accuracy = document.getElementById("liveAccuracy");
     const lastSeen = document.getElementById("liveLastSeen");
-    if (title) title.textContent = state === "online" ? `Tracking ${selectedDevice.device_name || "device"}` : "Device not reporting";
-    if (status) status.textContent = state === "online" ? "Online" : "Offline";
+    if (title) title.textContent = state === "online" ? `Tracking ${selectedDevice.device_name || "device"}` : state === "stale" ? "Last GPS update is stale" : "Device not reporting";
+    if (status) status.textContent = state === "online" ? "Online" : state === "stale" ? "Stale" : "Offline";
     if (accuracy) {
         const acc = getDeviceAccuracy(selectedDevice);
         accuracy.textContent = acc == null ? "—" : `${acc.toFixed(1)} m`;
@@ -4874,6 +3695,7 @@ function toggleDeviceFollow() {
 function selectDevice(id) {
     const device = devices.find(item => String(item.id) === String(id));
     if (!device) { showToast("Device not found.", "error"); return; }
+
     selectedDevice = device;
     localStorage.setItem("trackpoint_selected_device", device.id);
     clearDeviceMarker();
@@ -4883,29 +3705,88 @@ function selectDevice(id) {
     loadLocations();
     ensureLiveUI();
     renderSelectedDeviceOnMap({follow:true, animate:true});
+    updateMapStatus(`Tracking ${device.device_name || "selected phone"}.`);
 }
 
 function updateTracker() {
     if (!selectedDevice) return;
-    const name=document.getElementById("trackerDeviceName");
-    const type=document.getElementById("trackerDeviceType");
-    const status=document.getElementById("trackerDeviceStatus");
-    const coordinates=document.getElementById("trackerCoordinates");
-    const accuracy=document.getElementById("trackerAccuracy");
-    const lastSeen=document.getElementById("trackerLastSeen");
-    const lat=selectedDevice.last_latitude, lng=selectedDevice.last_longitude, acc=getDeviceAccuracy(selectedDevice), liveState=getLiveState(selectedDevice);
-    if(name) name.textContent=selectedDevice.device_name||"Unnamed Device";
-    if(type) type.textContent=selectedDevice.device_type||"Phone";
-    if(status){status.textContent=liveState==="online"?"Online":"Offline";status.className=`tracker-status ${liveState}`;}
-    if(coordinates) coordinates.textContent=lat!=null&&lng!=null?`${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`:"Waiting for GPS...";
-    if(accuracy) accuracy.textContent=acc==null?"—":`${acc.toFixed(1)} m`;
-    if(lastSeen) lastSeen.textContent=formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at);
-    const mapLatitude=document.getElementById("mapLatitude"), mapLongitude=document.getElementById("mapLongitude"), mapLastSeen=document.getElementById("mapLastSeen"), locationDetails=document.getElementById("locationDetails"), mapDeviceName=document.getElementById("mapDeviceName");
-    if(mapDeviceName) mapDeviceName.textContent=selectedDevice.device_name||"Selected device";
-    if(mapLatitude) mapLatitude.textContent=lat!=null?Number(lat).toFixed(6):"—";
-    if(mapLongitude) mapLongitude.textContent=lng!=null?Number(lng).toFixed(6):"—";
-    if(mapLastSeen) mapLastSeen.textContent=formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at);
-    if(locationDetails){locationDetails.innerHTML=lat!=null&&lng!=null?`<div class="location-info"><div class="info-box"><span>Latitude</span><strong>${Number(lat).toFixed(6)}</strong></div><div class="info-box"><span>Longitude</span><strong>${Number(lng).toFixed(6)}</strong></div><div class="info-box"><span>Accuracy</span><strong>${acc==null?"—":acc.toFixed(1)+" m"}</strong></div><div class="info-box"><span>Last Seen</span><strong>${escapeHTML(formatDate(selectedDevice.last_seen||selectedDevice.updated_at||selectedDevice.created_at))}</strong></div></div>`:`<div class="no-location">No GPS location has been reported yet. Open the phone connection page and allow location access.</div>`;}
+
+    const name = document.getElementById("trackerDeviceName");
+    const type = document.getElementById("trackerDeviceType");
+    const status = document.getElementById("trackerDeviceStatus");
+    const coordinates = document.getElementById("trackerCoordinates");
+    const accuracy = document.getElementById("trackerAccuracy");
+    const lastSeen = document.getElementById("trackerLastSeen");
+    const deviceInfo = document.getElementById("trackerDeviceInfo");
+
+    const lat = selectedDevice.last_latitude;
+    const lng = selectedDevice.last_longitude;
+    const acc = getDeviceAccuracy(selectedDevice);
+    const liveState = getLiveState(selectedDevice);
+    const seenValue = selectedDevice.last_seen || selectedDevice.updated_at || selectedDevice.created_at;
+    const seenText = formatDate(seenValue);
+
+    const stateLabel = liveState === "online" ? "LIVE" : liveState === "stale" ? "STALE" : "OFFLINE";
+    const stateText = liveState === "online" ? "Online" : liveState === "stale" ? "Stale" : "Offline";
+    const quality = acc == null ? "Waiting for GPS" : acc <= 25 ? "Excellent" : acc <= 100 ? "Good" : acc <= 500 ? "Fair" : "Poor";
+
+    if (name) name.textContent = selectedDevice.device_name || "Unnamed Device";
+    if (type) type.textContent = selectedDevice.device_type || "Phone";
+    if (status) {
+        status.textContent = stateText;
+        status.className = `tracker-status ${liveState}`;
+    }
+    if (coordinates) coordinates.textContent = lat != null && lng != null
+        ? `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
+        : "Waiting for GPS...";
+    if (accuracy) accuracy.textContent = acc == null ? "—" : `${acc.toFixed(1)} m`;
+    if (lastSeen) lastSeen.textContent = seenText;
+
+    const mapLatitude = document.getElementById("mapLatitude");
+    const mapLongitude = document.getElementById("mapLongitude");
+    const mapLastSeen = document.getElementById("mapLastSeen");
+    const locationDetails = document.getElementById("locationDetails");
+    const mapDeviceName = document.getElementById("mapDeviceName");
+
+    if (mapDeviceName) mapDeviceName.textContent = selectedDevice.device_name || "Selected device";
+    if (mapLatitude) mapLatitude.textContent = lat != null ? Number(lat).toFixed(6) : "—";
+    if (mapLongitude) mapLongitude.textContent = lng != null ? Number(lng).toFixed(6) : "—";
+    if (mapLastSeen) mapLastSeen.textContent = seenText;
+
+    if (deviceInfo) {
+        deviceInfo.innerHTML = `
+            <div class="selected-device-hero">
+                <div class="selected-device-icon">${getDeviceIcon(selectedDevice.device_type)}</div>
+                <div class="selected-device-copy">
+                    <div class="tracker-device-name">${escapeHTML(selectedDevice.device_name || "Unnamed Device")}</div>
+                    <div class="tracker-device-type">${escapeHTML(selectedDevice.device_type || "Phone")}</div>
+                </div>
+                <span class="device-live-pill ${liveState}"><span></span>${stateLabel}</span>
+            </div>
+            <div class="device-health">
+                <div><span>GPS quality</span><strong>${quality}</strong></div>
+                <div><span>Accuracy</span><strong>${acc == null ? "—" : acc.toFixed(1) + " m"}</strong></div>
+                <div><span>Last seen</span><strong>${escapeHTML(seenText)}</strong></div>
+            </div>
+            <div class="device-coordinates">
+                <span>Current coordinates</span>
+                <strong>${lat != null && lng != null ? Number(lat).toFixed(6) + ", " + Number(lng).toFixed(6) : "Waiting for GPS…"}</strong>
+            </div>
+        `;
+    }
+
+    if (locationDetails) {
+        locationDetails.innerHTML = lat != null && lng != null
+            ? `<div class="location-info">
+                <div class="info-box"><span>Latitude</span><strong>${Number(lat).toFixed(6)}°</strong></div>
+                <div class="info-box"><span>Longitude</span><strong>${Number(lng).toFixed(6)}°</strong></div>
+                <div class="info-box"><span>Accuracy</span><strong>${acc == null ? "—" : acc.toFixed(1) + " m"}</strong></div>
+                <div class="info-box"><span>GPS quality</span><strong>${quality}</strong></div>
+                <div class="info-box wide"><span>Last seen</span><strong>${escapeHTML(seenText)}</strong></div>
+            </div>`
+            : `<div class="no-location">No GPS location has been reported yet. Open the phone connection page and allow location permission.</div>`;
+    }
+
     restoreDeviceMarker();
     ensureLiveUI();
 }
