@@ -1589,21 +1589,21 @@
 
                                 <button
                                     class="btn"
-                                    onclick="setMapMode('satellite')"
+                                    onclick="setSatelliteView()"
                                 >
                                     Satellite
                                 </button>
 
                                 <button
                                     class="btn"
-                                    onclick="setMapMode('standard')"
+                                    onclick="setNormalView()"
                                 >
                                     Map
                                 </button>
 
                                 <button
                                     class="btn"
-                                    onclick="setMapMode('3d')"
+                                    onclick="set3DView()"
                                 >
                                     3D
                                 </button>
@@ -2210,12 +2210,11 @@
                                     type="text"
                                     id="deviceCode"
                                     class="form-control"
-                                    placeholder="Enter your device code"
+                                    placeholder="Click Generate Code, or leave blank"
                                 >
 
                                 <div class="form-help">
-                                    Use the device code provided for the
-                                    phone/device you want to connect.
+                                    A code is created automatically when you add the device. You can also click Generate Code first.
                                 </div>
 
                             </div>
@@ -2238,6 +2237,11 @@
                                 </button>
 
                             </div>
+
+                            <div
+                                id="addDeviceMessage"
+                                style="margin-top:14px;font-size:11px;color:#8b99a8;line-height:1.5;"
+                            ></div>
 
                         </div>
 
@@ -2801,6 +2805,18 @@ function updateMapStatus(message) {
    MAP MODE
 ========================================================= */
 
+function setNormalView() {
+    setMapMode("standard");
+}
+
+function setSatelliteView() {
+    setMapMode("satellite");
+}
+
+function set3DView() {
+    setMapMode("3d");
+}
+
 function setMapMode(mode) {
 
     if (!map) return;
@@ -2860,19 +2876,6 @@ function setMapMode(mode) {
     }
 
 }
-
-function setSatelliteView() {
-    setMapMode("satellite");
-}
-
-function setNormalView() {
-    setMapMode("standard");
-}
-
-function set3DView() {
-    setMapMode("3d");
-}
-
 
 
 /* =========================================================
@@ -3863,18 +3866,9 @@ function focusLocation(
    CREATE DEVICE
 ========================================================= */
 
-/* =========================================================
-   GENERATE DEVICE CODE
-========================================================= */
-
 function generateDeviceCode() {
     const codeInput = document.getElementById("deviceCode");
 
-    if (!codeInput) {
-        console.error("deviceCode input not found.");
-        return;
-    }
-
     const code =
         "TP-" +
         Math.random()
@@ -3882,277 +3876,629 @@ function generateDeviceCode() {
             .substring(2, 10)
             .toUpperCase();
 
-    codeInput.value = code;
-}
-
-
-/* =========================================================
-   CREATE DEVICE
-========================================================= */
-
-async function createDevice() {
-
-    const nameInput =
-        document.getElementById("deviceName");
-
-    const typeInput =
-        document.getElementById("deviceType");
-
-    const codeInput =
-        document.getElementById("deviceCode");
-
-    const message =
-        document.getElementById("addDeviceMessage");
-
-
-    const name =
-        nameInput?.value.trim();
-
-    const type =
-        typeInput?.value || "phone";
-
-    let deviceCode =
-        codeInput?.value.trim();
-
-
-    if (!name) {
-
-        if (message) {
-            message.textContent =
-                "Enter a device name.";
-        }
-
-        return;
-    }
-
-
-    /*
-       If the user didn't generate a code,
-       automatically create one.
-    */
-
-    if (!deviceCode) {
-
-        deviceCode =
-            "TP-" +
-            Math.random()
-                .toString(36)
-                .substring(2, 10)
-                .toUpperCase();
-
-        if (codeInput) {
-            codeInput.value =
-                deviceCode;
-        }
-    }
-
-
-    if (message) {
-        message.textContent =
-            "Creating device...";
-    }
-
-
-    try {
-
-        const created =
-            await supabaseRequest(
-                "devices",
-                {
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        device_code:
-                            deviceCode,
-
-                        device_name:
-                            name,
-
-                        device_type:
-                            type,
-
-                        status:
-                            "offline"
-                    })
-                }
-            );
-
-
-        const device =
-            Array.isArray(created)
-                ? created[0]
-                : created;
-
-
-        if (!device) {
-            throw new Error(
-                "Device was not returned by Supabase."
-            );
-        }
-
-
-        if (message) {
-
-            message.innerHTML = `
-                <div>
-                    Device created successfully.
-                </div>
-
-                <br>
-
-                <div>
-                    Device Code:
-                    <strong>
-                        ${escapeHTML(device.device_code)}
-                    </strong>
-                </div>
-
-                <br>
-
-                <button
-                    class="primary-btn"
-                    onclick="openQrModal('${device.id}')"
-                >
-                    Show QR Code
-                </button>
-            `;
-        }
-
-
-        if (nameInput) {
-            nameInput.value = "";
-        }
-
-
-        if (codeInput) {
-            codeInput.value = "";
-        }
-
-
-        await loadDevices();
-
-
-    } catch (error) {
-
-        console.error(
-            "Create device error:",
-            error
-        );
-
-
-        if (message) {
-            message.textContent =
-                error?.message ||
-                "Could not create device.";
-        }
-    }
-}
-
-
-function generateDeviceCode() {
-
-    const input =
-        document.getElementById(
-            "deviceCode"
-        );
-
-    const code =
-        "TP-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 10)
-            .toUpperCase();
-
-    if (input) {
-        input.value = code;
-        input.focus();
+    if (codeInput) {
+        codeInput.value = code;
     }
 
     return code;
 }
 
 
+async function createDevice() {
+    const nameInput = document.getElementById("deviceName");
+    const typeInput = document.getElementById("deviceType");
+    const codeInput = document.getElementById("deviceCode");
+    const message = document.getElementById("addDeviceMessage");
 
+    const name = nameInput?.value.trim();
+    const type = typeInput?.value || "phone";
+
+    if (!name) {
+        if (message) message.textContent = "Enter a device name.";
+        showToast("Enter a device name.", "error");
+        return;
+    }
+
+    let deviceCode = codeInput?.value.trim();
+
+    if (!deviceCode) {
+        deviceCode = generateDeviceCode();
+    }
+
+    if (message) message.textContent = "Creating device...";
+
+    try {
+        const created = await supabaseRequest("devices", {
+            method: "POST",
+            body: JSON.stringify({
+                device_code: deviceCode,
+                device_name: name,
+                device_type: type,
+                status: "offline"
+            })
+        });
+
+        const device = Array.isArray(created) ? created[0] : created;
+
+        if (!device?.id) {
+            throw new Error("Supabase did not return the new device.");
+        }
+
+        if (nameInput) nameInput.value = "";
+        if (codeInput) codeInput.value = "";
+
+        await loadDevices();
+
+        if (message) {
+            const safeCode = escapeHTML(device.device_code || deviceCode);
+            message.innerHTML = `
+                <div style="margin-top:14px;padding:14px;border:1px solid #263340;border-radius:10px;background:#0c141c;">
+                    <strong style="display:block;margin-bottom:8px;color:#70d69a;">
+                        Device created successfully
+                    </strong>
+                    <div style="font-size:11px;color:#8b99a8;margin-bottom:6px;">Device Code</div>
+                    <div style="font-size:18px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;">
+                        ${safeCode}
+                    </div>
+                    <button class="btn btn-primary" type="button"
+                        onclick="openQrModal('${device.id}')">
+                        Show QR Code & Link
+                    </button>
+                </div>
+            `;
+        }
+
+        showToast("Device added successfully.", "success");
+        openQrModal(device.id);
+
+    } catch (error) {
+        console.error("Create device error:", error);
+        const detail = error?.message || "Could not create device.";
+        if (message) message.textContent = detail;
+        showToast(detail, "error");
+    }
+}
 /* =========================================================
    QR CODE
 ========================================================= */
 
-function showQRCode(deviceId) {
+function openQrModal(deviceId) {
+    const modal = document.getElementById("qrModal");
+    const qrContainer = document.getElementById("qrContainer");
+    const linkElement = document.getElementById("qrLink");
 
-    const phoneURL =
-        new URL(
-            "phone.html",
-            window.location.href
+    if (!modal || !qrContainer) {
+        console.error("QR modal elements are missing.");
+        return;
+    }
+
+    if (typeof QRCode === "undefined") {
+        console.error("QRCode library is not loaded.");
+        if (linkElement) {
+            linkElement.textContent =
+                "QR library failed to load. Use the connection link instead.";
+        }
+        return;
+    }
+
+    const phoneUrl = new URL("phone.html", window.location.href);
+    phoneUrl.searchParams.set("device", deviceId);
+    const finalUrl = phoneUrl.toString();
+
+    qrContainer.innerHTML = "";
+
+    new QRCode(qrContainer, {
+        text: finalUrl,
+        width: 220,
+        height: 220,
+        colorDark: "#111827",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    if (linkElement) {
+        linkElement.innerHTML = `
+            <div style="margin-bottom:8px;color:#aeb8c4;">
+                Phone connection link
+            </div>
+            <a href="${escapeHTML(finalUrl)}"
+               target="_blank"
+               rel="noopener"
+               style="color:#60a5fa;text-decoration:none;">
+                ${escapeHTML(finalUrl)}
+            </a>
+        `;
+        linkElement.dataset.url = finalUrl;
+    }
+
+    modal.classList.add("show");
+}
+/* =========================================================
+   CLOSE QR MODAL
+========================================================= */
+
+function closeQrModal() {
+
+    const modal =
+        document.getElementById(
+            "qrModal"
         );
 
 
-    phoneURL.searchParams.set(
-        "device",
-        deviceId
-    );
+    if (modal) {
 
+        modal.classList.remove(
+            "show"
+        );
 
-    const connectionLink =
-        phoneURL.href;
-
-
-    document.getElementById(
-        "qrContainer"
-    ).innerHTML = "";
-
-
-    new QRCode(
-        document.getElementById(
-            "qrContainer"
-        ),
-        {
-
-            text:
-                connectionLink,
-
-            width:
-                190,
-
-            height:
-                190
-
-        }
-    );
-
-
-    document.getElementById(
-        "qrLink"
-    ).textContent =
-        connectionLink;
-
-
-    document.getElementById(
-        "qrModal"
-    ).classList.add("show");
+    }
 
 }
 
 
-function closeQR(event) {
+/* =========================================================
+   COPY TRACKING LINK
+========================================================= */
 
-    if (
-        event &&
-        event.target !== event.currentTarget
-    ) {
+async function copyTrackingLink() {
+
+    const linkElement =
+        document.getElementById(
+            "phoneTrackingLink"
+        );
+
+
+    if (!linkElement) return;
+
+
+    const link =
+        linkElement.href ||
+        linkElement.textContent;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+
+        showToast(
+            "Tracking link copied.",
+            "success"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "Could not copy the link.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE DEVICE
+========================================================= */
+
+async function deleteDevice(
+    deviceId
+) {
+
+    if (!deviceId) return;
+
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete this device?"
+        );
+
+
+    if (!confirmed) {
 
         return;
 
     }
 
 
-    document
-        .getElementById("qrModal")
-        .classList.remove("show");
+    try {
+
+        await supabaseRequest(
+            `devices?id=eq.${encodeURIComponent(
+                deviceId
+            )}`,
+            {
+
+                method:
+                    "DELETE"
+
+            }
+        );
+
+
+        if (
+            selectedDevice &&
+            String(selectedDevice.id) ===
+            String(deviceId)
+        ) {
+
+            selectedDevice =
+                null;
+
+            localStorage.removeItem(
+                "trackpoint_selected_device"
+            );
+
+        }
+
+
+        showToast(
+            "Device deleted.",
+            "success"
+        );
+
+
+        await loadDevices();
+
+
+        showSection(
+            "devices",
+            document.querySelector(
+                '.nav-btn[onclick*="devices"]'
+            )
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete device error:",
+            error
+        );
+
+
+        showToast(
+            "Could not delete device.",
+            "error"
+        );
+
+    }
 
 }
 
 
+/* =========================================================
+   DEVICE ICON
+========================================================= */
+
+function getDeviceIcon(type) {
+
+    const value =
+        String(type || "")
+            .toLowerCase();
+
+
+    if (
+        value.includes("iphone") ||
+        value.includes("phone")
+    ) {
+
+        return "📱";
+
+    }
+
+
+    if (
+        value.includes("tablet") ||
+        value.includes("ipad")
+    ) {
+
+        return "▯";
+
+    }
+
+
+    if (
+        value.includes("laptop") ||
+        value.includes("computer")
+    ) {
+
+        return "💻";
+
+    }
+
+
+    return "▣";
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+
+        return "Never";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "Unknown";
+
+    }
+
+
+    return date.toLocaleString(
+        undefined,
+        {
+
+            dateStyle:
+                "medium",
+
+            timeStyle:
+                "short"
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(
+    message,
+    type = "info"
+) {
+
+    let container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+
+    if (!container) {
+
+        container =
+            document.createElement(
+                "div"
+            );
+
+        container.id =
+            "toastContainer";
+
+        container.className =
+            "toast-container";
+
+        document.body.appendChild(
+            container
+        );
+
+    }
+
+
+    const toast =
+        document.createElement(
+            "div"
+        );
+
+
+    toast.className =
+        `toast toast-${type}`;
+
+
+    toast.innerHTML = `
+
+        <span class="toast-message">
+            ${escapeHtml(message)}
+        </span>
+
+        <button
+            class="toast-close"
+            onclick="this.parentElement.remove()"
+        >
+            ×
+        </button>
+
+    `;
+
+
+    container.appendChild(
+        toast
+    );
+
+
+    setTimeout(() => {
+
+        toast.classList.add(
+            "hide"
+        );
+
+        setTimeout(() => {
+
+            toast.remove();
+
+        }, 300);
+
+    }, 4000);
+
+}
+/* =========================================================
+   CREATE DEVICE
+========================================================= */
+
+async function createDevice() {
+    const nameInput = document.getElementById("deviceName");
+    const typeInput = document.getElementById("deviceType");
+    const codeInput = document.getElementById("deviceCode");
+    const message = document.getElementById("addDeviceMessage");
+
+    const name = nameInput?.value.trim();
+    const type = typeInput?.value || "phone";
+
+    if (!name) {
+        if (message) message.textContent = "Enter a device name.";
+        showToast("Enter a device name.", "error");
+        return;
+    }
+
+    let deviceCode = codeInput?.value.trim();
+
+    if (!deviceCode) {
+        deviceCode = generateDeviceCode();
+    }
+
+    if (message) message.textContent = "Creating device...";
+
+    try {
+        const created = await supabaseRequest("devices", {
+            method: "POST",
+            body: JSON.stringify({
+                device_code: deviceCode,
+                device_name: name,
+                device_type: type,
+                status: "offline"
+            })
+        });
+
+        const device = Array.isArray(created) ? created[0] : created;
+
+        if (!device?.id) {
+            throw new Error("Supabase did not return the new device.");
+        }
+
+        if (nameInput) nameInput.value = "";
+        if (codeInput) codeInput.value = "";
+
+        await loadDevices();
+
+        if (message) {
+            const safeCode = escapeHTML(device.device_code || deviceCode);
+            message.innerHTML = `
+                <div style="margin-top:14px;padding:14px;border:1px solid #263340;border-radius:10px;background:#0c141c;">
+                    <strong style="display:block;margin-bottom:8px;color:#70d69a;">
+                        Device created successfully
+                    </strong>
+                    <div style="font-size:11px;color:#8b99a8;margin-bottom:6px;">Device Code</div>
+                    <div style="font-size:18px;font-weight:bold;letter-spacing:2px;margin-bottom:12px;">
+                        ${safeCode}
+                    </div>
+                    <button class="btn btn-primary" type="button"
+                        onclick="openQrModal('${device.id}')">
+                        Show QR Code & Link
+                    </button>
+                </div>
+            `;
+        }
+
+        showToast("Device added successfully.", "success");
+        openQrModal(device.id);
+
+    } catch (error) {
+        console.error("Create device error:", error);
+        const detail = error?.message || "Could not create device.";
+        if (message) message.textContent = detail;
+        showToast(detail, "error");
+    }
+}
+/* =========================================================
+   QR CODE
+========================================================= */
+
+function closeQRModal() {
+    const modal = document.getElementById("qrModal");
+    if (modal) modal.classList.remove("show");
+}
+
+async function copyQRLink() {
+    const linkElement = document.getElementById("qrLink");
+    const url = linkElement?.dataset?.url;
+
+    if (!url) {
+        showToast("No connection link is available.", "error");
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(url);
+        showToast("Connection link copied.", "success");
+    } catch (error) {
+        console.error("Copy link error:", error);
+        showToast("Could not copy the link.", "error");
+    }
+}
+
+
+function showQRCode(deviceId) {
+    openQrModal(deviceId);
+}
 /* =========================================================
    AUTO REFRESH
 ========================================================= */
