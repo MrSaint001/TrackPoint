@@ -2554,6 +2554,34 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 }
 
+function getDeviceIcon(type) {
+    const deviceType = String(type || "").toLowerCase();
+
+    if (
+        deviceType.includes("tablet") ||
+        deviceType.includes("ipad")
+    ) {
+        return "📱";
+    }
+
+    if (
+        deviceType.includes("laptop") ||
+        deviceType.includes("computer") ||
+        deviceType.includes("pc")
+    ) {
+        return "💻";
+    }
+
+    if (
+        deviceType.includes("watch") ||
+        deviceType.includes("wearable")
+    ) {
+        return "⌚";
+    }
+
+    return "📱";
+}
+
 function escapeHtml(value) {
     return escapeHTML(value);
 }
